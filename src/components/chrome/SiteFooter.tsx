@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { AffiliationStrip } from "@/components/affiliations/AffiliationStrip";
 
 export function SiteFooter() {
   const openContact = () => window.dispatchEvent(new CustomEvent("open-contact"));
@@ -108,6 +109,22 @@ export function SiteFooter() {
 
       <div className="wordmark">
         Rennie <em>Lab.</em>
+      </div>
+
+      <div
+        style={{
+          padding: "32px 0 24px",
+          marginTop: 16,
+          borderTop: "1px solid rgba(244, 241, 222, 0.12)",
+        }}
+      >
+        <div
+          className="mono"
+          style={{ marginBottom: 18, color: "rgba(244, 241, 222, 0.5)" }}
+        >
+          Accountability · alliances
+        </div>
+        <AffiliationStrip variant="footer" forceTheme="dark" />
       </div>
 
       <div className="foot-bottom">

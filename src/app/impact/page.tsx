@@ -2,6 +2,7 @@ import { ContactButton } from "@/components/chrome/ContactButton";
 import { IMPACT_CASE_STUDIES } from "@/data/impactProjects";
 import { ImpactGrid } from "@/components/impact/ImpactGrid";
 import { ImpactCaseStudyDrawer } from "@/components/impact/ImpactCaseStudyDrawer";
+import { AffiliationStrip } from "@/components/affiliations/AffiliationStrip";
 
 export const metadata = {
   title: "Impact — Rennie Lab",
@@ -10,10 +11,10 @@ export const metadata = {
 };
 
 const NUMBERS: [string, string][] = [
-  ["1,820", "pro-bono hours · 2025"],
-  ["22", "impact case studies"],
-  ["3", "categories · climate · community · movement"],
-  ["1%", "of revenue · planet"],
+  ["$1.1M+", "pro-bono · since 2009"],
+  ["22", "impact clients"],
+  ["115", "impact projects"],
+  ["40%", "of all work · 2026 target"],
 ];
 
 export default function ImpactPage() {
@@ -37,6 +38,20 @@ export default function ImpactPage() {
           chosen not just for its creative output, but for its contribution to something
           larger than the brief — work across movement, climate and community.
         </p>
+      </section>
+
+      {/* Affiliations strip — credentials we hold ourselves to */}
+      <section
+        style={{
+          padding: "32px 0 48px",
+          borderTop: "1px solid var(--line)",
+          marginBottom: 16,
+        }}
+      >
+        <div className="mono" style={{ marginBottom: 24 }}>
+          Credentials · accountability · alliances
+        </div>
+        <AffiliationStrip variant="page" />
       </section>
 
       {/* Numbers */}
