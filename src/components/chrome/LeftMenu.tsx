@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { NAV_ITEMS, routeIdFromPath } from "./navigation";
 import { useTheme } from "./ThemeProvider";
@@ -22,15 +21,8 @@ export function LeftMenu() {
     <nav className="chrome left-menu" data-open={open}>
       <div className="left-menu-head">
         <Link href="/" className="brand" onClick={close} style={{ cursor: "pointer" }}>
-          <Image
-            className="brand-logo"
-            src={logoSrc}
-            alt="Rennie Lab"
-            width={120}
-            height={22}
-            priority
-            unoptimized
-          />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="brand-logo" src={logoSrc} alt="Rennie Lab" />
           <div className="brand-label">{route === "home" ? "Home" : route}</div>
         </Link>
         <button

@@ -1,101 +1,129 @@
-import { IMPACT_PILLARS } from "@/data/impact";
-import { PROJECTS } from "@/data/projects";
 import { ContactButton } from "@/components/chrome/ContactButton";
+import { FEED } from "@/data/feed";
 
 export const metadata = {
   title: "Impact — Rennie Lab",
   description:
-    "Rennie Lab works across five impact pillars: Oceans, Health, Community, Mountains, and Climate. Pro-bono and partnership work for the issues that matter.",
+    "Pro-bono and at-cost programs with charities, NGOs and movements. Ten programs since 2019.",
 };
 
+const NUMBERS: [string, string][] = [
+  ["1,820", "pro-bono hours · 2025"],
+  ["10", "partner charities"],
+  ["14", "programs shipped"],
+  ["1%", "of revenue · planet"],
+];
+
 export default function ImpactPage() {
+  const programs = FEED.filter((f) => f.kind === "impact");
+
   return (
     <div className="container">
-      <section style={{ paddingTop: 64, paddingBottom: 96 }}>
-        <div className="mono" style={{ marginBottom: 32 }}>04 — Impact</div>
-        <h1 className="h-display rise" style={{ maxWidth: "12ch" }}>
-          Design as a pro-social discipline.
+      <section style={{ padding: "40px 0 64px" }}>
+        <div className="mono rise" style={{ marginBottom: 32 }}>
+          Impact · pro-bono + at-cost programs
+        </div>
+        <h1
+          className="h-display rise delay-1"
+          style={{ margin: 0, maxWidth: "14ch" }}
+        >
+          Work for the <em style={{ color: "var(--accent)" }}>commons.</em>
         </h1>
-        <p className="body-lg rise delay-1" style={{ maxWidth: "60ch", marginTop: 48 }}>
-          Five pillars where the work earns its keep — Oceans, Health, Community,
-          Mountains, and Climate. Some of it is pro-bono, some of it is paid, all of it is
-          chosen.
+        <p
+          className="body-lg rise delay-2"
+          style={{ marginTop: 24, maxWidth: "48ch" }}
+        >
+          A portion of the studio&apos;s hours each year is set aside for charities, NGOs
+          and movements. Ten programs since 2019; here&apos;s where the time and craft has
+          gone.
         </p>
       </section>
 
-      {IMPACT_PILLARS.map((pillar, i) => {
-        const linked = PROJECTS.filter((p) => pillar.exampleProjectSlugs.includes(p.slug));
-        return (
-          <section
-            key={pillar.slug}
-            style={{
-              padding: "80px 0",
-              borderTop: "1px solid var(--line)",
-              display: "grid",
-              gridTemplateColumns: "1fr 1.4fr",
-              gap: 64,
-            }}
-          >
-            <div>
-              <div className="mono" style={{ marginBottom: 16 }}>0{i + 1}</div>
-              <h2 className="h-1" style={{ margin: 0 }}>{pillar.title}</h2>
-            </div>
-            <div>
-              <p className="body-lg" style={{ margin: 0, maxWidth: "62ch" }}>{pillar.body}</p>
-              {linked.length > 0 && (
-                <div
-                  style={{
-                    marginTop: 40,
-                    display: "grid",
-                    gridTemplateColumns: `repeat(${Math.min(linked.length, 3)}, 1fr)`,
-                    gap: 16,
-                  }}
-                >
-                  {linked.slice(0, 3).map((project) => (
-                    <div key={project.slug}>
-                      <div
-                        className="ph"
-                        data-tone={project.tone || pillar.tone}
-                        style={{ aspectRatio: "4/3", borderRadius: "var(--radius)" }}
-                      />
-                      <div className="mono" style={{ marginTop: 12 }}>{project.client}</div>
-                      <div
-                        style={{
-                          fontFamily: "var(--sans)",
-                          fontWeight: 600,
-                          fontSize: 18,
-                          marginTop: 4,
-                          letterSpacing: "-0.01em",
-                        }}
-                      >
-                        {project.name}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </section>
-        );
-      })}
-
+      {/* Numbers */}
       <section
         style={{
-          padding: "96px 0 0",
+          padding: "48px 0",
           borderTop: "1px solid var(--line)",
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: 64,
-          alignItems: "end",
+          borderBottom: "1px solid var(--line)",
+          marginBottom: 96,
         }}
       >
-        <h2 className="h-1" style={{ margin: 0, maxWidth: "16ch" }}>
-          Have a brief that needs to <em>matter?</em>
-        </h2>
-        <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-          <ContactButton>
-            Open the brief <span className="arrow">→</span>
-          </ContactButton>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 32 }}>
+          {NUMBERS.map(([v, l], i) => (
+            <div key={i}>
+              <div
+                className="serif"
+                style={{
+                  fontSize: "clamp(56px, 7vw, 112px)",
+                  lineHeight: 1,
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                {v}
+              </div>
+              <div className="mono" style={{ marginTop: 12 }}>
+                {l}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Programs */}
+      <section style={{ padding: "0 0 96px" }}>
+        <div className="mono" style={{ marginBottom: 24 }}>Active programs</div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+          {programs.map((p) => (
+            <article key={p.id} className="card">
+              <div className="ph" data-tone={p.tone} style={{ aspectRatio: "16/10" }}>
+                <span className="ph-tag">{p.cat} · charity</span>
+              </div>
+              <div style={{ padding: 28 }}>
+                <div
+                  className="mono"
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                >
+                  <span>{p.client}</span>
+                  <span>{p.year}</span>
+                </div>
+                <h3
+                  className="h-2"
+                  style={{ margin: "14px 0", fontSize: "clamp(28px,3vw,40px)" }}
+                >
+                  {p.title}
+                </h3>
+                <p className="body" style={{ margin: 0 }}>
+                  A multi-year partnership with creative direction, public-facing
+                  programme design and on-the-ground production support.
+                </p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* Apply for support */}
+      <section style={{ padding: "64px 0", borderTop: "1px solid var(--line)" }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: 64,
+            alignItems: "center",
+          }}
+        >
+          <h2 className="h-1" style={{ margin: 0, maxWidth: "12ch" }}>
+            Running a charity? <em>Tell us.</em>
+          </h2>
+          <div>
+            <p className="body-lg" style={{ margin: "0 0 24px", maxWidth: "42ch" }}>
+              We open one or two new pro-bono partnerships each year, alongside at-cost
+              work for movements that need craft. The brief is open year-round.
+            </p>
+            <ContactButton>
+              Open the brief <span className="arrow">→</span>
+            </ContactButton>
+          </div>
         </div>
       </section>
     </div>

@@ -1,84 +1,99 @@
 "use client";
 
+import { ContactButton } from "@/components/chrome/ContactButton";
 import type { Project } from "@/data/types";
+
+function summary(p: Project): string {
+  return (
+    p.sections.challenge ??
+    p.sections.background ??
+    p.sections.description ??
+    p.sections.solution ??
+    ""
+  );
+}
 
 export function ProjectsList({ projects }: { projects: Project[] }) {
   return (
-    <div>
-      {projects.map((project, i) => {
-        const reverse = i % 2 === 1;
-        const summary =
-          project.sections.challenge ??
-          project.sections.background ??
-          project.sections.description ??
-          project.sections.solution ??
-          "";
-
-        return (
-          <article
-            key={project.slug}
-            onClick={() =>
-              window.dispatchEvent(
-                new CustomEvent("open-case", { detail: { project, index: i } }),
-              )
-            }
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: 64,
-              padding: "80px 0",
-              borderTop: "1px solid var(--line)",
-              cursor: "pointer",
-              alignItems: "center",
-            }}
+    <section style={{ padding: "0 0 96px" }}>
+      {projects.map((p, i) => (
+        <article
+          key={p.slug}
+          onClick={() =>
+            window.dispatchEvent(
+              new CustomEvent("open-case", { detail: { project: p, index: i } }),
+            )
+          }
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1.1fr",
+            gap: 56,
+            padding: "48px 0",
+            borderTop: "1px solid var(--line)",
+            alignItems: "center",
+            cursor: "pointer",
+          }}
+        >
+          <div>
+            <div className="mono" style={{ marginBottom: 18 }}>
+              {p.source === "reny-studio" ? "case study" : "project"} ·{" "}
+              {(p.categories[0] ?? "design").toLowerCase()}
+            </div>
+            <h2
+              className="h-1"
+              style={{ margin: "0 0 24px", fontSize: "clamp(32px, 4.5vw, 64px)" }}
+            >
+              {p.name}
+            </h2>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: 24,
+                padding: "20px 0",
+                borderTop: "1px solid var(--line)",
+                borderBottom: "1px solid var(--line)",
+              }}
+            >
+              <div>
+                <div className="mono">Partner</div>
+                <div className="serif" style={{ fontSize: 22, marginTop: 6 }}>
+                  {p.client}
+                </div>
+              </div>
+              <div>
+                <div className="mono">Year</div>
+                <div className="serif" style={{ fontSize: 22, marginTop: 6 }}>
+                  {p.year ?? "—"}
+                </div>
+              </div>
+            </div>
+            <p className="body-lg" style={{ marginTop: 24, maxWidth: "46ch" }}>
+              {summary(p).slice(0, 320)}
+              {summary(p).length > 320 ? "…" : ""}
+            </p>
+            <div style={{ marginTop: 24, display: "flex", gap: 12 }}>
+              <button type="button" className="btn btn-primary">
+                Open case study <span className="arrow">→</span>
+              </button>
+              <span onClick={(e) => e.stopPropagation()}>
+                <ContactButton className="btn btn-ghost">
+                  Start a project <span className="arrow">→</span>
+                </ContactButton>
+              </span>
+            </div>
+          </div>
+          <div
+            className="ph"
+            data-tone={p.tone || "ink"}
+            style={{ aspectRatio: "4/3", borderRadius: "var(--radius)" }}
           >
-            <div style={{ order: reverse ? 2 : 1 }}>
-              <div className="mono" style={{ marginBottom: 16 }}>
-                {String(i + 1).padStart(2, "0")} · {project.client}
-                {project.year ? ` · ${project.year}` : ""}
-              </div>
-              <h2 className="h-2" style={{ margin: 0 }}>
-                {project.name}
-              </h2>
-              <p className="body-lg" style={{ marginTop: 24, maxWidth: "52ch" }}>
-                {summary.slice(0, 280)}
-                {summary.length > 280 ? "…" : ""}
-              </p>
-              <div style={{ marginTop: 32, display: "flex", flexWrap: "wrap", gap: 8 }}>
-                {project.categories.slice(0, 4).map((c) => (
-                  <span key={c} className="tag">
-                    {c}
-                  </span>
-                ))}
-              </div>
-              <div style={{ marginTop: 32, display: "flex", gap: 24, alignItems: "center" }}>
-                <span className="mono">Read case study →</span>
-                <span
-                  className="mono"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    window.dispatchEvent(new CustomEvent("open-contact"));
-                  }}
-                  style={{ cursor: "pointer", color: "var(--accent)" }}
-                >
-                  Start a project →
-                </span>
-              </div>
-            </div>
-            <div style={{ order: reverse ? 1 : 2 }}>
-              <div
-                className="ph"
-                data-tone={project.tone || "ink"}
-                style={{ aspectRatio: "4/3", borderRadius: "var(--radius)" }}
-              >
-                <span className="ph-tag">
-                  {project.categories.slice(0, 2).join(" · ") || "Case Study"}
-                </span>
-              </div>
-            </div>
-          </article>
-        );
-      })}
-    </div>
+            <span className="ph-tag">
+              {String(i + 1).padStart(2, "0")} · {(p.categories[0] ?? "design").toLowerCase()}
+            </span>
+          </div>
+        </article>
+      ))}
+    </section>
   );
 }

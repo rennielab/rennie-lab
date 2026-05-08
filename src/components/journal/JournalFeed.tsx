@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import type { JournalPost, JournalCategory, JournalSource } from "@/data/types";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { JournalPost, JournalCategory, JournalKind } from "@/data/types";
 
-const CATEGORIES: { id: JournalCategory | "all"; label: string }[] = [
+const CATS: { id: JournalCategory | "all"; label: string }[] = [
   { id: "all", label: "All" },
   { id: "climate", label: "Climate" },
   { id: "movement", label: "Movement" },
@@ -12,164 +12,195 @@ const CATEGORIES: { id: JournalCategory | "all"; label: string }[] = [
   { id: "impact", label: "Impact" },
 ];
 
-const SOURCES: { id: JournalSource | "all"; label: string }[] = [
-  { id: "all", label: "All sources" },
-  { id: "substack", label: "Substack" },
-  { id: "97percent", label: "97%" },
+const KINDS: { id: JournalKind | "all"; label: string }[] = [
+  { id: "all", label: "All formats" },
+  { id: "newsletter", label: "Essays" },
+  { id: "field-guide", label: "Field Guides" },
+  { id: "podcast", label: "Podcasts" },
+  { id: "reading", label: "Reading" },
 ];
 
-function formatDate(d: string) {
-  return new Date(d).toLocaleDateString("en-GB", {
+function JournalCard({ post, large = false }: { post: JournalPost; large?: boolean }) {
+  const date = new Date(post.publishedAt).toLocaleDateString("en-GB", {
     day: "numeric",
     month: "short",
     year: "numeric",
   });
+  const readMin = Math.max(2, Math.round(post.body.length / 1200));
+  return (
+    <article
+      className="card"
+      style={{ display: "flex", flexDirection: "column", cursor: "pointer" }}
+      onClick={() =>
+        window.dispatchEvent(new CustomEvent("open-journal", { detail: { post } }))
+      }
+    >
+      <div
+        className="ph"
+        data-tone={post.tone || "ink"}
+        style={{ aspectRatio: large ? "16/10" : "4/3" }}
+      >
+        <span className="ph-tag">
+          {post.type} · {post.category ?? "design"}
+        </span>
+      </div>
+      <div
+        style={{
+          padding: large ? 28 : 20,
+          display: "flex",
+          flexDirection: "column",
+          gap: 12,
+          flex: 1,
+        }}
+      >
+        <div className="mono" style={{ display: "flex", justifyContent: "space-between" }}>
+          <span>{post.source === "substack" ? "Ben Rennie · Substack" : "97% · Field"}</span>
+          <span>{date}</span>
+        </div>
+        <h3 className={large ? "h-2" : "h-3"} style={{ margin: 0 }}>
+          {post.title}
+        </h3>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginTop: "auto",
+          }}
+        >
+          <span className="mono">{readMin} min read</span>
+          <span style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--accent)" }}>
+            READ →
+          </span>
+        </div>
+      </div>
+    </article>
+  );
 }
 
 export function JournalFeed({ posts }: { posts: JournalPost[] }) {
-  const [category, setCategory] = useState<JournalCategory | "all">("all");
-  const [source, setSource] = useState<JournalSource | "all">("all");
+  const [cat, setCat] = useState<JournalCategory | "all">("all");
+  const [kind, setKind] = useState<JournalKind | "all">("all");
+  const [count, setCount] = useState(9);
+  const sentinel = useRef<HTMLDivElement>(null);
 
-  const filtered = useMemo(() => {
-    return posts.filter((p) => {
-      if (category !== "all" && p.category !== category) return false;
-      if (source !== "all" && p.source !== source) return false;
-      return true;
-    });
-  }, [posts, category, source]);
+  const filtered = useMemo(
+    () =>
+      posts.filter(
+        (it) => (cat === "all" || it.category === cat) && (kind === "all" || it.type === kind),
+      ),
+    [posts, cat, kind],
+  );
 
-  const open = (post: JournalPost) =>
-    window.dispatchEvent(new CustomEvent("open-journal", { detail: { post } }));
+  // duplicate to simulate forever scroll, like the prototype
+  const items = useMemo(() => {
+    const base = filtered.length ? filtered : posts;
+    const out: { post: JournalPost; key: string }[] = [];
+    for (let i = 0; i < count; i++) {
+      const post = base[i % base.length]!;
+      out.push({ post, key: `${post.slug}-${i}` });
+    }
+    return out;
+  }, [filtered, posts, count]);
+
+  useEffect(() => {
+    if (!sentinel.current) return;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e?.isIntersecting) setCount((c) => c + 6);
+      },
+      { rootMargin: "300px" },
+    );
+    io.observe(sentinel.current);
+    return () => io.disconnect();
+  }, []);
 
   return (
     <>
       <div
         style={{
           position: "sticky",
-          top: 86,
-          zIndex: 10,
-          background: "var(--bg)",
-          padding: "12px 0",
-          marginBottom: 32,
+          top: 84,
+          zIndex: 30,
+          background: "color-mix(in oklab, var(--bg-card) 92%, transparent)",
+          backdropFilter: "blur(20px)",
+          margin: "24px 0 32px",
+          padding: "14px 18px",
+          border: "1px solid var(--line)",
+          borderRadius: "var(--radius)",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            border: "1px solid var(--line)",
-            borderRadius: "var(--radius)",
-            padding: 8,
-            gap: 8,
-            flexWrap: "wrap",
-          }}
-        >
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-            {CATEGORIES.map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                className="tag"
-                data-active={category === c.id}
-                onClick={() => setCategory(c.id)}
-              >
-                {c.label}
-              </button>
-            ))}
-          </div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-            {SOURCES.map((s) => (
+        <div style={{ display: "flex", gap: 24, alignItems: "center", flexWrap: "wrap" }}>
+          <span className="mono" style={{ color: "var(--ink-4)" }}>Filter</span>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            {CATS.map((s) => (
               <button
                 key={s.id}
                 type="button"
                 className="tag"
-                data-active={source === s.id}
-                onClick={() => setSource(s.id)}
+                data-active={cat === s.id}
+                onClick={() => {
+                  setCat(s.id);
+                  setCount(9);
+                }}
               >
                 {s.label}
               </button>
             ))}
           </div>
-        </div>
-        <div className="mono" style={{ marginTop: 12 }}>
-          {filtered.length} {filtered.length === 1 ? "post" : "posts"}
+          <div style={{ flex: 1 }}></div>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            {KINDS.map((k) => (
+              <button
+                key={k.id}
+                type="button"
+                className="tag"
+                data-active={kind === k.id}
+                onClick={() => {
+                  setKind(k.id);
+                  setCount(9);
+                }}
+              >
+                {k.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: 32,
+          gridTemplateColumns: "repeat(6, 1fr)",
+          gap: 24,
+          marginBottom: 64,
         }}
       >
-        {filtered.map((post) => (
-          <article
-            key={post.slug}
-            className="card"
-            onClick={() => open(post)}
-            style={{ cursor: "pointer", display: "flex", flexDirection: "column" }}
-          >
-            <div
-              className="ph"
-              data-tone={post.tone || "ink"}
-              style={{ aspectRatio: "4/3" }}
-            >
-              <span className="ph-tag">
-                {post.type} · {post.category ?? "design"}
-              </span>
+        {items.map(({ post, key }, i) => {
+          const n = i % 6;
+          const span = n === 0 ? 4 : 2;
+          const isLarge = n === 0;
+          return (
+            <div key={key} style={{ gridColumn: `span ${span}` }}>
+              <JournalCard post={post} large={isLarge} />
             </div>
-            <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 12, flex: 1 }}>
-              <div className="mono">
-                {post.source === "substack" ? "Substack" : "97%"} · {formatDate(post.publishedAt)}
-                {post.bodyAvailable === "preview-only" ? " · Preview" : ""}
-              </div>
-              <h3
-                style={{
-                  margin: 0,
-                  fontFamily: "var(--sans)",
-                  fontWeight: 600,
-                  fontSize: 22,
-                  lineHeight: 1.2,
-                  letterSpacing: "-0.015em",
-                }}
-              >
-                {post.title}
-              </h3>
-              <p
-                className="body-sm"
-                style={{
-                  margin: 0,
-                  display: "-webkit-box",
-                  WebkitLineClamp: 3,
-                  WebkitBoxOrient: "vertical",
-                  overflow: "hidden",
-                }}
-              >
-                {post.excerpt}
-              </p>
-              <div className="mono" style={{ marginTop: "auto" }}>Read →</div>
-            </div>
-          </article>
-        ))}
+          );
+        })}
       </div>
 
-      {filtered.length === 0 && (
-        <div
-          style={{
-            padding: "96px 0",
-            textAlign: "center",
-            color: "var(--ink-3)",
-            fontFamily: "var(--mono)",
-            fontSize: 12,
-            letterSpacing: "0.08em",
-            textTransform: "uppercase",
-          }}
-        >
-          No posts match this filter — try another category.
-        </div>
-      )}
+      <div
+        ref={sentinel}
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: "48px 0",
+          gap: 12,
+        }}
+      >
+        <span className="dot dot-pulse" style={{ background: "var(--ink-3)" }}></span>
+        <span className="mono">Loading more from the archive…</span>
+      </div>
     </>
   );
 }

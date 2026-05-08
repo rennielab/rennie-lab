@@ -245,10 +245,11 @@ em, i, .italic { font-style: normal; color: inherit !important; }
   overflow: hidden;
 }
 .brand-logo {
-  height: 22px;
+  height: 18px;
   width: auto;
-  max-width: none;
-  flex-shrink: 0;
+  max-width: 100%;
+  min-width: 0;
+  flex-shrink: 1;
   object-fit: contain;
   display: block;
   background: transparent;
