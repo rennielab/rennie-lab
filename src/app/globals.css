@@ -214,9 +214,11 @@ em, i, .italic { font-style: normal; color: inherit !important; }
   top: 18px;
   left: 18px;
   background: var(--bg-card);
-  border: 1px solid var(--line);
+  border: 0;
   border-radius: var(--radius);
-  box-shadow: 0 10px 40px -20px rgba(0, 0, 0, 0.25);
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.04),
+    0 12px 40px -18px rgba(0, 0, 0, 0.35);
   overflow: hidden;
   transition: width 500ms var(--easing), height 500ms var(--easing);
   width: 280px;
@@ -267,6 +269,11 @@ em, i, .italic { font-style: normal; color: inherit !important; }
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  flex: 0 0 auto;
+  max-width: 90px;
+}
+.left-menu[data-open="false"] .brand-label {
+  display: none;
 }
 .icon-btn {
   width: 32px;
@@ -351,7 +358,7 @@ em, i, .italic { font-style: normal; color: inherit !important; }
 }
 .right-pill {
   background: var(--bg-card);
-  border: 1px solid var(--line);
+  border: 0;
   border-radius: var(--radius);
   padding: 10px 12px;
   display: flex;
@@ -363,6 +370,9 @@ em, i, .italic { font-style: normal; color: inherit !important; }
   text-transform: uppercase;
   color: var(--ink-3);
   backdrop-filter: blur(20px);
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.04),
+    0 8px 24px -12px rgba(0, 0, 0, 0.3);
   transition: all 400ms var(--easing);
   overflow: hidden;
 }
@@ -381,7 +391,7 @@ em, i, .italic { font-style: normal; color: inherit !important; }
 }
 .dots-btn {
   background: var(--bg-card);
-  border: 1px solid var(--line);
+  border: 0;
   border-radius: var(--radius);
   width: 42px;
   height: 42px;
@@ -389,6 +399,9 @@ em, i, .italic { font-style: normal; color: inherit !important; }
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.04),
+    0 8px 24px -12px rgba(0, 0, 0, 0.3);
   transition: all 250ms var(--easing);
 }
 .dots-btn:hover { background: var(--bg-elev); }
@@ -415,7 +428,7 @@ em, i, .italic { font-style: normal; color: inherit !important; }
   overflow-y: auto;
   max-width: calc(100vw - 36px);
   background: var(--bg-card);
-  border: 1px solid var(--line);
+  border: 0;
   border-radius: var(--radius);
   padding: 16px;
   transform-origin: top right;
@@ -424,7 +437,9 @@ em, i, .italic { font-style: normal; color: inherit !important; }
   pointer-events: none;
   transition: transform 350ms var(--easing), opacity 250ms;
   backdrop-filter: blur(20px);
-  box-shadow: 0 20px 60px -20px rgba(0, 0, 0, 0.35);
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.04),
+    0 24px 60px -18px rgba(0, 0, 0, 0.45);
 }
 .dots-panel[data-open="true"] {
   transform: scale(1) translateY(0);
