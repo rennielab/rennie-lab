@@ -536,7 +536,7 @@ em, i, .italic { font-style: normal; color: inherit !important; }
 .carbon-tracker {
   position: fixed;
   bottom: 18px;
-  left: 18px;
+  right: 18px;
   z-index: 50;
   background: var(--bg-card);
   border: 1px solid var(--line);
@@ -638,14 +638,8 @@ main {
     radial-gradient(120% 80% at 70% 80%, rgba(21, 21, 23, 0.12), transparent 60%),
     var(--bg-soft);
   overflow: hidden;
-}
-.ph::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image:
-    radial-gradient(circle at 10% 90%, rgba(255, 255, 255, 0.4), transparent 30%),
-    repeating-linear-gradient(45deg, transparent 0 6px, rgba(0, 0, 0, 0.02) 6px 12px);
+  background-size: cover;
+  background-position: center;
 }
 .ph[data-tone="red"] {
   background:

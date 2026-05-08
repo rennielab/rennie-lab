@@ -10,19 +10,19 @@ type StackSection = {
   desc: string;
   bg: string;
   fg: string;
-  img: string;
   projectSlugs: string[];
   fallbackTone: "red" | "moss" | "cream" | "sand" | "rust" | "ocean" | "ink";
 };
 
+// Five tinted-black backdrops — almost imperceptible warm/cool shifts that give
+// each section its discipline cue without competing with the hero card images.
 const SECTIONS: StackSection[] = [
   {
     id: "brand",
     title: "brand",
     desc: "A complete brand foundation built to hold its own alongside organisations ten times your size — from positioning and narrative through to identity, voice and rollout. We work with founders, leadership teams and movements to build brands that feel inevitable, not invented.",
-    bg: "#E94E4D",
-    fg: "#FFFDEC",
-    img: "https://images.unsplash.com/photo-1543269664-76bc3997d9ea?auto=format&fit=crop&w=2400&q=70",
+    bg: "#1a1416",
+    fg: "#fbfbf7",
     projectSlugs: ["marlee", "re-form-projects", "robert-coopers-rare-gin", "renystudio"],
     fallbackTone: "red",
   },
@@ -30,9 +30,8 @@ const SECTIONS: StackSection[] = [
     id: "advisory",
     title: "advisory",
     desc: "A bespoke creative, strategic and communications advisory partnership for the bigger projects and bolder ambitions. We sit alongside leadership — quietly, monthly, for as long as it takes — helping the work clarify itself before the world ever sees it.",
-    bg: "#151517",
-    fg: "#FFFDEC",
-    img: "https://images.unsplash.com/photo-1486325212027-8081e485255e?auto=format&fit=crop&w=2400&q=70",
+    bg: "#0c0c0e",
+    fg: "#fbfbf7",
     projectSlugs: ["patagonia", "heartfoundation", "johnston-advisory", "packer"],
     fallbackTone: "ink",
   },
@@ -40,9 +39,8 @@ const SECTIONS: StackSection[] = [
     id: "ux",
     title: "ux design",
     desc: "Editorial-grade product and service design — the kind of digital experience people quietly choose to come back to. End-to-end work, from research and information architecture through to interaction, interface and shipped code.",
-    bg: "#2C4A5E",
-    fg: "#FFFDEC",
-    img: "https://images.unsplash.com/photo-1505142468610-359e7d316be0?auto=format&fit=crop&w=2400&q=70",
+    bg: "#0e1418",
+    fg: "#fbfbf7",
     projectSlugs: ["buck-mason", "boody", "electric-california", "herschel"],
     fallbackTone: "ocean",
   },
@@ -50,9 +48,8 @@ const SECTIONS: StackSection[] = [
     id: "climate",
     title: "climate",
     desc: "Programs and identities for the climate, community and movement work. Built with charities, governments and the curious — the studio's pro-bono and at-cost lane, where craft is pointed at the questions that matter beyond a launch.",
-    bg: "#4F6A4A",
-    fg: "#FFFDEC",
-    img: "https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=2400&q=70",
+    bg: "#0e1410",
+    fg: "#fbfbf7",
     projectSlugs: ["1percentfortheplanet", "verteyewear", "imf", "in-pieces"],
     fallbackTone: "moss",
   },
@@ -60,9 +57,8 @@ const SECTIONS: StackSection[] = [
     id: "research",
     title: "research",
     desc: "Quiet, deep-end research as a standalone engagement — interviews, fieldwork, archive and ethnography for studios, brands and policy teams who need a second mind in the room. We treat research as craft.",
-    bg: "#B45E3F",
-    fg: "#FFFDEC",
-    img: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=2400&q=70",
+    bg: "#1a140e",
+    fg: "#fbfbf7",
     projectSlugs: ["rozelleinterchange", "mr-simple", "benbaker", "nswis"],
     fallbackTone: "rust",
   },
@@ -94,12 +90,6 @@ export function WhatWeDo() {
             className="stack-section"
             style={{ background: s.bg, color: s.fg, zIndex: 10 + i }}
           >
-            <div
-              className="stack-bg"
-              aria-hidden="true"
-              style={{ backgroundImage: `url(${s.img})` }}
-            ></div>
-            <div className="stack-bg-overlay" aria-hidden="true" style={{ background: s.bg }}></div>
             <div className="stack-head">
               <div>
                 <div
@@ -159,9 +149,7 @@ type ProjectStackCardProps = {
 function ProjectStackCard({ project, fallbackTone }: ProjectStackCardProps) {
   const onClick = () => {
     if (typeof window === "undefined") return;
-    window.dispatchEvent(
-      new CustomEvent("open-case", { detail: { project } }),
-    );
+    window.dispatchEvent(new CustomEvent("open-case", { detail: { project } }));
   };
   const heroSrc = PROJECT_HERO[project.slug];
   return (
@@ -177,7 +165,7 @@ function ProjectStackCard({ project, fallbackTone }: ProjectStackCardProps) {
       style={
         heroSrc
           ? {
-              backgroundImage: `linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0.1)), url(${heroSrc})`,
+              backgroundImage: `linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0.05) 60%), url(${heroSrc})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
             }
