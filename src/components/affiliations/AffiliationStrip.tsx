@@ -22,7 +22,7 @@ const AFFILIATIONS: Affiliation[] = [
     href: "https://www.bcorporation.net/",
     src: "/affiliations/bcorp.webp",
     monoFilter: true,
-    maxHeight: 64,
+    maxHeight: 90,
   },
   {
     id: "onepercent",
@@ -30,7 +30,7 @@ const AFFILIATIONS: Affiliation[] = [
     href: "https://onepercentfortheplanet.org/",
     src: "/affiliations/onepercent.webp",
     monoFilter: true,
-    maxHeight: 60,
+    maxHeight: 84,
   },
   {
     id: "d-declares",
@@ -38,7 +38,7 @@ const AFFILIATIONS: Affiliation[] = [
     href: "https://designdeclares.com/",
     src: "/affiliations/d-declares.webp",
     monoFilter: true,
-    maxHeight: 48,
+    maxHeight: 68,
   },
   {
     id: "clean-creatives",
@@ -46,7 +46,7 @@ const AFFILIATIONS: Affiliation[] = [
     href: "https://cleancreatives.org/",
     src: "/affiliations/clean-creatives.webp",
     monoFilter: true,
-    maxHeight: 60,
+    maxHeight: 84,
   },
   {
     id: "lfca",
@@ -54,7 +54,7 @@ const AFFILIATIONS: Affiliation[] = [
     href: "https://lfca.earth/",
     src: "/affiliations/lfca.webp",
     monoFilter: true,
-    maxHeight: 60,
+    maxHeight: 84,
   },
   {
     id: "cityswitch",
@@ -62,7 +62,7 @@ const AFFILIATIONS: Affiliation[] = [
     href: "https://www.cityswitch.net.au/",
     src: "/affiliations/cityswitch.webp",
     monoFilter: true,
-    maxHeight: 44,
+    maxHeight: 62,
   },
   {
     id: "green-web",
@@ -71,7 +71,7 @@ const AFFILIATIONS: Affiliation[] = [
     src: "https://app.greenweb.org/api/v3/greencheckimage/rennielab.com?nocache=true",
     monoFilter: true,
     external: true,
-    maxHeight: 56,
+    maxHeight: 78,
   },
 ];
 
@@ -87,7 +87,7 @@ export function AffiliationStrip({ variant = "page", forceTheme }: Props) {
   const theme = forceTheme ?? activeTheme;
 
   const isFooter = variant === "footer";
-  const cellHeight = isFooter ? 64 : 96;
+  const cellHeight = isFooter ? 90 : 134;
   const restingOpacity = isFooter ? 0.55 : 0.7;
 
   // brightness(0) → pure black silhouette. invert(1) → flip to white.

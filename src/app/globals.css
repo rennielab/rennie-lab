@@ -783,7 +783,7 @@ footer.site-foot {
 .wordmark {
   font-family: var(--sans);
   font-weight: 600;
-  font-size: clamp(72px, 13vw, 200px);
+  font-size: clamp(64px, 10vw, 156px);
   line-height: 0.92;
   letter-spacing: -0.05em;
   color: var(--cream);

@@ -107,24 +107,36 @@ export function SiteFooter() {
         </div>
       </div>
 
-      <div className="wordmark">
-        Rennie <em>Lab.</em>
-      </div>
-
       <div
         style={{
-          padding: "32px 0 24px",
-          marginTop: 16,
-          borderTop: "1px solid rgba(244, 241, 222, 0.12)",
+          display: "flex",
+          alignItems: "flex-end",
+          justifyContent: "space-between",
+          gap: 48,
+          flexWrap: "wrap",
         }}
       >
-        <div
-          className="mono"
-          style={{ marginBottom: 18, color: "rgba(244, 241, 222, 0.5)" }}
-        >
-          Accountability · alliances
+        <div className="wordmark" style={{ marginTop: 64, flex: "0 0 auto" }}>
+          Rennie <em>Lab.</em>
         </div>
-        <AffiliationStrip variant="footer" forceTheme="dark" />
+        <div
+          style={{
+            flex: "1 1 480px",
+            maxWidth: 720,
+            paddingBottom: 24,
+            display: "flex",
+            flexDirection: "column",
+            gap: 16,
+          }}
+        >
+          <div
+            className="mono"
+            style={{ color: "rgba(244, 241, 222, 0.5)" }}
+          >
+            Accountability · alliances
+          </div>
+          <AffiliationStrip variant="footer" forceTheme="dark" />
+        </div>
       </div>
 
       <div className="foot-bottom">
