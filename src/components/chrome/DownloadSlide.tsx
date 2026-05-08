@@ -16,11 +16,15 @@ type Kind = "press" | "deck";
 
 type DownloadEvent = CustomEvent<{ kind?: Kind }>;
 
+type Status = "idle" | "submitting" | "sent" | "error";
+
 export function DownloadSlide() {
   const { theme } = useTheme();
   const [open, setOpen] = useState(false);
   const [kind, setKind] = useState<Kind>("deck");
   const [sent, setSent] = useState(false);
+  const [status, setStatus] = useState<Status>("idle");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [data, setData] = useState({
     name: "",
     org: "",
@@ -30,12 +34,35 @@ export function DownloadSlide() {
     consent: false,
   });
 
+  async function submit() {
+    if (status === "submitting") return;
+    setStatus("submitting");
+    setErrorMessage(null);
+    try {
+      const res = await fetch("/api/download", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...data, kind }),
+      });
+      const json = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
+      if (!res.ok || !json.ok) throw new Error(json.error || `HTTP ${res.status}`);
+      setStatus("sent");
+      setSent(true);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Something went wrong";
+      setErrorMessage(msg);
+      setStatus("error");
+    }
+  }
+
   useEffect(() => {
     const handler = (e: Event) => {
       const detail = (e as DownloadEvent).detail;
       setKind(detail?.kind ?? "deck");
       setOpen(true);
       setSent(false);
+      setStatus("idle");
+      setErrorMessage(null);
     };
     window.addEventListener("open-download", handler);
     return () => window.removeEventListener("open-download", handler);
@@ -137,7 +164,7 @@ export function DownloadSlide() {
             <div className="mono" style={{ marginBottom: 12 }}>
               {meta.eyebrow}
             </div>
-            <h2 className="h-1" style={{ margin: 0 }}>
+            <h2 className="h-2" style={{ margin: 0 }}>
               {meta.title}
             </h2>
             <p className="body-lg" style={{ marginTop: 24, maxWidth: 520 }}>
@@ -257,6 +284,19 @@ export function DownloadSlide() {
                     list. Unsubscribe anytime.
                   </span>
                 </label>
+                {status === "error" && errorMessage && (
+                  <div
+                    className="mono"
+                    style={{
+                      padding: 12,
+                      border: "1px solid var(--red)",
+                      borderRadius: 4,
+                      color: "var(--red)",
+                    }}
+                  >
+                    Couldn&apos;t send · {errorMessage}
+                  </div>
+                )}
               </>
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: 20, paddingTop: 40 }}>
@@ -288,11 +328,16 @@ export function DownloadSlide() {
             <button
               type="button"
               className="btn btn-primary"
-              style={{ background: "var(--accent)", color: "var(--cream)", opacity: data.email ? 1 : 0.5 }}
-              disabled={!data.email}
-              onClick={() => setSent(true)}
+              style={{
+                background: "var(--accent)",
+                color: "var(--cream)",
+                opacity: data.email && status !== "submitting" ? 1 : 0.5,
+              }}
+              disabled={!data.email || status === "submitting"}
+              onClick={submit}
             >
-              {meta.cta} <span className="arrow">↓</span>
+              {status === "submitting" ? "Sending…" : meta.cta}{" "}
+              <span className="arrow">↓</span>
             </button>
           ) : (
             <button type="button" className="btn btn-primary" onClick={() => setOpen(false)}>

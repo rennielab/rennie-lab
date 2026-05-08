@@ -40,20 +40,46 @@ const EMPTY: Data = {
   heard: "",
 };
 
+type Status = "idle" | "submitting" | "sent" | "error";
+
 export function ContactSlide() {
   const { theme } = useTheme();
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(0);
   const [data, setData] = useState<Data>(EMPTY);
+  const [status, setStatus] = useState<Status>("idle");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const handler = () => {
       setOpen(true);
       setStep(0);
+      setStatus("idle");
+      setErrorMessage(null);
     };
     window.addEventListener("open-contact", handler);
     return () => window.removeEventListener("open-contact", handler);
   }, []);
+
+  async function submit() {
+    if (status === "submitting") return;
+    setStatus("submitting");
+    setErrorMessage(null);
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const json = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
+      if (!res.ok || !json.ok) throw new Error(json.error || `HTTP ${res.status}`);
+      setStatus("sent");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Something went wrong";
+      setErrorMessage(msg);
+      setStatus("error");
+    }
+  }
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -118,7 +144,7 @@ export function ContactSlide() {
                 <div className="mono" style={{ marginBottom: 12 }}>
                   01 — Tell us about it
                 </div>
-                <h2 className="h-1" style={{ margin: 0 }}>
+                <h2 className="h-2" style={{ margin: 0 }}>
                   What kind of <em>change</em> are you trying to make?
                 </h2>
                 <p className="body-lg" style={{ marginTop: 24, maxWidth: 520 }}>
@@ -261,7 +287,7 @@ export function ContactSlide() {
                 <div className="mono" style={{ marginBottom: 12 }}>
                   02 — Who&apos;s saying hello
                 </div>
-                <h2 className="h-1" style={{ margin: 0 }}>
+                <h2 className="h-2" style={{ margin: 0 }}>
                   Tell us who <em>you are.</em>
                 </h2>
               </div>
@@ -290,19 +316,51 @@ export function ContactSlide() {
               </div>
             </div>
           )}
-          {step === 2 && (
+          {step === 2 && status === "sent" && (
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64 }} className="rise">
+              <div>
+                <div className="mono" style={{ marginBottom: 12 }}>
+                  Sent ✓
+                </div>
+                <h2 className="h-2" style={{ margin: 0 }}>
+                  Thanks. We&apos;ll be in touch.
+                </h2>
+                <p className="body-lg" style={{ marginTop: 24, maxWidth: 480 }}>
+                  Your brief is on its way to the studio. We read every one and reply within
+                  2 working days — usually from {data.email || "the address you provided"}.
+                </p>
+              </div>
+              <div></div>
+            </div>
+          )}
+          {step === 2 && status !== "sent" && (
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64 }} className="rise">
               <div>
                 <div className="mono" style={{ marginBottom: 12 }}>
                   03 — The detail
                 </div>
-                <h2 className="h-1" style={{ margin: 0 }}>
+                <h2 className="h-2" style={{ margin: 0 }}>
                   What should we <em>know?</em>
                 </h2>
                 <p className="body-lg" style={{ marginTop: 24, maxWidth: 480 }}>
                   Pop the brief, audience, references — anything you&apos;ve got. We read every one and
                   reply within 2 working days.
                 </p>
+                {status === "error" && errorMessage && (
+                  <div
+                    className="mono"
+                    style={{
+                      marginTop: 24,
+                      padding: 12,
+                      border: "1px solid var(--red)",
+                      borderRadius: 4,
+                      color: "var(--red)",
+                      maxWidth: 420,
+                    }}
+                  >
+                    Couldn&apos;t send · {errorMessage}
+                  </div>
+                )}
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
                 <div>
@@ -354,7 +412,11 @@ export function ContactSlide() {
           >
             ← {step === 0 ? "Cancel" : "Back"}
           </button>
-          {step < 2 ? (
+          {status === "sent" ? (
+            <button type="button" className="btn btn-primary" onClick={() => setOpen(false)}>
+              Done <span className="arrow">→</span>
+            </button>
+          ) : step < 2 ? (
             <button type="button" className="btn btn-primary" onClick={() => setStep(step + 1)}>
               Continue <span className="arrow">→</span>
             </button>
@@ -362,13 +424,16 @@ export function ContactSlide() {
             <button
               type="button"
               className="btn btn-primary"
-              style={{ background: "var(--accent)", color: "var(--cream)" }}
-              onClick={() => {
-                alert("Thanks — sent.");
-                setOpen(false);
+              style={{
+                background: "var(--accent)",
+                color: "var(--cream)",
+                opacity: status === "submitting" ? 0.6 : 1,
               }}
+              disabled={status === "submitting"}
+              onClick={submit}
             >
-              Send brief <span className="arrow">→</span>
+              {status === "submitting" ? "Sending…" : "Send brief"}{" "}
+              <span className="arrow">→</span>
             </button>
           )}
         </div>

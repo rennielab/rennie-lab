@@ -1158,6 +1158,14 @@ footer.site-foot {
   opacity: 0;
   transition: opacity 700ms cubic-bezier(0.22, 1, 0.36, 1);
 }
+.logo-mark-img {
+  max-width: 70%;
+  max-height: 56%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
 @media (max-width: 1100px) { .logo-strip { grid-template-columns: repeat(4, 1fr); } }
 @media (max-width: 700px)  { .logo-strip { grid-template-columns: repeat(2, 1fr); } }
 

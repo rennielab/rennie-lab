@@ -1,40 +1,25 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-
-type LogoMark = {
-  name: string;
-  font: string;
-  weight: number;
-  size: number;
-  tracking: string;
-  italic?: boolean;
-};
-
-const ALL: LogoMark[] = [
-  { name: "Patagonia",        font: "Georgia, serif",            weight: 700, size: 26, tracking: "0.02em" },
-  { name: "WWF",              font: "var(--sans)",               weight: 800, size: 32, tracking: "-0.04em" },
-  { name: "Beyond Blue",      font: "var(--sans)",               weight: 300, size: 20, tracking: "-0.01em" },
-  { name: "CSIRO",            font: "var(--sans)",               weight: 700, size: 22, tracking: "0.18em" },
-  { name: "Surfrider",        font: "Georgia, serif",            weight: 400, size: 24, tracking: "0",        italic: true },
-  { name: "GreatForest",      font: "var(--sans)",               weight: 600, size: 20, tracking: "-0.02em" },
-  { name: "Bundanon",         font: "Georgia, serif",            weight: 400, size: 26, tracking: "0.06em" },
-  { name: "OFF·CLIMATE",      font: "var(--mono)",               weight: 500, size: 16, tracking: "0.12em" },
-  { name: "Slow Goods",       font: "Georgia, serif",            weight: 400, size: 22, tracking: "-0.01em" },
-  { name: "UN Habitat",       font: "var(--sans)",               weight: 500, size: 20, tracking: "0.04em" },
-  { name: "Halfway Hotel",    font: "Georgia, serif",            weight: 400, size: 20, tracking: "-0.02em", italic: true },
-  { name: "Ocean Foundation", font: "var(--sans)",               weight: 600, size: 17, tracking: "-0.01em" },
-];
+import { useTheme } from "@/components/chrome/ThemeProvider";
+import { CLIENT_LOGOS_DARK_THEME, CLIENT_LOGOS_LIGHT_THEME } from "@/data/clientLogos";
 
 const SLOTS = 6;
 const CYCLE_MS = 4000;
 const FADE_MS = 700;
 
-type Slot = { logo: LogoMark; phase: 0 | 1; idx: number };
+type Slot = { src: string; phase: 0 | 1; idx: number };
 
 export function LogoStrip() {
+  const { theme } = useTheme();
+  // remount when theme flips so new slots fade in, no cross-palette mid-cycle
+  return <LogoStripInner key={theme} theme={theme} />;
+}
+
+function LogoStripInner({ theme }: { theme: "light" | "dark" }) {
+  const all = theme === "dark" ? CLIENT_LOGOS_DARK_THEME : CLIENT_LOGOS_LIGHT_THEME;
   const [slots, setSlots] = useState<Slot[]>(() =>
-    ALL.slice(0, SLOTS).map((logo, i) => ({ logo, phase: 1, idx: i })),
+    all.slice(0, SLOTS).map((src, i) => ({ src, phase: 1, idx: i })),
   );
   const cursor = useRef(SLOTS);
 
@@ -48,9 +33,9 @@ export function LogoStrip() {
         setSlots((prev) =>
           prev.map((s, j) => {
             if (j !== i) return s;
-            const next = ALL[cursor.current % ALL.length]!;
+            const next = all[cursor.current % all.length]!;
             cursor.current += 1;
-            return { logo: next, phase: 1 as const, idx: cursor.current };
+            return { src: next, phase: 1 as const, idx: cursor.current };
           }),
         );
       }, FADE_MS);
@@ -71,26 +56,20 @@ export function LogoStrip() {
       timeouts.forEach(clearTimeout);
       intervals.forEach(clearInterval);
     };
-  }, []);
+  }, [all]);
 
   return (
     <div className="logo-strip">
       {slots.map((s, i) => (
         <div key={i} className="logo-cell">
-          <span
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             key={s.idx}
-            className="logo-mark"
-            style={{
-              fontFamily: s.logo.font,
-              fontWeight: s.logo.weight,
-              fontSize: s.logo.size,
-              letterSpacing: s.logo.tracking,
-              fontStyle: s.logo.italic ? "italic" : "normal",
-              opacity: s.phase,
-            }}
-          >
-            {s.logo.name}
-          </span>
+            src={s.src}
+            alt=""
+            className="logo-mark logo-mark-img"
+            style={{ opacity: s.phase * 0.85 }}
+          />
         </div>
       ))}
     </div>

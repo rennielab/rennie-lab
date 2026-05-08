@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTheme } from "./ThemeProvider";
 import type { Project } from "@/data/types";
+import { PROJECT_HERO } from "@/data/projectImages";
 
 type OpenCaseEvent = CustomEvent<{ project: Project; index?: number }>;
 
@@ -98,7 +99,18 @@ export function CaseStudyDrawer() {
             <div
               className="ph"
               data-tone={project.tone || "ink"}
-              style={{ aspectRatio: "16/9", marginTop: 48, borderRadius: "var(--radius)" }}
+              style={{
+                aspectRatio: "16/9",
+                marginTop: 48,
+                borderRadius: "var(--radius)",
+                ...(PROJECT_HERO[project.slug]
+                  ? {
+                      backgroundImage: `url(${PROJECT_HERO[project.slug]})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                    }
+                  : {}),
+              }}
             >
               <span className="ph-tag">Hero · {project.categories[0] ?? "Case Study"}</span>
             </div>

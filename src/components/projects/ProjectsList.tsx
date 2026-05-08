@@ -2,6 +2,7 @@
 
 import { ContactButton } from "@/components/chrome/ContactButton";
 import type { Project } from "@/data/types";
+import { PROJECT_HERO } from "@/data/projectImages";
 
 function summary(p: Project): string {
   return (
@@ -86,7 +87,17 @@ export function ProjectsList({ projects }: { projects: Project[] }) {
           <div
             className="ph"
             data-tone={p.tone || "ink"}
-            style={{ aspectRatio: "4/3", borderRadius: "var(--radius)" }}
+            style={{
+              aspectRatio: "4/3",
+              borderRadius: "var(--radius)",
+              ...(PROJECT_HERO[p.slug]
+                ? {
+                    backgroundImage: `url(${PROJECT_HERO[p.slug]})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }
+                : {}),
+            }}
           >
             <span className="ph-tag">
               {String(i + 1).padStart(2, "0")} · {(p.categories[0] ?? "design").toLowerCase()}
