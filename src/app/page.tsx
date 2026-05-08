@@ -17,8 +17,8 @@ export default function HomePage() {
   return (
     <div className="container">
       {/* Hero */}
-      <section style={{ padding: "40px 0 64px", position: "relative" }}>
-        <div className="mono rise" style={{ marginBottom: 48 }}>
+      <section style={{ padding: "24px 0 48px", position: "relative" }}>
+        <div className="mono rise" style={{ marginBottom: 32 }}>
           <span
             className="dot dot-pulse"
             style={{ background: "var(--ink)", marginRight: 10 }}
@@ -37,8 +37,8 @@ export default function HomePage() {
           style={{
             display: "grid",
             gridTemplateColumns: "1.4fr 1fr",
-            gap: 64,
-            marginTop: 80,
+            gap: 48,
+            marginTop: 56,
             alignItems: "end",
           }}
         >
@@ -62,7 +62,7 @@ export default function HomePage() {
       </section>
 
       {/* Logo strip — single row, rotating */}
-      <section style={{ padding: "32px 0 80px" }}>
+      <section style={{ padding: "24px 0 64px" }}>
         <LogoStrip />
       </section>
 
@@ -70,7 +70,7 @@ export default function HomePage() {
       <WhatWeDo />
 
       {/* Recent feed teaser */}
-      <section style={{ padding: "32px 0 96px" }}>
+      <section style={{ padding: "32px 0 80px" }}>
         <div
           style={{
             display: "flex",
@@ -94,7 +94,7 @@ export default function HomePage() {
       </section>
 
       {/* Climate strip */}
-      <section style={{ padding: "64px 0 96px", borderTop: "1px solid var(--line)" }}>
+      <section style={{ padding: "56px 0 80px", borderTop: "1px solid var(--line)" }}>
         <div
           style={{
             display: "grid",
@@ -142,7 +142,7 @@ export default function HomePage() {
 
       {/* CTA */}
       <section
-        style={{ padding: "0 0 96px", display: "flex", gap: 16, flexWrap: "wrap" }}
+        style={{ padding: "0 0 64px", display: "flex", gap: 16, flexWrap: "wrap" }}
       >
         <ContactButton>
           Open the brief <span className="arrow">→</span>
