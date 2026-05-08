@@ -8,6 +8,8 @@ import { CarbonTracker } from "./CarbonTracker";
 import { SiteFooter } from "./SiteFooter";
 import { ContactSlide } from "./ContactSlide";
 import { DownloadSlide } from "./DownloadSlide";
+import { CaseStudyDrawer } from "./CaseStudyDrawer";
+import { JournalPostDrawer } from "./JournalPostDrawer";
 
 export function Chrome({ children }: { children: ReactNode }) {
   return (
@@ -19,6 +21,8 @@ export function Chrome({ children }: { children: ReactNode }) {
       <SiteFooter />
       <ContactSlide />
       <DownloadSlide />
+      <CaseStudyDrawer />
+      <JournalPostDrawer />
     </ThemeProvider>
   );
 }
