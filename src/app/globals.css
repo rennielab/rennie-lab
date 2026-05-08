@@ -15,8 +15,8 @@
 
   --bg: var(--cream);
   --bg-soft: #f4f1de;
-  --bg-card: #fdfaeb;
-  --bg-elev: #ffffff;
+  --bg-card: #f6f0d4;
+  --bg-elev: #fffdf0;
   --ink: var(--carbon);
   --ink-2: #2a2a2d;
   --ink-3: #5b5b5f;
@@ -620,15 +620,14 @@ main {
 
 .card {
   background: var(--bg-card);
-  border: 1px solid var(--line);
+  border: 1px solid transparent;
   border-radius: var(--radius);
   overflow: hidden;
   transition:
     transform 400ms var(--easing),
-    border-color 250ms,
     background 300ms var(--easing);
 }
-.card:hover { border-color: var(--line-2); background: var(--bg-elev); }
+.card:hover { background: var(--bg-elev); }
 
 .ph {
   position: relative;
