@@ -47,7 +47,19 @@ export function SiteFooter() {
         </div>
       </div>
 
-      <div className="foot-cols">
+      <div className="foot-ack-row">
+        <div className="foot-ack">
+          <div className="foot-col-title">Acknowledgement of Country</div>
+          <p>
+            Reny acknowledge the Traditional Owners of Country throughout
+            Australia and pay our respects to Elders past, present and
+            emerging. We honour their enduring connection to land, waters,
+            skies and culture. As the first storytellers of these lands, we
+            give thanks for their care and share our respect and friendship
+            with all First Nations peoples.
+          </p>
+        </div>
+        <div className="foot-cols">
         <div className="foot-col">
           <div className="foot-col-title">Sitemap</div>
           <ul>
@@ -104,6 +116,7 @@ export function SiteFooter() {
             <li>Green hosting</li>
             <li>Carbon report ↓</li>
           </ul>
+        </div>
         </div>
       </div>
 
