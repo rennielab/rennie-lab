@@ -48,7 +48,7 @@ That is the practice we are trying to build.`,
     type: "newsletter",
     category: "impact",
     tone: "moss",
-    image: "/journal/in-pieces-extra.png",
+    image: "/journal/orbital-design.png",
   },
   {
     slug: "rl-expertise-studio-and-ai",
