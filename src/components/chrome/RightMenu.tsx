@@ -1,32 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "./ThemeProvider";
-
-const NEWS_ITEMS = [
-  {
-    id: "n1",
-    cat: "NEWSLETTERS",
-    title: "OFF Climate: Why design must lead the next decade…",
-    sub: "Notes on the role of creative practice in climate strategy…",
-    tone: "red",
-  },
-  {
-    id: "n2",
-    cat: "PRESS",
-    title: "“Quiet bold,” Rennie’s Ben on the studio’s new chapter…",
-    sub: "How Reny became Rennie Lab — and what changed underneath…",
-    tone: "cream",
-  },
-  {
-    id: "n3",
-    cat: "NEWSLETTERS",
-    title: "OFF Brand: The half-life of a movement, mapped…",
-    sub: "Why most movements stall at year three, and how to push past…",
-    tone: "moss",
-  },
-];
+import { FEED_ITEMS } from "@/data/journalFeed";
 
 const LOCATIONS = [
   { id: "sydney", label: "SYD", tz: "Australia/Sydney" },
@@ -137,6 +114,11 @@ export function RightMenu() {
     router.push("/journal");
   };
 
+  const latestPosts = useMemo(
+    () => FEED_ITEMS.filter((it) => it.origin === "journal").slice(0, 3),
+    [],
+  );
+
   return (
     <div className="chrome right-menu" ref={ref}>
       <div className="right-pill">
@@ -235,14 +217,25 @@ export function RightMenu() {
           </span>
         </div>
         <div className="dots-news-list">
-          {NEWS_ITEMS.map((n) => (
-            <div key={n.id} className="dots-news-item" onClick={goJournal}>
+          {latestPosts.map((p) => (
+            <div key={p.id} className="dots-news-item" onClick={goJournal}>
               <div className="dots-news-text">
-                <div className="dots-news-title">{n.title}</div>
-                <div className="dots-news-sub">{n.sub}</div>
-                <div className="dots-news-cat">{n.cat}</div>
+                <div className="dots-news-title">{p.title}</div>
+                <div className="dots-news-cat">{p.source}</div>
               </div>
-              <div className="dots-news-thumb ph" data-tone={n.tone}></div>
+              <div
+                className="dots-news-thumb ph"
+                data-tone={p.tone}
+                style={
+                  p.image
+                    ? {
+                        backgroundImage: `url(${p.image})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                      }
+                    : undefined
+                }
+              ></div>
             </div>
           ))}
         </div>
