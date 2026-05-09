@@ -118,7 +118,14 @@ export function JournalPostDrawer() {
           <>
             <header className="jp-head">
               <div className="jp-chip">
-                <div className="jp-chip-img ph" data-tone={data.tone}></div>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  className="jp-chip-img"
+                  src="/r-icon.png"
+                  alt="Rennie Lab"
+                  width={44}
+                  height={44}
+                />
                 <div>
                   <div className="jp-chip-t">{data.client}</div>
                   <div className="jp-chip-d mono">{data.date}</div>

@@ -888,7 +888,7 @@ footer.site-foot {
   flex-shrink: 0;
 }
 .jp-chip { display: flex; align-items: center; gap: 14px; }
-.jp-chip-img { width: 44px; height: 44px; border-radius: 4px; flex-shrink: 0; }
+.jp-chip-img { width: 44px; height: 44px; border-radius: 4px; flex-shrink: 0; object-fit: cover; display: block; }
 .jp-chip-t { font-family: var(--sans); font-weight: 600; font-size: 15px; }
 .jp-chip-d { font-size: 11px; margin-top: 2px; color: var(--ink-3); }
 .jp-cta {
