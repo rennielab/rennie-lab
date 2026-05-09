@@ -49,7 +49,13 @@ export function SiteFooter() {
 
       <div className="foot-ack-row">
         <div className="foot-ack">
-          <div className="foot-col-title">Acknowledgement of Country</div>
+          <button
+            type="button"
+            className="foot-col-title foot-ack-title-button"
+            onClick={() => window.dispatchEvent(new CustomEvent("open-acknowledgement"))}
+          >
+            Acknowledgement of Country ↑
+          </button>
           <p>
             Rennie Lab acknowledge the Traditional Owners of Country
             throughout Australia and pay our respects to Elders past,

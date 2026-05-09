@@ -1160,6 +1160,80 @@ footer.site-foot {
   .stack-title { font-size: clamp(56px, 16vw, 120px); }
 }
 
+/* Welcome / Acknowledgement of Country slide-up */
+.aoc-overlay {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 70vh;
+  z-index: 90;
+  pointer-events: none;
+  transform: translateY(100%);
+  transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.aoc-overlay[data-open="true"] {
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.aoc-panel {
+  height: 100%;
+  background: var(--bg);
+  border-top: 1px solid var(--line);
+  box-shadow: 0 -32px 80px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+}
+.aoc-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  height: 100%;
+}
+.aoc-video {
+  background: var(--ink);
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+.aoc-video video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.aoc-text {
+  padding: clamp(28px, 4.5vw, 64px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 24px;
+  max-width: 640px;
+}
+.aoc-body {
+  font-family: var(--sans);
+  font-size: clamp(15px, 1.2vw, 18px);
+  line-height: 1.55;
+  letter-spacing: -0.005em;
+  color: var(--ink-2);
+  margin: 0;
+  max-width: 50ch;
+}
+.foot-ack-title-button {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+  text-align: left;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+}
+.foot-ack-title-button:hover { color: var(--accent); }
+@media (max-width: 900px) {
+  .aoc-overlay { height: 80vh; }
+  .aoc-grid { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
+}
+
 /* Logo strip */
 .logo-strip {
   display: grid;
