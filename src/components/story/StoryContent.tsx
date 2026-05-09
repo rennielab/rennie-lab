@@ -55,9 +55,29 @@ const PRINCIPLES: [string, string][] = [
   ["Built to be edited", "Every system we make is a starting point for in-house teams to take further. We design for the second decade, not the launch week."],
 ];
 
+// NOTE: Studio images currently hot-link Unsplash. Swap to self-hosted
+// /public/studios/{slug}.jpg whenever a final asset is chosen.
 const STUDIOS = [
-  { city: "Sydney", country: "Australia", addr: "Surry Hills · Eora · 33°S", body: "The original studio. Two blocks from the harbour, runs on flat whites and the occasional ocean swim. Home base for strategy and the climate practice.", tone: "red",   hours: "Mon–Fri · 9am–6pm AEST" },
-  { city: "Los Angeles", country: "USA", addr: "Santa Monica · Tongva · 34°N", body: "Opened in 2021. A WeWork in Santa Monica, then bigger. Home base for design, production and our US partners.", tone: "cream", hours: "Mon–Fri · 9am–6pm PST" },
+  {
+    city: "Sydney",
+    country: "Australia",
+    addr: "Surry Hills · Eora · 33°S",
+    body: "The original studio. Two blocks from the harbour, runs on flat whites and the occasional ocean swim. Home base for strategy and the climate practice.",
+    tone: "red",
+    hours: "Mon–Fri · 9am–6pm AEST",
+    image:
+      "https://images.unsplash.com/photo-1624138784614-87fd1b6528f8?w=1600&q=80&auto=format&fit=crop",
+  },
+  {
+    city: "Los Angeles",
+    country: "USA",
+    addr: "Santa Monica · Tongva · 34°N",
+    body: "Opened in 2021. A WeWork in Santa Monica, then bigger. Home base for design, production and our US partners.",
+    tone: "cream",
+    hours: "Mon–Fri · 9am–6pm PST",
+    image:
+      "https://images.unsplash.com/photo-1661688625912-8d0191156923?w=1600&q=80&auto=format&fit=crop",
+  },
 ];
 
 export function StoryContent() {
@@ -275,7 +295,16 @@ export function StoryContent() {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32 }}>
           {STUDIOS.map((s, i) => (
             <article key={i} className="card" style={{ display: "flex", flexDirection: "column" }}>
-              <div className="ph" data-tone={s.tone} style={{ aspectRatio: "4/3" }}>
+              <div
+                className="ph"
+                data-tone={s.tone}
+                style={{
+                  aspectRatio: "4/3",
+                  backgroundImage: `linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0.05) 60%), url(${s.image})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
+              >
                 <span className="ph-tag">
                   {s.city.toUpperCase()} · {s.country}
                 </span>

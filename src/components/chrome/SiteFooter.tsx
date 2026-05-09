@@ -51,14 +51,12 @@ export function SiteFooter() {
         <div className="foot-ack">
           <div className="foot-col-title">Acknowledgement of Country</div>
           <p>
-            Rennie Lab works on the lands of the Gadigal people of the Eora
-            Nation in Sydney and the Tongva people in Los Angeles. We
-            acknowledge the Traditional Owners and Custodians of these lands
-            and waters, and pay our respects to Elders past, present and
-            emerging. Indigenous peoples have practised seven-generation
-            thinking for tens of thousands of years. We are still learning.
-            We honour the enduring connection of First Peoples to country,
-            and the first storytellers of these places.
+            Rennie Lab acknowledge the Traditional Owners of Country
+            throughout Australia and pay our respects to Elders past,
+            present and emerging. We honour their enduring connection to
+            land, waters, skies and culture. As the first storytellers of
+            these lands, we give thanks for their care and share our
+            respect and friendship with all First Nations peoples.
           </p>
         </div>
         <div className="foot-cols">
