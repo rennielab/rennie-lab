@@ -5,8 +5,8 @@ import { useTheme } from "@/components/chrome/ThemeProvider";
 import { CLIENT_LOGOS_DARK_THEME, CLIENT_LOGOS_LIGHT_THEME } from "@/data/clientLogos";
 
 const SLOTS = 6;
-const CYCLE_MS = 4000;
-const FADE_MS = 700;
+const CYCLE_MS = 11000;
+const FADE_MS = 850;
 
 type Slot = { src: string; phase: 0 | 1; idx: number };
 
@@ -43,7 +43,7 @@ function LogoStripInner({ theme }: { theme: "light" | "dark" }) {
     };
 
     for (let i = 0; i < SLOTS; i++) {
-      const startDelay = (CYCLE_MS / SLOTS) * i + Math.random() * 400;
+      const startDelay = (CYCLE_MS / SLOTS) * i + Math.random() * 250;
       const start = setTimeout(() => {
         swap(i);
         const id = setInterval(() => swap(i), CYCLE_MS);
