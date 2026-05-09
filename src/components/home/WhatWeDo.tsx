@@ -20,7 +20,7 @@ const SECTIONS: StackSection[] = [
   {
     id: "brand",
     title: "brand",
-    desc: "A complete brand foundation built to hold its own alongside organisations ten times your size — from positioning and narrative through to identity, voice and rollout. We work with founders, leadership teams and movements to build brands that feel inevitable, not invented.",
+    desc: "A full brand foundation, built to hold its own next to organisations ten times your size. Positioning, narrative, identity, voice, rollout. We work with founders, leadership teams and movements who want a brand that feels like it was always there, waiting.",
     bg: "#1a1416",
     fg: "#fbfbf7",
     projectSlugs: ["marlee", "re-form-projects", "robert-coopers-rare-gin", "renystudio"],
@@ -29,16 +29,16 @@ const SECTIONS: StackSection[] = [
   {
     id: "advisory",
     title: "advisory",
-    desc: "A bespoke creative, strategic and communications advisory partnership for the bigger projects and bolder ambitions. We sit alongside leadership — quietly, monthly, for as long as it takes — helping the work clarify itself before the world ever sees it.",
+    desc: "Some projects are too big to launch and walk away from. We sit beside leadership, monthly, sometimes for years, helping the work find what it's trying to say before the world has a chance to mishear it.",
     bg: "#0c0c0e",
     fg: "#fbfbf7",
     projectSlugs: ["patagonia", "heartfoundation", "johnston-advisory", "packer"],
     fallbackTone: "ink",
   },
   {
-    id: "ux",
-    title: "ux design",
-    desc: "Editorial-grade product and service design — the kind of digital experience people quietly choose to come back to. End-to-end work, from research and information architecture through to interaction, interface and shipped code.",
+    id: "product",
+    title: "product",
+    desc: "Product and service design for the kind of digital experience people quietly choose to come back to. From research and information architecture through to interaction, interface and shipped code. We don't hand over wireframes and wave.",
     bg: "#0e1418",
     fg: "#fbfbf7",
     projectSlugs: ["buck-mason", "boody", "electric-california", "herschel"],
@@ -47,7 +47,7 @@ const SECTIONS: StackSection[] = [
   {
     id: "climate",
     title: "climate",
-    desc: "Programs and identities for the climate, community and movement work. Built with charities, governments and the curious — the studio's pro-bono and at-cost lane, where craft is pointed at the questions that matter beyond a launch.",
+    desc: "This is where craft gets pointed at the questions that matter beyond a launch. Programs and identities for charities, governments, and the curious. Mostly pro-bono and at-cost. Always built with the planet in the room.",
     bg: "#0e1410",
     fg: "#fbfbf7",
     projectSlugs: ["1percentfortheplanet", "verteyewear", "imf", "in-pieces"],
@@ -56,7 +56,7 @@ const SECTIONS: StackSection[] = [
   {
     id: "research",
     title: "research",
-    desc: "Quiet, deep-end research as a standalone engagement — interviews, fieldwork, archive and ethnography for studios, brands and policy teams who need a second mind in the room. We treat research as craft.",
+    desc: "Standalone research for studios, brands and policy teams who need a second mind in the room. Interviews, fieldwork, archive, ethnography. We treat research as craft, and we don't write reports nobody reads.",
     bg: "#1a140e",
     fg: "#fbfbf7",
     projectSlugs: ["rozelleinterchange", "mr-simple", "benbaker", "nswis"],

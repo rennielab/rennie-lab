@@ -29,9 +29,9 @@ export default function HomePage() {
           className="h-display rise delay-1"
           style={{ margin: 0, maxWidth: "14ch", fontFamily: "var(--sans)", fontWeight: 600 }}
         >
-          Clean creative
+          Creative Work
           <br />
-          for the things that <em style={{ color: "var(--accent)" }}>actually matter</em>.
+          for a <em style={{ color: "var(--accent)" }}>Liveable Planet</em>.
         </h1>
         <div
           style={{
@@ -42,10 +42,10 @@ export default function HomePage() {
             alignItems: "end",
           }}
         >
-          <p className="body-lg rise delay-2" style={{ maxWidth: "36ch", margin: 0 }}>
-            We&apos;re a decentralised studio of strategists, designers and writers — quietly
-            partnering with the world&apos;s bolder brands on climate design, user experience
-            and the work of moving people.
+          <p className="body-lg rise delay-2" style={{ maxWidth: "44ch", margin: 0 }}>
+            A small studio of strategists, designers and writers working out of Sydney
+            and Los Angeles. We partner with bolder brands on climate, digital, and the
+            work of moving people somewhere worth going.
           </p>
           <div
             className="rise delay-3"
@@ -69,30 +69,6 @@ export default function HomePage() {
       {/* What we do — Driftime-style stacked sections */}
       <WhatWeDo />
 
-      {/* Recent feed teaser */}
-      <section style={{ padding: "32px 0 80px" }}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "baseline",
-            marginBottom: 32,
-          }}
-        >
-          <h2 className="h-2" style={{ margin: 0 }}>
-            Latest from the <em>Journal</em>
-          </h2>
-          <Link className="btn btn-ghost" href="/journal">
-            All entries →
-          </Link>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr 1fr", gap: 24 }}>
-          {recent.slice(0, 3).map((it, i) => (
-            <FeedCard item={it} key={it.id} large={i === 0} />
-          ))}
-        </div>
-      </section>
-
       {/* Climate strip */}
       <section style={{ padding: "56px 0 80px", borderTop: "1px solid var(--line)" }}>
         <div
@@ -108,10 +84,12 @@ export default function HomePage() {
             <h2 className="h-2" style={{ margin: 0, maxWidth: "18ch" }}>
               Every page carries its <em>weight.</em>
             </h2>
-            <p className="body-lg" style={{ marginTop: 24, maxWidth: "42ch" }}>
-              The little leaf in the corner is a real-time estimate of the CO₂e your visit
-              to this site has produced — measured per scroll, per asset, per request. Most
-              pages here come in under <span style={{ color: "var(--ink)" }}>0.4g</span>.
+            <p className="body-lg" style={{ marginTop: 24, maxWidth: "44ch" }}>
+              The little leaf in the corner is a live count of the CO₂e your visit has
+              produced. Measured per scroll, per asset, per request. Most pages on this
+              site come in under <span style={{ color: "var(--ink)" }}>0.4 grams</span>.
+              The internet is a heavier place than people realise. We try not to add to
+              it.
             </p>
           </div>
           <div
@@ -126,10 +104,10 @@ export default function HomePage() {
             }}
           >
             {[
-              { v: "0.21g", l: "avg CO₂e per page" },
-              { v: "94%", l: "cleaner than typical web" },
-              { v: "100%", l: "green-grid hosting" },
-              { v: "1%", l: "of revenue · planet" },
+              { v: "0.21g", l: "per page load" },
+              { v: "100%", l: "green-hosted" },
+              { v: "94%", l: "cleaner than the average web page" },
+              { v: "40%", l: "impact, 60% rad" },
             ].map((s, i) => (
               <div key={i}>
                 <div className="serif" style={{ fontSize: 56, lineHeight: 1 }}>{s.v}</div>
@@ -140,13 +118,59 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section
-        style={{ padding: "0 0 64px", display: "flex", gap: 16, flexWrap: "wrap" }}
-      >
-        <ContactButton>
-          Open the brief <span className="arrow">→</span>
-        </ContactButton>
+      {/* Closer */}
+      <section style={{ padding: "64px 0 80px", borderTop: "1px solid var(--line)" }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: 64,
+            alignItems: "center",
+          }}
+        >
+          <h2 className="h-1" style={{ margin: 0, maxWidth: "14ch" }}>
+            Tell us what you&apos;re trying to <em>move.</em>
+          </h2>
+          <div>
+            <p className="body-lg" style={{ margin: "0 0 24px", maxWidth: "44ch" }}>
+              Climate work, brand work, the project that&apos;s been on the whiteboard
+              for two years. Start anywhere.
+            </p>
+            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+              <ContactButton>
+                Open the brief <span className="arrow">→</span>
+              </ContactButton>
+              <button type="button" className="btn btn-ghost">
+                Book a call
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Recent feed teaser */}
+      <section style={{ padding: "32px 0 80px", borderTop: "1px solid var(--line)" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "baseline",
+            marginBottom: 32,
+            marginTop: 32,
+          }}
+        >
+          <h2 className="h-2" style={{ margin: 0 }}>
+            Latest from the <em>Journal</em>
+          </h2>
+          <Link className="btn btn-ghost" href="/journal">
+            All entries →
+          </Link>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr 1fr", gap: 24 }}>
+          {recent.slice(0, 3).map((it, i) => (
+            <FeedCard item={it} key={it.id} large={i === 0} />
+          ))}
+        </div>
       </section>
     </div>
   );
