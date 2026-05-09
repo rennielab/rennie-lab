@@ -20,7 +20,7 @@ export default function ProjectsPage() {
           className="h-display rise delay-1"
           style={{ margin: 0, maxWidth: "14ch" }}
         >
-          Impact Projects
+          Projects &amp; Partnerships
         </h1>
         <p className="body-lg rise delay-2" style={{ marginTop: 24, maxWidth: "48ch" }}>
           A short list of recent partnerships. Most projects run two to five years; we
