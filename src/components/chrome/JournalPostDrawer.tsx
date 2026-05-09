@@ -103,20 +103,25 @@ export function JournalPostDrawer() {
   }, [open]);
 
   return (
-    <div className="jp-wrap" data-open={open} data-theme={theme}>
-      <div className="jp-back" onClick={() => setOpen(false)} aria-hidden>
+    <>
+      <div
+        className="contact-shade"
+        data-open={open}
+        onClick={() => setOpen(false)}
+      ></div>
+      <aside
+        className="contact-panel is-journal-post"
+        data-open={open}
+        data-theme={theme}
+      >
         <button
-          className="jp-close"
-          onClick={(e) => {
-            e.stopPropagation();
-            setOpen(false);
-          }}
+          type="button"
+          className="drawer-close"
+          onClick={() => setOpen(false)}
           aria-label="Close"
         >
           ✕
         </button>
-      </div>
-      <aside className="jp-panel">
         {data && (
           <>
             <header className="jp-head">
@@ -224,6 +229,6 @@ export function JournalPostDrawer() {
           </>
         )}
       </aside>
-    </div>
+    </>
   );
 }

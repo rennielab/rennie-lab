@@ -37,6 +37,14 @@ export function ImpactCaseStudyDrawer() {
     <>
       <div className="contact-shade" data-open={open} onClick={() => setOpen(false)}></div>
       <aside className="contact-panel" data-open={open} data-theme={theme}>
+        <button
+          type="button"
+          className="drawer-close"
+          onClick={() => setOpen(false)}
+          aria-label="Close"
+        >
+          ✕
+        </button>
         {data && (
           <>
             <div

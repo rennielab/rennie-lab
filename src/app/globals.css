@@ -1001,6 +1001,63 @@ footer.site-foot {
   color: var(--cream);
 }
 
+/* Journal-post variant: deep red wash, cream text — distinct from project drawers */
+.contact-panel.is-journal-post,
+.contact-panel.is-journal-post[data-theme="dark"],
+.contact-panel.is-journal-post[data-theme="light"] {
+  background: #1a0a0a;
+  color: var(--cream);
+}
+.contact-panel.is-journal-post .jp-head {
+  border-bottom-color: rgba(244, 241, 222, 0.08);
+}
+.contact-panel.is-journal-post .jp-body p,
+.contact-panel.is-journal-post .jp-lede {
+  color: rgba(244, 241, 222, 0.78);
+}
+.contact-panel.is-journal-post .mono { color: rgba(244, 241, 222, 0.45); }
+.contact-panel.is-journal-post .jp-cta {
+  border-color: rgba(244, 241, 222, 0.18);
+  color: var(--cream);
+}
+.contact-panel.is-journal-post .jp-cta:hover {
+  background: var(--cream);
+  color: #1a0a0a;
+}
+.contact-panel.is-journal-post .jp-foot { border-top-color: rgba(244, 241, 222, 0.08); }
+.contact-panel.is-journal-post .jp-foot .btn {
+  border-color: rgba(244, 241, 222, 0.18);
+  color: var(--cream);
+}
+
+/* Shared X close — both drawer types use this */
+.drawer-close {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  color: currentColor;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.45;
+  transition: opacity 200ms, background 200ms;
+  z-index: 5;
+}
+.drawer-close:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.06);
+}
+.contact-panel.is-journal-post .drawer-close:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
 /* ── Loader / hero animations ── */
 @keyframes rise {
   from { opacity: 0; transform: translateY(28px); }
