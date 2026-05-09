@@ -114,14 +114,6 @@ export function JournalPostDrawer() {
         data-open={open}
         data-theme={theme}
       >
-        <button
-          type="button"
-          className="drawer-close"
-          onClick={() => setOpen(false)}
-          aria-label="Close"
-        >
-          ✕
-        </button>
         {data && (
           <>
             <header className="jp-head">
@@ -132,26 +124,29 @@ export function JournalPostDrawer() {
                   <div className="jp-chip-d mono">{data.date}</div>
                 </div>
               </div>
-              {data.sourceUrl ? (
-                <a
-                  className="jp-cta mono"
-                  href={data.sourceUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+              <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                {data.sourceUrl ? (
+                  <a
+                    className="jp-cta mono"
+                    href={data.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    READ FULL <span aria-hidden>↗</span>
+                  </a>
+                ) : null}
+                <button
+                  type="button"
+                  className="drawer-close drawer-close-inline"
+                  onClick={() => setOpen(false)}
+                  aria-label="Close"
                 >
-                  READ FULL <span aria-hidden>↗</span>
-                </a>
-              ) : (
-                <a
-                  className="jp-cta mono"
-                  href="#"
-                  onClick={(e) => e.preventDefault()}
-                >
-                  READ FULL <span aria-hidden>↗</span>
-                </a>
-              )}
+                  ✕
+                </button>
+              </div>
             </header>
             <div className="jp-scroll">
+              <div className="jp-scroll-inner">
               <h1 className="jp-title">{data.title}</h1>
               <p className="jp-lede">{data.excerpt}</p>
               <div
@@ -224,6 +219,7 @@ export function JournalPostDrawer() {
                     Talk to the studio →
                   </button>
                 )}
+              </div>
               </div>
             </div>
           </>
