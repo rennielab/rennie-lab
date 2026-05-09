@@ -96,12 +96,69 @@ export function AffiliationStrip({ variant = "page", forceTheme }: Props) {
       ? { filter: "brightness(0) invert(1)" }
       : { filter: "brightness(0)" };
 
+  if (!isFooter) {
+    // Page variant: square tiles matching the homepage client logo strip
+    return (
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: `repeat(${AFFILIATIONS.length}, 1fr)`,
+          gap: 8,
+          width: "100%",
+        }}
+      >
+        {AFFILIATIONS.map((a) => (
+          <Link
+            key={a.id}
+            href={a.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={a.label}
+            title={a.label}
+            style={{
+              aspectRatio: "1 / 1",
+              background: "var(--bg-soft)",
+              borderRadius: 2,
+              display: "grid",
+              placeItems: "center",
+              padding: "16px 24px",
+              overflow: "hidden",
+              opacity: restingOpacity,
+              transition: "opacity 250ms cubic-bezier(0.22, 1, 0.36, 1)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.opacity = "1";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.opacity = String(restingOpacity);
+            }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={a.src}
+              alt={a.label}
+              style={{
+                maxWidth: "70%",
+                maxHeight: "56%",
+                width: "auto",
+                height: "auto",
+                objectFit: "contain",
+                display: "block",
+                ...(a.monoFilter ? monoStyle : {}),
+              }}
+            />
+          </Link>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div
       style={{
         display: "grid",
         gridTemplateColumns: `repeat(${AFFILIATIONS.length}, 1fr)`,
-        gap: isFooter ? 8 : 16,
+        gap: 8,
         width: "100%",
       }}
     >
@@ -118,7 +175,7 @@ export function AffiliationStrip({ variant = "page", forceTheme }: Props) {
             alignItems: "center",
             justifyContent: "center",
             height: cellHeight,
-            padding: isFooter ? "8px 12px" : "12px 16px",
+            padding: "8px 12px",
             opacity: restingOpacity,
             transition: "opacity 250ms cubic-bezier(0.22, 1, 0.36, 1)",
             borderRadius: 2,
