@@ -19,7 +19,7 @@ type StackSection = {
 const SECTIONS: StackSection[] = [
   {
     id: "brand",
-    title: "brand",
+    title: "Brand",
     desc: "We build brands for their second decade. Positioning, narrative, identity, voice, rollout. Systems that get easier to use as the company grows, and sharper as the world changes around them. The work we are proudest of looks newer at year five than it did at launch.",
     bg: "#1a1416",
     fg: "#fbfbf7",
@@ -28,7 +28,7 @@ const SECTIONS: StackSection[] = [
   },
   {
     id: "advisory",
-    title: "advisory",
+    title: "Advisory",
     desc: "Strategy work that doesn't end in a deck. We sit beside founders, boards and leadership teams as a long-form retained partner. Monthly, sometimes for years. The work tends to outlast the brief that started it.",
     bg: "#0c0c0e",
     fg: "#fbfbf7",
@@ -37,7 +37,7 @@ const SECTIONS: StackSection[] = [
   },
   {
     id: "product",
-    title: "product",
+    title: "Product",
     desc: "The internet uses more electricity than most countries. We design like that matters. Product and service design across research, architecture, interaction, interface, and shipped code. Pages built to load fast on a five-year-old phone in a regional area. Systems built so the in-house team can keep building.",
     bg: "#0e1418",
     fg: "#fbfbf7",
@@ -46,7 +46,7 @@ const SECTIONS: StackSection[] = [
   },
   {
     id: "climate",
-    title: "climate",
+    title: "Climate",
     desc: "Forty percent of the studio's capacity, mostly pro-bono and at-cost. Programs and identities for charities, councils, coalitions and the curious. The lane where craft gets pointed at the questions that outlast a launch.",
     bg: "#0e1410",
     fg: "#fbfbf7",
@@ -55,7 +55,7 @@ const SECTIONS: StackSection[] = [
   },
   {
     id: "research",
-    title: "research",
+    title: "Research",
     desc: "Most studios fold research into a project. We sell it on its own. Standalone fieldwork, ethnography, archive and synthesis for studios, brands and policy teams who need a second mind in the room. Reports designed to be read, used, and argued with.",
     bg: "#1a140e",
     fg: "#fbfbf7",
@@ -106,20 +106,14 @@ export function WhatWeDo() {
                 </div>
                 <h2 className="stack-title">{s.title}</h2>
               </div>
-              <div style={{ display: "flex", flexDirection: "column" }}>
-                <div
-                  style={{
-                    fontFamily: "var(--mono)",
-                    fontSize: 11,
-                    letterSpacing: "0.14em",
-                    textTransform: "uppercase",
-                    opacity: 0,
-                    marginBottom: 24,
-                  }}
-                  aria-hidden="true"
-                >
-                  spacer
-                </div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "flex-end",
+                  paddingBottom: "0.18em",
+                }}
+              >
                 <p className="stack-desc">{s.desc}</p>
               </div>
             </div>
