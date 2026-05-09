@@ -15,6 +15,7 @@ type Service = {
   crafts: string[];
   caseTitle: string;
   caseClient: string;
+  caseImage: string;
   tone: "red" | "cream" | "ocean" | "moss" | "sand";
 };
 
@@ -23,7 +24,7 @@ const SERVICES: Service[] = [
     n: "01",
     kicker: "Brand",
     title: "Brand Identity & Strategy",
-    lead: "We build brands for their second decade. Most identity systems are designed to win a launch. Ours are designed to outlast a CMO, a category shift, and the in-house team that will inherit them. Positioning, narrative, identity, voice, rollout, and the documentation that lets your people take it further without coming back to us for permission. The work we are proudest of looks newer at year five than it did at launch.",
+    lead: "We build brands for their second decade. Most identity systems are designed to win a launch. Ours outlast a CMO, a category shift, and the team that inherits them. Positioning, narrative, identity, voice, rollout. The work we are proudest of looks newer at year five than at launch.",
     includes: [
       "Brand positioning & narrative",
       "Visual identity systems",
@@ -33,15 +34,16 @@ const SERVICES: Service[] = [
       "Launch strategy & rollout",
     ],
     crafts: ["Strategy", "Identity", "Naming", "Verbal", "Type", "Motion"],
-    caseTitle: "A national identity for an ocean policy coalition",
-    caseClient: "Ocean Decade Australia",
+    caseTitle: "Renaming Mental Strength",
+    caseClient: "Marlee · formerly F4S",
+    caseImage: "/projects/marlee.webp",
     tone: "red",
   },
   {
     n: "02",
     kicker: "Advisory",
     title: "Strategic Advisory",
-    lead: "Strategy work that doesn't end in a deck. We sit beside founders, boards, CMOs and executive directors as a long-form retained partner. Monthly, sometimes for years. We are in the room for the hard board conversation, the capital raise, the announcement that lands wrong, the rebrand that scares the legal team. Most of what we do here never carries our name. That is the point.",
+    lead: "Strategy that doesn't end in a deck. We sit beside founders and boards as a retained partner — monthly, sometimes for years. In the room for the hard board call, the capital raise, the rebrand that scares legal. Most of what we do here never carries our name. That is the point.",
     includes: [
       "Founder & CEO advisory",
       "Brand health audits",
@@ -51,15 +53,16 @@ const SERVICES: Service[] = [
       "Capital-raise narrative",
     ],
     crafts: ["Counsel", "Workshops", "Audit", "Narrative", "Pitch"],
-    caseTitle: "Repositioning a regional hotel group around the rhythm of country travel",
-    caseClient: "Halfway Hotel Group",
+    caseTitle: "Making Generosity Visible",
+    caseClient: "Patagonia × 1% For The Planet",
+    caseImage: "/projects/patagonia.webp",
     tone: "cream",
   },
   {
     n: "03",
     kicker: "Product",
     title: "Product Design",
-    lead: "The internet uses more electricity than most countries. We design like that matters. Product and service design end to end: research, information architecture, interaction, interface, and shipped code. Pages built to load fast on a five-year-old phone in a regional area, and to stay accessible at the AA threshold without a separate audit. Systems built so the in-house team can keep building. The work we ship tends to be among the lightest in its category. We can show you the page weight.",
+    lead: "The internet uses more electricity than most countries. We design like that matters. Product and service design end to end — research, information architecture, interaction, interface, shipped code. Pages that load fast on a five-year-old phone in a regional area, accessible at AA without a separate audit. The work we ship tends to be among the lightest in its category.",
     includes: [
       "Product & service design",
       "Information architecture",
@@ -69,15 +72,16 @@ const SERVICES: Service[] = [
       "Carbon-aware web & low-impact UX",
     ],
     crafts: ["Research", "IA", "UI", "Systems", "Prototype", "Carbon"],
-    caseTitle: "A public ledger for measuring carbon held in seagrass",
-    caseClient: "CSIRO + State Lab",
+    caseTitle: "Unifying a National Foundation",
+    caseClient: "Heart Foundation Australia",
+    caseImage: "/projects/heartfoundation.webp",
     tone: "ocean",
   },
   {
     n: "04",
     kicker: "Climate",
     title: "Climate & Impact Design",
-    lead: "Forty percent of our capacity, mostly pro-bono and at-cost. Since 2019, over a million dollars invested in Australian climate, community and movement work. Programs and identities for charities, councils, coalitions, governments, and the curious. We design with the planet in the room from the first sketch, and the next seven generations on the wall behind it. Indigenous practice on this continent has run to seven-generation arcs for tens of thousands of years. We are still learning.",
+    lead: "Forty percent of our capacity, mostly pro-bono and at-cost. Since 2019, over a million dollars into Australian climate, community and movement work. Programs and identities for charities, councils, coalitions and governments. The planet has been in the room from the first sketch since 2019. Indigenous practice on this continent has run to seven-generation arcs for tens of thousands of years. We are still learning.",
     includes: [
       "Public-facing programs",
       "Movement & coalition identities",
@@ -87,15 +91,16 @@ const SERVICES: Service[] = [
       "Co-design with community",
     ],
     crafts: ["Programs", "Coalition", "Co-design", "Editorial", "Reporting"],
-    caseTitle: "A community-led coalition for cool roofs, across eight inner-city councils",
-    caseClient: "City of Sydney",
+    caseTitle: "Architecting a Movement's Trust",
+    caseClient: "1% For The Planet",
+    caseImage: "/projects/1percentfortheplanet.png",
     tone: "moss",
   },
   {
     n: "05",
     kicker: "Research",
     title: "Research & Insight",
-    lead: "Most studios fold research into a project. We sell it on its own. Standalone fieldwork, interviews, archive and ethnography for studios, brands, policy teams and editorial titles who need a second mind in the room. We treat research as craft, and the deliverable is whatever form the work needs to take. A printed book, a public-facing site, a board paper, a year-long ethnography that will not be published for a decade. The point is that the work is true, and that it changes what the people who commissioned it do next.",
+    lead: "Most studios fold research into a project. We sell it on its own. Standalone fieldwork, interviews, archive and ethnography for studios, brands and policy teams. The deliverable is whatever form the work needs — a printed book, a board paper, an ethnography that won't publish for a decade. The work changes what the people who commissioned it do next.",
     includes: [
       "Audience research",
       "Cultural insight reports",
@@ -105,31 +110,32 @@ const SERVICES: Service[] = [
       "Strategic synthesis",
     ],
     crafts: ["Interview", "Field", "Archive", "Ethnography", "Synthesis"],
-    caseTitle: "A year of fieldwork on permanence and the long-now economy",
-    caseClient: "Studio research, ongoing",
+    caseTitle: "Innovating Australia's Innovator",
+    caseClient: "John Holland · Rozelle Interchange",
+    caseImage: "/projects/rozelleinterchange.webp",
     tone: "sand",
   },
 ];
 
 const PROCESS = [
-  { n: "01", t: "Origins",     d: "Understand the root causes and systemic dynamics of the problem. Use system mapping, stakeholder analysis, and sustainability assessments to see what's actually happening beneath the surface." },
-  { n: "02", t: "Junctions",   d: "Identify the intersections and relationships within the system. Find the leverage points where small changes can create big impact. Map the key players, spot the risks, see the opportunities." },
-  { n: "03", t: "Connections", d: "Develop concepts that address immediate needs and long-term impacts. This is where you brainstorm, ideate, and prototype with systems thinking baked in from the start." },
-  { n: "04", t: "Reflections", d: "Gather feedback, assess impact, refine. Use tools like gigamapping and scenario planning to evaluate how the solution performs within the broader systems it touches." },
-  { n: "05", t: "Directions",  d: "Make the necessary adjustments based on what you learned in Reflections. Prepare for implementation by maximising positive impacts across Systems, Humanity, and Ecology." },
-  { n: "06", t: "Horizons",    d: "Look forward. Plan for scalability, adaptability, and regeneration. Make sure the solution can evolve as contexts change and systems shift." },
+  { n: "01", t: "Origins",     d: "Understand the root causes and systemic dynamics. System mapping, stakeholder analysis, sustainability assessments — see what's happening beneath the surface." },
+  { n: "02", t: "Junctions",   d: "Identify the intersections and relationships within the system. Find leverage points where small changes create big impact. Map the players, spot the risks." },
+  { n: "03", t: "Connections", d: "Develop concepts that address immediate needs and long-term impacts. Brainstorm, ideate, prototype — with systems thinking baked in from the start." },
+  { n: "04", t: "Reflections", d: "Gather feedback, assess impact, refine. Gigamapping, scenario planning — evaluate how the solution performs within the systems it touches." },
+  { n: "05", t: "Directions",  d: "Adjust based on what Reflections taught you. Prepare for implementation, maximising positive impact across Systems, Humanity and Ecology." },
+  { n: "06", t: "Horizons",    d: "Look forward. Plan for scalability, adaptability, regeneration. Make sure the solution can evolve as contexts and systems shift." },
 ];
 
 const PILLARS = [
-  { letter: "S", word: "Systems",  body: "The interconnected frameworks that shape how things work — economies, supply chains, infrastructure, organisations. Systems are the scaffolding of modern life." },
-  { letter: "H", word: "Humanity", body: "The collective wellbeing of people, communities, cultures. Everyone, not just the end user. Current generations, future generations, communities across the globe." },
-  { letter: "E", word: "Ecology",  body: "The natural world we depend on — ecosystems, biodiversity, water, soil, air, climate. Ecology is the foundation on which everything else stands." },
+  { letter: "S", word: "Systems",  body: "The frameworks that shape how things work — economies, supply chains, infrastructure, organisations. The scaffolding of modern life." },
+  { letter: "H", word: "Humanity", body: "The collective wellbeing of people, communities, cultures. Everyone, not just the end user. Current and future generations, across the globe." },
+  { letter: "E", word: "Ecology",  body: "The natural world we depend on — ecosystems, biodiversity, water, soil, air, climate. The foundation everything else stands on." },
 ];
 
 const ORBITAL_STATS: { tag: string; v: string; sub: string }[] = [
-  { tag: "We crossed the line",  v: "1.6°C", sub: "2024 became the first year to clearly exceed the Paris Agreement threshold." },
-  { tag: "Determined at design", v: "80%",   sub: "Product environmental impact is locked in during the design phase." },
-  { tag: "The deadline",         v: "2030",  sub: "Emissions must drop 42% by 2030 to limit warming to 1.5°C." },
+  { tag: "We crossed the line",  v: "1.6°C", sub: "The first year to clearly exceed the Paris Agreement threshold." },
+  { tag: "Determined at design", v: "80%",   sub: "Product environmental impact, locked in during design." },
+  { tag: "The deadline",         v: "2030",  sub: "Emissions must drop 42% to limit warming to 1.5°C." },
 ];
 
 export function ServicesContent() {
@@ -267,7 +273,15 @@ export function ServicesContent() {
                       </ul>
                     </div>
                     <div className="svc-col-r">
-                      <div className="ph svc-case-img" data-tone={s.tone}>
+                      <div
+                        className="ph svc-case-img"
+                        data-tone={s.tone}
+                        style={{
+                          backgroundImage: `linear-gradient(to top, rgba(0,0,0,0.45), rgba(0,0,0,0) 55%), url(${s.caseImage})`,
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                        }}
+                      >
                         <span className="ph-tag">Featured · {s.kicker}</span>
                       </div>
                       <div className="mono" style={{ marginTop: 16 }}>
@@ -305,10 +319,9 @@ export function ServicesContent() {
             </p>
             <p className="body" style={{ marginTop: 24, maxWidth: "44ch" }}>
               In 2019, we created Orbital Design to give Mother Nature a seat at the
-              table. A framework for designing solutions that work for humanity, not
-              just humans. Because humans exist in systems. We exist in ecosystems.
-              And when we design without considering that reality, we create problems
-              faster than we solve them.
+              table. A framework for solutions that work for humanity, not just humans.
+              Design without ecosystems in mind, and you create problems faster than
+              you solve them.
             </p>
           </div>
           <OrbitalDiagram />
@@ -385,7 +398,7 @@ export function ServicesContent() {
             className="h-2"
             style={{ margin: "0 0 16px", maxWidth: "26ch", fontFamily: "var(--sans)", fontWeight: 600 }}
           >
-            You don&apos;t go 1 to 6 and call it done. You move between them based on what the work needs.
+            You don&apos;t march 1 to 6. You move based on what the work needs.
           </h3>
           <p className="body" style={{ margin: "0 0 56px", maxWidth: "62ch" }}>
             Sometimes you start at Junctions. Sometimes you loop back to Origins after
@@ -421,10 +434,9 @@ export function ServicesContent() {
             80% of environmental impact gets locked in during the design phase.
           </h3>
           <p className="body" style={{ margin: "0 0 64px", maxWidth: "62ch" }}>
-            Every decision a designer, creator or builder makes carries weight. Orbital
-            Design is a way to use that power responsibly — solutions that support
-            people, respect planetary boundaries, and work within the systems we all
-            depend on.
+            Every decision a designer or builder makes carries weight. Orbital Design
+            is a way to use that power responsibly — solutions that support people,
+            respect planetary boundaries, work within the systems we depend on.
           </p>
           <div
             style={{
@@ -483,14 +495,13 @@ export function ServicesContent() {
               Anyone creating solutions.
             </h3>
             <p className="body" style={{ margin: "0 0 16px", maxWidth: "44ch" }}>
-              Designers shaping products, services or experiences. Organisations
-              building strategies or solving systemic challenges. Communities working
-              on local or global problems.
+              Designers shaping products. Organisations solving systemic challenges.
+              Communities tackling local and global problems.
             </p>
             <p className="body" style={{ margin: 0, maxWidth: "44ch" }}>
               You don&apos;t need a design degree. You need the willingness to think
-              beyond the immediate problem in front of you, and the willingness to give
-              Systems, Humanity and Ecology equal weight at the table.
+              beyond the immediate problem and give Systems, Humanity and Ecology
+              equal weight.
             </p>
           </div>
           <div>
@@ -502,14 +513,12 @@ export function ServicesContent() {
               Start with the challenge. Then ask which pillar needs attention first.
             </h3>
             <p className="body" style={{ margin: "0 0 16px", maxWidth: "44ch" }}>
-              Infrastructure, supply chains, organisational change → start with
-              Systems. Community wellbeing, equity, cultural impact → start with
-              Humanity. Climate, biodiversity, resource use → start with Ecology.
+              Infrastructure or organisational change → Systems. Community wellbeing
+              or equity → Humanity. Climate or biodiversity → Ecology.
             </p>
             <p className="body" style={{ margin: 0, maxWidth: "44ch" }}>
-              Move through the six phases, but stay flexible. The framework guides you;
-              you drive the orbit. Design with Mother Nature at the table. That&apos;s
-              how you use it.
+              Move through the six phases, but stay flexible. The framework guides;
+              you drive the orbit. Design with Mother Nature at the table.
             </p>
           </div>
         </div>
