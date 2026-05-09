@@ -70,8 +70,7 @@ export function WelcomeAcknowledgement() {
             {videoOk ? (
               /* eslint-disable-next-line jsx-a11y/media-has-caption */
               <video
-                src="/welcome-to-country.mp4"
-                poster="/welcome-to-country-poster.jpg"
+                src="/video/welcome-to-country.mp4"
                 autoPlay
                 muted
                 playsInline
