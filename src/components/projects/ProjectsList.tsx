@@ -1,7 +1,8 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import { ContactButton } from "@/components/chrome/ContactButton";
-import type { Project } from "@/data/types";
+import type { ImpactTag, Project } from "@/data/types";
 import { PROJECT_HERO } from "@/data/projectImages";
 
 function summary(p: Project): string {
@@ -14,10 +15,63 @@ function summary(p: Project): string {
   );
 }
 
+const FILTERS: { id: ImpactTag | "all"; label: string }[] = [
+  { id: "all", label: "All" },
+  { id: "Movement", label: "Movement" },
+  { id: "Climate", label: "Climate" },
+  { id: "Community", label: "Community" },
+];
+
 export function ProjectsList({ projects }: { projects: Project[] }) {
+  const [filter, setFilter] = useState<ImpactTag | "all">("all");
+  const filtered = useMemo(
+    () =>
+      filter === "all"
+        ? projects
+        : projects.filter((p) => p.impactTags?.includes(filter)),
+    [projects, filter],
+  );
   return (
     <section style={{ padding: "0 0 96px" }}>
-      {projects.map((p, i) => (
+      <div
+        style={{
+          position: "sticky",
+          top: 84,
+          zIndex: 30,
+          background: "color-mix(in oklab, var(--bg-card) 92%, transparent)",
+          backdropFilter: "blur(20px)",
+          margin: "0 0 24px",
+          padding: "14px 18px",
+          border: "1px solid var(--line)",
+          borderRadius: "var(--radius)",
+          display: "flex",
+          gap: 24,
+          alignItems: "center",
+          flexWrap: "wrap",
+        }}
+      >
+        <span className="mono" style={{ color: "var(--ink-4)" }}>
+          Filter
+        </span>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {FILTERS.map((f) => (
+            <button
+              key={f.id}
+              type="button"
+              className="tag"
+              data-active={filter === f.id}
+              onClick={() => setFilter(f.id)}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+        <div style={{ flex: 1 }}></div>
+        <span className="mono" style={{ color: "var(--ink-3)" }}>
+          {filtered.length} of {projects.length}
+        </span>
+      </div>
+      {filtered.map((p, i) => (
         <article
           key={p.slug}
           onClick={() =>

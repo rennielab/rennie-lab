@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ContactButton } from "@/components/chrome/ContactButton";
 import { DownloadButton } from "@/components/chrome/DownloadButton";
+import { OrbitalDiagram } from "@/components/services/OrbitalDiagram";
 
 type Service = {
   n: string;
@@ -111,11 +112,24 @@ const SERVICES: Service[] = [
 ];
 
 const PROCESS = [
-  { n: "01", t: "Gravity", d: "Every engagement starts with the pull. The question, the tension, or the truth the brief is really circling. Forty hours of conversation, on average, before the studio writes a word." },
-  { n: "02", t: "Orbit", d: "Three loops, each tighter than the last. Research, strategy, expression. The work passes through every discipline before it lands, so the answer carries the weight of the whole team." },
-  { n: "03", t: "Atmosphere", d: "The conditions the work has to live in. Codes, materials, behaviours, partners and the public-facing weather. We design the system before the surface." },
-  { n: "04", t: "Re-entry", d: "Launch is the moment the brand meets the world. We stay in the room for the first burn. Rollout, training, governance." },
-  { n: "05", t: "Return", d: "Eighteen months in, we come back. A second pass on the work, the metrics and the team. The orbit completes, and the next one begins from a wiser place." },
+  { n: "01", t: "Origins",     d: "Understand the root causes and systemic dynamics of the problem. Use system mapping, stakeholder analysis, and sustainability assessments to see what's actually happening beneath the surface." },
+  { n: "02", t: "Junctions",   d: "Identify the intersections and relationships within the system. Find the leverage points where small changes can create big impact. Map the key players, spot the risks, see the opportunities." },
+  { n: "03", t: "Connections", d: "Develop concepts that address immediate needs and long-term impacts. This is where you brainstorm, ideate, and prototype with systems thinking baked in from the start." },
+  { n: "04", t: "Reflections", d: "Gather feedback, assess impact, refine. Use tools like gigamapping and scenario planning to evaluate how the solution performs within the broader systems it touches." },
+  { n: "05", t: "Directions",  d: "Make the necessary adjustments based on what you learned in Reflections. Prepare for implementation by maximising positive impacts across Systems, Humanity, and Ecology." },
+  { n: "06", t: "Horizons",    d: "Look forward. Plan for scalability, adaptability, and regeneration. Make sure the solution can evolve as contexts change and systems shift." },
+];
+
+const PILLARS = [
+  { letter: "S", word: "Systems",  body: "The interconnected frameworks that shape how things work — economies, supply chains, infrastructure, organisations. Systems are the scaffolding of modern life." },
+  { letter: "H", word: "Humanity", body: "The collective wellbeing of people, communities, cultures. Everyone, not just the end user. Current generations, future generations, communities across the globe." },
+  { letter: "E", word: "Ecology",  body: "The natural world we depend on — ecosystems, biodiversity, water, soil, air, climate. Ecology is the foundation on which everything else stands." },
+];
+
+const ORBITAL_STATS: { tag: string; v: string; sub: string }[] = [
+  { tag: "We crossed the line",  v: "1.6°C", sub: "2024 became the first year to clearly exceed the Paris Agreement threshold." },
+  { tag: "Determined at design", v: "80%",   sub: "Product environmental impact is locked in during the design phase." },
+  { tag: "The deadline",         v: "2030",  sub: "Emissions must drop 42% by 2030 to limit warming to 1.5°C." },
 ];
 
 export function ServicesContent() {
@@ -274,7 +288,7 @@ export function ServicesContent() {
 
       <section className="svc-process">
         <div className="svc-process-head">
-          <span className="mono">The Orbital design process · 05 phases</span>
+          <span className="mono">Orbital design · 03 pillars · 06 phases · since 2019</span>
         </div>
         <div className="svc-process-grid">
           <div>
@@ -282,17 +296,101 @@ export function ServicesContent() {
               className="h-1"
               style={{ margin: 0, maxWidth: "14ch", fontFamily: "var(--sans)", fontWeight: 600 }}
             >
-              The Orbital
+              Orbital
               <br />
-              design
-              <br />
-              process.
+              Design.
             </h2>
-            <p className="body" style={{ marginTop: 24, maxWidth: "36ch" }}>
-              Our work doesn&apos;t move in a straight line. It loops around purpose,
-              audience and consequence, each pass tighter than the last.
+            <p className="body-lg" style={{ marginTop: 24, maxWidth: "40ch" }}>
+              Orbital Design creates a path for meaningful, regenerative impact.
+            </p>
+            <p className="body" style={{ marginTop: 24, maxWidth: "44ch" }}>
+              In 2019, we created Orbital Design to give Mother Nature a seat at the
+              table. A framework for designing solutions that work for humanity, not
+              just humans. Because humans exist in systems. We exist in ecosystems.
+              And when we design without considering that reality, we create problems
+              faster than we solve them.
             </p>
           </div>
+          <OrbitalDiagram />
+        </div>
+
+        {/* SHE — three pillars */}
+        <div style={{ marginTop: 96, paddingTop: 56, borderTop: "1px solid var(--line)" }}>
+          <div className="mono" style={{ marginBottom: 32 }}>
+            What is Orbital Design · 03 pillars
+          </div>
+          <h3
+            className="h-2"
+            style={{ margin: "0 0 48px", maxWidth: "28ch", fontFamily: "var(--sans)", fontWeight: 600 }}
+          >
+            Three pillars that orbit and recalibrate with each other. We call them SHE.
+          </h3>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)",
+              gap: 32,
+            }}
+          >
+            {PILLARS.map((p, i) => (
+              <div
+                key={p.letter}
+                style={{
+                  padding: "32px 28px",
+                  border: "1px solid var(--line)",
+                  borderRadius: "var(--radius)",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 20,
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "baseline", gap: 16 }}>
+                  <span
+                    style={{
+                      fontFamily: "var(--sans)",
+                      fontWeight: 700,
+                      fontSize: 80,
+                      lineHeight: 1,
+                      letterSpacing: "-0.04em",
+                      color: "var(--accent)",
+                    }}
+                  >
+                    {p.letter}
+                  </span>
+                  <span className="mono">0{i + 1}</span>
+                </div>
+                <h4
+                  style={{
+                    margin: 0,
+                    fontFamily: "var(--sans)",
+                    fontWeight: 600,
+                    fontSize: 22,
+                    letterSpacing: "-0.015em",
+                  }}
+                >
+                  {p.word}
+                </h4>
+                <p className="body" style={{ margin: 0 }}>{p.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Six phases */}
+        <div style={{ marginTop: 96, paddingTop: 56, borderTop: "1px solid var(--line)" }}>
+          <div className="mono" style={{ marginBottom: 32 }}>
+            The six phases · you orbit, you don&apos;t march
+          </div>
+          <h3
+            className="h-2"
+            style={{ margin: "0 0 16px", maxWidth: "26ch", fontFamily: "var(--sans)", fontWeight: 600 }}
+          >
+            You don&apos;t go 1 to 6 and call it done. You move between them based on what the work needs.
+          </h3>
+          <p className="body" style={{ margin: "0 0 56px", maxWidth: "62ch" }}>
+            Sometimes you start at Junctions. Sometimes you loop back to Origins after
+            Reflections. The framework adapts because reality is complex.
+          </p>
           <div className="svc-process-steps">
             {PROCESS.map((p) => (
               <div key={p.n} className="svc-step">
@@ -300,20 +398,119 @@ export function ServicesContent() {
                 <div>
                   <h3
                     className="h-3"
-                    style={{
-                      margin: "0 0 12px",
-                      fontFamily: "var(--sans)",
-                      fontWeight: 600,
-                    }}
+                    style={{ margin: "0 0 12px", fontFamily: "var(--sans)", fontWeight: 600 }}
                   >
                     {p.t}
                   </h3>
-                  <p className="body" style={{ margin: 0, maxWidth: "52ch" }}>
-                    {p.d}
-                  </p>
+                  <p className="body" style={{ margin: 0, maxWidth: "62ch" }}>{p.d}</p>
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* Why it matters — stats */}
+        <div style={{ marginTop: 96, paddingTop: 56, borderTop: "1px solid var(--line)" }}>
+          <div className="mono" style={{ marginBottom: 32 }}>
+            Why it matters
+          </div>
+          <h3
+            className="h-2"
+            style={{ margin: "0 0 16px", maxWidth: "24ch", fontFamily: "var(--sans)", fontWeight: 600 }}
+          >
+            80% of environmental impact gets locked in during the design phase.
+          </h3>
+          <p className="body" style={{ margin: "0 0 64px", maxWidth: "62ch" }}>
+            Every decision a designer, creator or builder makes carries weight. Orbital
+            Design is a way to use that power responsibly — solutions that support
+            people, respect planetary boundaries, and work within the systems we all
+            depend on.
+          </p>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)",
+              gap: 32,
+            }}
+          >
+            {ORBITAL_STATS.map((s) => (
+              <div
+                key={s.tag}
+                style={{
+                  padding: "28px 24px",
+                  borderTop: "1px solid var(--line)",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 14,
+                }}
+              >
+                <div className="mono">{s.tag}</div>
+                <div
+                  style={{
+                    fontFamily: "var(--sans)",
+                    fontWeight: 700,
+                    fontSize: "clamp(56px, 6vw, 96px)",
+                    lineHeight: 1,
+                    letterSpacing: "-0.03em",
+                    color: "var(--accent)",
+                  }}
+                >
+                  {s.v}
+                </div>
+                <p className="body" style={{ margin: 0 }}>{s.sub}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Who it's for + How you use it */}
+        <div
+          style={{
+            marginTop: 96,
+            paddingTop: 56,
+            borderTop: "1px solid var(--line)",
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: 64,
+          }}
+        >
+          <div>
+            <div className="mono" style={{ marginBottom: 24 }}>Who it&apos;s for</div>
+            <h3
+              className="h-3"
+              style={{ margin: "0 0 16px", fontFamily: "var(--sans)", fontWeight: 600 }}
+            >
+              Anyone creating solutions.
+            </h3>
+            <p className="body" style={{ margin: "0 0 16px", maxWidth: "44ch" }}>
+              Designers shaping products, services or experiences. Organisations
+              building strategies or solving systemic challenges. Communities working
+              on local or global problems.
+            </p>
+            <p className="body" style={{ margin: 0, maxWidth: "44ch" }}>
+              You don&apos;t need a design degree. You need the willingness to think
+              beyond the immediate problem in front of you, and the willingness to give
+              Systems, Humanity and Ecology equal weight at the table.
+            </p>
+          </div>
+          <div>
+            <div className="mono" style={{ marginBottom: 24 }}>How you use it</div>
+            <h3
+              className="h-3"
+              style={{ margin: "0 0 16px", fontFamily: "var(--sans)", fontWeight: 600 }}
+            >
+              Start with the challenge. Then ask which pillar needs attention first.
+            </h3>
+            <p className="body" style={{ margin: "0 0 16px", maxWidth: "44ch" }}>
+              Infrastructure, supply chains, organisational change → start with
+              Systems. Community wellbeing, equity, cultural impact → start with
+              Humanity. Climate, biodiversity, resource use → start with Ecology.
+            </p>
+            <p className="body" style={{ margin: 0, maxWidth: "44ch" }}>
+              Move through the six phases, but stay flexible. The framework guides you;
+              you drive the orbit. Design with Mother Nature at the table. That&apos;s
+              how you use it.
+            </p>
           </div>
         </div>
       </section>
