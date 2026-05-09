@@ -2427,6 +2427,30 @@ In 1993, I was sporting a hairstyle reminiscent of Jason Donovan from Neighbours
   },
 ];
 
-export const JOURNAL_POSTS: JournalPost[] = RAW_POSTS.filter(
-  (p) => !REMOVED_TITLES.has(p.title),
-);
+// Hero images scraped from each post's og:image meta tag.
+// Hot-linked from substackcdn.com / storage.ghost.io for now — swap to
+// self-hosted /public/journal/{slug}.jpg if the carbon claim tightens.
+const IMAGES_BY_SLUG: Record<string, string> = {
+  "sub-higher-ground": "https://substackcdn.com/image/fetch/$s_!PzJl!,w_1200,h_675,c_fill,f_jpg,q_auto:good,fl_progressive:steep,g_auto/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc30dac0a-0a73-477f-8003-cce9a38d6062_1500x800.png",
+  "97p-7-websites-for-creative-inspiration": "https://storage.ghost.io/c/05/7e/057e2877-d826-480b-8c19-52ba2ac08384/content/images/2026/03/ewrqrwg.jpg",
+  "97p-7-websites-every-first-time-author-needs-to-know": "https://storage.ghost.io/c/05/7e/057e2877-d826-480b-8c19-52ba2ac08384/content/images/size/w1200/2026/03/authors-network.jpg",
+  "97p-7-websites-that-take-creativity-seriously": "https://storage.ghost.io/c/05/7e/057e2877-d826-480b-8c19-52ba2ac08384/content/images/size/w1200/2026/03/Creativeb8923.jpg",
+  "97p-97-recommends-9-books-on-creative-resiliance": "https://storage.ghost.io/c/05/7e/057e2877-d826-480b-8c19-52ba2ac08384/content/images/2026/03/4024.webp",
+  "97p-97-recommends-10-books-on-creative-culture": "https://storage.ghost.io/c/05/7e/057e2877-d826-480b-8c19-52ba2ac08384/content/images/size/w1200/2026/03/jdnhbwydgfwe.webp",
+  "97p-97-recommends-10-books-on-creative-leadership": "https://storage.ghost.io/c/05/7e/057e2877-d826-480b-8c19-52ba2ac08384/content/images/size/w1200/2026/03/DSC04187.webp",
+  "97p-97-recommends-7-books-on-creative-thinking": "https://storage.ghost.io/c/05/7e/057e2877-d826-480b-8c19-52ba2ac08384/content/images/size/w1200/2026/03/qlbook.jpg",
+  "97p-97-recommends-10-books-on-creative-practice": "https://storage.ghost.io/c/05/7e/057e2877-d826-480b-8c19-52ba2ac08384/content/images/2026/03/download--1-.jpeg",
+  "97p-97-recommends-10-books-on-creative-confidence": "https://storage.ghost.io/c/05/7e/057e2877-d826-480b-8c19-52ba2ac08384/content/images/size/w1200/2026/03/isaren38828348.webp",
+  "97p-test-post-1": "https://storage.ghost.io/c/05/7e/057e2877-d826-480b-8c19-52ba2ac08384/content/images/size/w1200/2026/03/BR_DSC06157_W1-1.jpg",
+  "97p-im-writing-my-next-book-in-public": "https://storage.ghost.io/c/05/7e/057e2877-d826-480b-8c19-52ba2ac08384/content/images/2026/03/https-3a-2f-2fsubstack-post-media-s3-amazonaws-com-2fpublic-2fimages-2fbaeefb71-fe42-40cd-b488-7c06e74bcf7e_1920x1080-jpeg.jpg",
+  "sub-im-writing-my-next-book-in-public": "https://substackcdn.com/image/fetch/$s_!Bf4B!,w_1200,h_675,c_fill,f_jpg,q_auto:good,fl_progressive:steep,g_auto/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fbaeefb71-fe42-40cd-b488-7c06e74bcf7e_1920x1080.jpeg",
+  "sub-be-kind-rewind": "https://substackcdn.com/image/fetch/$s_!I9KD!,w_1200,h_675,c_fill,f_jpg,q_auto:good,fl_progressive:steep,g_auto/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F7d20d99f-f5fc-4c3e-b046-c15dbfafe329_2000x1200.png",
+  "97p-be-kind-rewind": "https://storage.ghost.io/c/05/7e/057e2877-d826-480b-8c19-52ba2ac08384/content/images/2026/03/https-3a-2f-2fsubstack-post-media-s3-amazonaws-com-2fpublic-2fimages-2f7d20d99f-f5fc-4c3e-b046-c15dbfafe329_2000x1200-png.jpg",
+  "97p-creative-2026-reset": "https://storage.ghost.io/c/05/7e/057e2877-d826-480b-8c19-52ba2ac08384/content/images/2026/03/Design-Decalres-Ben-Rennie-and-Australia-At-the-Greenhouse-Climate-Tech-Hub-Sydney.png",
+  "sub-humping-elvis-and-the-right-to-be": "https://substackcdn.com/image/fetch/$s_!3WRe!,w_1200,h_675,c_fill,f_jpg,q_auto:good,fl_progressive:steep,g_auto/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb1382f30-fa6b-42f8-9299-b6b9ccc27179_1172x660.jpeg",
+  "97p-humping-elvis-and-the-right-to-be": "https://storage.ghost.io/c/05/7e/057e2877-d826-480b-8c19-52ba2ac08384/content/images/2026/03/https-3a-2f-2fsubstack-post-media-s3-amazonaws-com-2fpublic-2fimages-2fb1382f30-fa6b-42f8-9299-b6b9ccc27179_1172x660-jpeg.jpg",
+};
+
+export const JOURNAL_POSTS: JournalPost[] = RAW_POSTS
+  .filter((p) => !REMOVED_TITLES.has(p.title))
+  .map((p) => ({ ...p, image: p.image ?? IMAGES_BY_SLUG[p.slug] }));
