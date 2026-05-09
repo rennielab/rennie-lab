@@ -4,6 +4,8 @@ export const PROJECTS: Project[] = [
   {
     slug: "patagonia",
     name: "Patagonia",
+    tagline: "Making Generosity Visible",
+    impactTags: ["Climate", "Movement"],
     client: "Patagonia",
     services: [
       "Brand Strategy",
@@ -30,6 +32,8 @@ export const PROJECTS: Project[] = [
   {
     slug: "1percentfortheplanet",
     name: "1% For the Planet",
+    tagline: "Architecting a Movement's Trust",
+    impactTags: ["Climate", "Community"],
     client: "1% For the Planet",
     services: ["Strategy", "Workshop Facilitation", "System Design", "Content"],
     gallery: [],
@@ -51,6 +55,8 @@ export const PROJECTS: Project[] = [
   {
     slug: "in-pieces",
     name: "In Pieces",
+    tagline: "Restarting the Conversation",
+    impactTags: ["Community"],
     client: "In Pieces · Suicide Awareness",
     services: [
       "Brand Strategy",
@@ -82,6 +88,8 @@ export const PROJECTS: Project[] = [
   {
     slug: "nswis",
     name: "Snow Australia / NSWIS",
+    tagline: "Designing Olympic Connection",
+    impactTags: ["Movement"],
     client: "Snow Australia · NSW Institute of Sport",
     services: [
       "Brand Strategy",
@@ -108,6 +116,8 @@ export const PROJECTS: Project[] = [
   {
     slug: "buck-mason",
     name: "Buck Mason",
+    tagline: "Refining American Heritage",
+    impactTags: ["Community"],
     client: "Buck Mason USA",
     year: 2023,
     industry: "Fashion",
@@ -129,6 +139,7 @@ export const PROJECTS: Project[] = [
   {
     slug: "re-form-projects",
     name: "Re-Form Projects",
+    tagline: "Disrupting Construction",
     client: "Re-Form Projects",
     services: [
       "Brand Strategy",
@@ -156,6 +167,8 @@ export const PROJECTS: Project[] = [
   {
     slug: "heartfoundation",
     name: "Heart Foundation",
+    tagline: "Unifying a National Foundation",
+    impactTags: ["Movement", "Community"],
     client: "Heart Foundation Australia",
     services: [
       "Consumer & Enterprise Software",
@@ -184,6 +197,7 @@ export const PROJECTS: Project[] = [
   {
     slug: "herschel",
     name: "Herschel",
+    tagline: "Creating Environments for Carry",
     client: "Herschel Supply Co.",
     services: [
       "Brand Strategy",
@@ -207,6 +221,8 @@ export const PROJECTS: Project[] = [
   {
     slug: "packer",
     name: "Packer Family Foundation",
+    tagline: "Re-Positioning an Icon",
+    impactTags: ["Community"],
     client: "Packer Family Foundation",
     services: ["Brand Refresh", "Web UX & Development", "Editorial Design", "Event Branding"],
     gallery: [],
@@ -224,6 +240,8 @@ export const PROJECTS: Project[] = [
   {
     slug: "electric-california",
     name: "Electric California",
+    tagline: "Creating Sustainable Eyewear",
+    impactTags: ["Climate"],
     client: "Electric Eyewear",
     services: [
       "Brand Strategy",
@@ -254,6 +272,8 @@ export const PROJECTS: Project[] = [
   {
     slug: "boody",
     name: "Boody",
+    tagline: "A Brand for the Conscious",
+    impactTags: ["Climate"],
     client: "Boody",
     services: [
       "Brand Strategy",
@@ -276,6 +296,8 @@ export const PROJECTS: Project[] = [
   {
     slug: "marlee",
     name: "Marlee",
+    tagline: "Renaming Mental Strength",
+    impactTags: ["Community"],
     client: "Fingerprint for Success / Marlee",
     industry: "Technology · People Analytics & Coaching",
     services: ["Brand Research", "Naming", "Rebranding", "Brand Architecture", "Art Direction"],
@@ -298,6 +320,7 @@ export const PROJECTS: Project[] = [
   {
     slug: "renystudio",
     name: "Reny Studio · Brand Refresh",
+    tagline: "Re-Imagining Our Own Brand",
     client: "Reny Studio (in-house)",
     services: ["Brand Strategy", "Visual Identity", "Brand Architecture", "Sub-brand System"],
     gallery: [],
@@ -313,6 +336,8 @@ export const PROJECTS: Project[] = [
   {
     slug: "rozelleinterchange",
     name: "John Holland · Rozelle Interchange",
+    tagline: "Innovating Australia's Innovator",
+    impactTags: ["Community"],
     client: "John Holland · Westconnex Tunnel Project",
     services: [
       "Brand Strategy",
@@ -338,6 +363,8 @@ export const PROJECTS: Project[] = [
   {
     slug: "imf",
     name: "Indigenous Marathon Foundation",
+    tagline: "Running as Resilience",
+    impactTags: ["Movement", "Community"],
     client: "Indigenous Marathon Foundation",
     services: [
       "Brand Strategy",
@@ -360,6 +387,7 @@ export const PROJECTS: Project[] = [
   {
     slug: "benbaker",
     name: "Ben Baker",
+    tagline: "Showcasing a Master Portraitist",
     client: "Ben Baker · Portrait Photography",
     services: ["Web Design", "UX", "Brand Direction"],
     gallery: [],
@@ -379,6 +407,8 @@ export const PROJECTS: Project[] = [
   {
     slug: "verteyewear",
     name: "Vert",
+    tagline: "Pioneering Circular Eyewear",
+    impactTags: ["Climate"],
     client: "Vert Eyewear (Reny Ventures)",
     services: [
       "Brand Strategy",
@@ -402,6 +432,7 @@ export const PROJECTS: Project[] = [
   {
     slug: "robert-coopers-rare-gin",
     name: "Robert Cooper's Rare Gin",
+    tagline: "Branding Australia's First Gin",
     client: "Mark Moran (private commission)",
     services: ["Brand Strategy", "Visual Identity", "Packaging", "Print Production"],
     gallery: [],
@@ -417,6 +448,8 @@ export const PROJECTS: Project[] = [
   {
     slug: "mr-simple",
     name: "Mr Simple",
+    tagline: "Building Conscious Menswear",
+    impactTags: ["Climate"],
     client: "Mr Simple (Sidelife)",
     services: [
       "Brand Strategy",
@@ -443,6 +476,7 @@ export const PROJECTS: Project[] = [
   {
     slug: "johnston-advisory",
     name: "Johnston Advisory",
+    tagline: "Making Accounting Cool",
     client: "Johnston Advisory",
     year: 2024,
     industry: "Tech / Professional Services",

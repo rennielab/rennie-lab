@@ -10,11 +10,15 @@ export type ProjectCategory =
   | "UX"
   | "Websites";
 
+export type ImpactTag = "Movement" | "Climate" | "Community";
+
 export type ProjectImage = { src: string; alt?: string };
 
 export type Project = {
   slug: string;
   name: string;
+  /** Short, aspirational project headline. Falls back to `name` when absent. */
+  tagline?: string;
   client: string;
   year?: number;
   industry?: string;
@@ -22,6 +26,8 @@ export type Project = {
   hero?: ProjectImage;
   gallery: ProjectImage[];
   categories: ProjectCategory[];
+  /** Movement / Climate / Community — surfaced as tags on project cards. */
+  impactTags?: ImpactTag[];
   source: "reny-studio" | "rennie-lab";
   sections: {
     challenge?: string;

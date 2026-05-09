@@ -44,7 +44,7 @@ export function ProjectsList({ projects }: { projects: Project[] }) {
               className="h-1"
               style={{ margin: "0 0 24px", fontSize: "clamp(32px, 4.5vw, 64px)" }}
             >
-              {p.name}
+              {p.tagline ?? p.name}
             </h2>
             <div
               style={{
@@ -63,13 +63,42 @@ export function ProjectsList({ projects }: { projects: Project[] }) {
                 </div>
               </div>
               <div>
-                <div className="mono">Year</div>
-                <div className="serif" style={{ fontSize: 22, marginTop: 6 }}>
-                  {p.year ?? "—"}
-                </div>
+                <div className="mono">Tags</div>
+                {p.impactTags && p.impactTags.length > 0 ? (
+                  <div
+                    style={{
+                      marginTop: 8,
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: 6,
+                    }}
+                  >
+                    {p.impactTags.map((t) => (
+                      <span
+                        key={t}
+                        className="mono"
+                        style={{
+                          padding: "4px 10px",
+                          border: "1px solid var(--line)",
+                          borderRadius: 999,
+                          fontSize: 11,
+                        }}
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="serif" style={{ fontSize: 22, marginTop: 6 }}>
+                    —
+                  </div>
+                )}
               </div>
             </div>
-            <p className="body-lg" style={{ marginTop: 24, maxWidth: "46ch" }}>
+            <p
+              className="body"
+              style={{ marginTop: 24, maxWidth: "46ch" }}
+            >
               {summary(p).slice(0, 320)}
               {summary(p).length > 320 ? "…" : ""}
             </p>
