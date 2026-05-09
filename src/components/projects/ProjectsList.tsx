@@ -35,17 +35,12 @@ export function ProjectsList({ projects }: { projects: Project[] }) {
     <section style={{ padding: "0 0 96px" }}>
       <div
         style={{
-          position: "sticky",
-          top: 84,
-          zIndex: 30,
-          background: "color-mix(in oklab, var(--bg-card) 92%, transparent)",
-          backdropFilter: "blur(20px)",
-          margin: "0 0 24px",
-          padding: "14px 18px",
+          margin: "0 0 32px",
+          padding: "10px 16px",
           border: "1px solid var(--line)",
           borderRadius: "var(--radius)",
           display: "flex",
-          gap: 24,
+          gap: 16,
           alignItems: "center",
           flexWrap: "wrap",
         }}

@@ -158,13 +158,8 @@ export function JournalFeed({ items }: { items: UnifiedFeedItem[] }) {
     <>
       <div
         style={{
-          position: "sticky",
-          top: 84,
-          zIndex: 30,
-          background: "color-mix(in oklab, var(--bg-card) 92%, transparent)",
-          backdropFilter: "blur(20px)",
-          margin: "24px 0 32px",
-          padding: "14px 18px",
+          margin: "8px 0 32px",
+          padding: "10px 16px",
           border: "1px solid var(--line)",
           borderRadius: "var(--radius)",
         }}
