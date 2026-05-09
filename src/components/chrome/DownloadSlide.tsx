@@ -88,7 +88,7 @@ export function DownloadSlide() {
           eyebrow: "Press kit",
           title: (
             <>
-              The <em>Rennie Lab</em> press kit.
+              The Rennie Lab press kit.
             </>
           ),
           sub: "Logos, founder bios, recent coverage and high-res project imagery — packaged for editors and producers.",
@@ -105,7 +105,7 @@ export function DownloadSlide() {
           eyebrow: "Capabilities deck",
           title: (
             <>
-              The <em>Capabilities</em> deck.
+              The Capabilities deck.
             </>
           ),
           sub: "Forty pages on how Rennie Lab works — the four practices, the Orbital design process, fee bands and a curated set of recent case studies.",

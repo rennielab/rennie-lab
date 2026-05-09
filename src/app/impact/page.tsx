@@ -28,7 +28,7 @@ export default function ImpactPage() {
           className="h-display rise delay-1"
           style={{ margin: 0, maxWidth: "16ch" }}
         >
-          Work for the <em style={{ color: "var(--accent)" }}>commons.</em>
+          Work for the <span style={{ color: "var(--accent)" }}>commons.</span>
         </h1>
         <p
           className="body-lg rise delay-2"
@@ -100,7 +100,7 @@ export default function ImpactPage() {
           }}
         >
           <h2 className="h-1" style={{ margin: 0, maxWidth: "12ch" }}>
-            Running a charity? <em>Tell us.</em>
+            Running a charity? Tell us.
           </h2>
           <div>
             <p className="body-lg" style={{ margin: "0 0 24px", maxWidth: "42ch" }}>

@@ -14,7 +14,7 @@ export function SiteFooter() {
           <br />
           something that
           <br />
-          <em>matters.</em>
+          matters.
         </div>
         <div className="foot-contact-card">
           <div className="mono" style={{ color: "rgba(244,241,222,0.5)" }}>
@@ -130,7 +130,7 @@ export function SiteFooter() {
         }}
       >
         <div className="wordmark" style={{ marginTop: 64, flex: "0 0 auto" }}>
-          Rennie <em>Lab.</em>
+          Rennie Lab.
         </div>
         <div
           style={{

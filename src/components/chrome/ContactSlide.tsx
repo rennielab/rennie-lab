@@ -145,7 +145,7 @@ export function ContactSlide() {
                   01 — Tell us about it
                 </div>
                 <h2 className="h-2" style={{ margin: 0 }}>
-                  What kind of <em>change</em> are you trying to make?
+                  What kind of change are you trying to make?
                 </h2>
                 <p className="body-lg" style={{ marginTop: 24, maxWidth: 520 }}>
                   We work in three lanes — brand and strategic advisory, user experience design, and
@@ -288,7 +288,7 @@ export function ContactSlide() {
                   02 — Who&apos;s saying hello
                 </div>
                 <h2 className="h-2" style={{ margin: 0 }}>
-                  Tell us who <em>you are.</em>
+                  Tell us who you are.
                 </h2>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
@@ -340,7 +340,7 @@ export function ContactSlide() {
                   03 — The detail
                 </div>
                 <h2 className="h-2" style={{ margin: 0 }}>
-                  What should we <em>know?</em>
+                  What should we know?
                 </h2>
                 <p className="body-lg" style={{ marginTop: 24, maxWidth: 480 }}>
                   Pop the brief, audience, references — anything you&apos;ve got. We read every one and

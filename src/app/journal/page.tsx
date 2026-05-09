@@ -15,7 +15,7 @@ export default function JournalPage() {
           Journal · since 2017 · {JOURNAL_POSTS.length}+ entries
         </div>
         <h1 className="h-1 rise delay-1" style={{ margin: 0, maxWidth: "14ch" }}>
-          Notes from the <em style={{ color: "var(--accent)" }}>edge</em> of the work.
+          Notes from the <span style={{ color: "var(--accent)" }}>edge</span> of the work.
         </h1>
         <p className="body-lg rise delay-2" style={{ marginTop: 24, maxWidth: "52ch" }}>
           Essays, field guides, podcasts and the occasional reading list. Everything we

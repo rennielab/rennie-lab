@@ -31,7 +31,7 @@ export default function HomePage() {
         >
           Creative Work
           <br />
-          for a <em style={{ color: "var(--accent)" }}>Liveable Planet</em>.
+          for a <span style={{ color: "var(--accent)" }}>Liveable Planet</span>.
         </h1>
         <div
           style={{
@@ -82,7 +82,7 @@ export default function HomePage() {
           <div>
             <div className="mono" style={{ marginBottom: 24 }}>Carbon · Always on</div>
             <h2 className="h-2" style={{ margin: 0, maxWidth: "18ch" }}>
-              Every page carries its <em>weight.</em>
+              Every page carries its weight.
             </h2>
             <p className="body-lg" style={{ marginTop: 24, maxWidth: "44ch" }}>
               The little leaf in the corner is a live count of the CO₂e your visit has
@@ -129,7 +129,7 @@ export default function HomePage() {
           }}
         >
           <h2 className="h-1" style={{ margin: 0, maxWidth: "14ch" }}>
-            Tell us what you&apos;re trying to <em>move.</em>
+            Tell us what you&apos;re trying to move.
           </h2>
           <div>
             <p className="body-lg" style={{ margin: "0 0 24px", maxWidth: "44ch" }}>
@@ -160,7 +160,7 @@ export default function HomePage() {
           }}
         >
           <h2 className="h-2" style={{ margin: 0 }}>
-            Latest from the <em>Journal</em>
+            Latest from the Journal
           </h2>
           <Link className="btn btn-ghost" href="/journal">
             All entries →
