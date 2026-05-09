@@ -15,12 +15,17 @@ const TEAM = [
 ];
 
 const TIMELINE = [
-  { y: 2017, t: "Reny Studio opens in Surry Hills — five people, one room, one north star." },
-  { y: 2019, t: "First climate brief — a coastal carbon program with CSIRO. The lane finds us." },
-  { y: 2021, t: "Los Angeles outpost opens; the studio goes decentralised by design." },
-  { y: 2023, t: "Reny becomes Rennie Lab. Same north star, sharper instruments." },
-  { y: 2025, t: "Joins 1% for the Planet · launches the carbon ledger across the site." },
-  { y: 2026, t: "B-Corp pending. Eight years of clean creative — and counting." },
+  { y: 2009, t: "Founded in Melbourne as 6.2 Innovation Lab." },
+  { y: 2011, t: "First Sydney studio opens in Surry Hills." },
+  { y: 2014, t: "Launches a digital agency inside the studio." },
+  { y: 2017, t: "First clients in the United States." },
+  { y: 2019, t: "Shifts from traditional agency to impact model. The forty/sixty split begins." },
+  { y: 2020, t: "Starts research into digital carbon and product circularity." },
+  { y: 2021, t: "Opens Rennie Lab LA in a WeWork on Santa Monica Boulevard." },
+  { y: 2022, t: "Begins the B Corp journey for the second time. Starts working with clients and agencies in New York." },
+  { y: 2023, t: "Certified B Corp. One of the first creative agencies in Australia to make it through." },
+  { y: 2024, t: "Opens a third studio in Salt Lake City." },
+  { y: 2025, t: "Ends partnership with Reny. Rennie Lab moves to a focused creative and advisory model." },
 ];
 
 const PRESS: [string, string, number][] = [
@@ -33,8 +38,8 @@ const PRESS: [string, string, number][] = [
 ];
 
 const NUMBERS: [string, string][] = [
-  ["12+", "people across SYD and LA"],
-  ["9", "years of work"],
+  ["3", "studios on two continents"],
+  ["16", "years of work"],
   ["26", "partner brands"],
   ["1,820", "pro-bono hours · 2025"],
   ["0.21g", "avg CO₂e per page"],
@@ -51,8 +56,9 @@ const PRINCIPLES: [string, string][] = [
 ];
 
 const STUDIOS = [
-  { city: "Sydney", country: "Australia", addr: "Surry Hills · Eora · 33°S", body: "The original studio. Sits two blocks from the harbour, runs on flat whites and the occasional ocean swim. Home base for strategy and the climate practice.", tone: "red",   hours: "Mon–Fri · 9am–6pm AEST" },
-  { city: "Los Angeles", country: "USA", addr: "Frogtown · Tongva · 34°N",   body: "Opened in 2021. A converted warehouse on the LA River, half studio, half workshop. Home base for design, production and our US partners.", tone: "cream", hours: "Mon–Fri · 9am–6pm PST" },
+  { city: "Sydney", country: "Australia", addr: "Surry Hills · Eora · 33°S", body: "The original studio. Two blocks from the harbour, runs on flat whites and the occasional ocean swim. Home base for strategy and the climate practice.", tone: "red",   hours: "Mon–Fri · 9am–6pm AEST" },
+  { city: "Los Angeles", country: "USA", addr: "Santa Monica · Tongva · 34°N", body: "Opened in 2021. A WeWork in Santa Monica, then bigger. Home base for design, production and our US partners.", tone: "cream", hours: "Mon–Fri · 9am–6pm PST" },
+  { city: "Salt Lake City", country: "USA", addr: "Wasatch Front · Shoshone · 40°N", body: "Opened in 2024. The newest of the three, between the mountains and the lake.", tone: "moss", hours: "Mon–Fri · 9am–6pm MST" },
 ];
 
 export function StoryContent() {
@@ -80,11 +86,14 @@ export function StoryContent() {
         >
           <p
             className="body-lg rise delay-2"
-            style={{ margin: 0, maxWidth: "52ch" }}
+            style={{ margin: 0, maxWidth: "60ch" }}
           >
-            A small, deliberately decentralised group of strategists, designers and writers
-            between Sydney and Los Angeles — quietly partnering with bold brands, governments
-            and movements on the work that earns the right to last.
+            A small, deliberately decentralised practice of strategists, designers and
+            writers across Sydney, Los Angeles and Salt Lake City. Forty percent of our
+            work is impact: climate, community and movement, mostly pro-bono or at-cost.
+            The other sixty is the commercial work that funds it. Since we shifted to
+            the impact model in 2019, over a million dollars invested in Australian
+            impact work, and counting.
           </p>
           <div
             className="rise delay-3"
@@ -116,21 +125,26 @@ export function StoryContent() {
           </h2>
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
             <p className="body-lg" style={{ margin: 0 }}>
-              Rennie Lab exists because the world doesn’t need more brands shouting; it needs
-              fewer doing better. We came out of <strong>Reny Studio</strong>, which opened in
-              2017 with five people in one room in Surry Hills. The name changed in 2023 — the
-              practice didn’t.
+              Rennie Lab exists because the world doesn&apos;t need more brands shouting.
+              It needs fewer brands doing better. We started in Melbourne in 2009 as
+              6.2 Innovation Lab. We opened in Sydney in 2011. The shape of the work and
+              the name on the door have changed since. The thesis hasn&apos;t.
             </p>
             <p className="body-lg" style={{ margin: 0 }}>
-              Most of our work is strategy and advisory: helping bold brands clarify what
-              they’re actually for, then shaping the experiences and movements that follow.
-              The thread that runs through it all is impact — across climate, community and
-              movement — and the conviction that craft, when it’s pointed at the right thing,
-              is still one of the few tools that can move people.
+              We split our work forty/sixty. Forty percent is impact: climate, community
+              and movement, mostly pro-bono or at-cost. Since the model shifted in 2019,
+              that lane has put over a million dollars back into Australian climate,
+              community and movement organisations. The other sixty percent is the
+              commercial work that pays for it. Bolder brands, sharper instruments, the
+              same standard.
             </p>
             <p className="body-lg" style={{ margin: 0 }}>
-              We’re here for the long, slow, deliberate work. The kind that takes a few years
-              to be visible — and a lifetime to forget.
+              The thread that runs through both is craft pointed at the right thing.
+              Indigenous peoples on this continent have practised seven-generation thinking
+              for sixty thousand years. We&apos;re trying to learn. We design for the long,
+              slow, deliberate work. The kind that takes a few years to be visible and a
+              lifetime to forget. The kind that gives the planet a seat at the table from
+              the first sketch.
             </p>
           </div>
         </div>
@@ -219,11 +233,11 @@ export function StoryContent() {
       {/* TIMELINE */}
       <section style={{ padding: "96px 0", borderTop: "1px solid var(--line)" }}>
         <div className="mono" style={{ marginBottom: 32 }}>
-          A short history · Reny → Rennie Lab
+          A short history · 2009 → today
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 3fr", gap: 64 }}>
           <h2 className="h-1" style={{ margin: 0, alignSelf: "start" }}>
-            Nine years of clean creative.
+            Sixteen years of creativity &amp; impact.
           </h2>
           <div>
             {TIMELINE.map((t, i) => (
@@ -256,10 +270,10 @@ export function StoryContent() {
         </div>
       </section>
 
-      {/* TWO STUDIOS */}
+      {/* THREE STUDIOS */}
       <section style={{ padding: "96px 0", borderTop: "1px solid var(--line)" }}>
-        <div className="mono" style={{ marginBottom: 32 }}>Two studios · one weather front</div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32 }}>
+        <div className="mono" style={{ marginBottom: 32 }}>Three studios · one weather front</div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
           {STUDIOS.map((s, i) => (
             <article key={i} className="card" style={{ display: "flex", flexDirection: "column" }}>
               <div className="ph" data-tone={s.tone} style={{ aspectRatio: "4/3" }}>
@@ -300,13 +314,14 @@ export function StoryContent() {
             <div className="mono" style={{ marginBottom: 24 }}>
               The lab · {TEAM.length} + collaborators
             </div>
-            <h2 className="h-1" style={{ margin: 0, maxWidth: "12ch" }}>
-              One team, two cities.
+            <h2 className="h-1" style={{ margin: 0, maxWidth: "14ch" }}>
+              One team, three cities.
             </h2>
           </div>
           <p className="body-lg" style={{ margin: 0, maxWidth: "52ch" }}>
-            We’re small on purpose — partner-led, generalist by training, specialist by
-            instinct. Every project is run end to end by the people who scoped it.
+            We&apos;re small on purpose. Partner-led, generalist by training, specialist
+            by instinct. Every project is run end to end by the people who scoped it.
+            Three time zones, one set of standards.
           </p>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
@@ -364,7 +379,7 @@ export function StoryContent() {
               >
                 We’re hiring
               </div>
-              <div className="mono" style={{ marginTop: 6 }}>2 open roles · SYD + LA</div>
+              <div className="mono" style={{ marginTop: 6 }}>2 open roles · SYD + LA + SLC</div>
             </div>
           </article>
         </div>
