@@ -3,15 +3,27 @@
 import { ContactButton } from "@/components/chrome/ContactButton";
 import { LogoStrip } from "@/components/home/LogoStrip";
 
-const TEAM = [
-  { name: "Ben Rennie",     role: "Founder · Creative Director",  loc: "Sydney",      tone: "red",    yrs: "2017—" },
-  { name: "Hana Okafor",    role: "Strategy Partner",             loc: "Los Angeles", tone: "cream",  yrs: "2019—" },
-  { name: "Jules Marsden",  role: "Design Director",              loc: "Sydney",      tone: "moss",   yrs: "2020—" },
-  { name: "Mateo Ríos",     role: "Climate Lead",                 loc: "Los Angeles", tone: "rust",   yrs: "2021—" },
-  { name: "Priya Vance",    role: "Writer-in-Residence",          loc: "Sydney",      tone: "ocean",  yrs: "2022—" },
-  { name: "Tomi Aluko",     role: "Movement Producer",            loc: "Los Angeles", tone: "sand",   yrs: "2022—" },
-  { name: "Eli Park",       role: "Senior Designer",              loc: "Sydney",      tone: "ink",    yrs: "2023—" },
-  { name: "Sara Goldstein", role: "Producer",                     loc: "Los Angeles", tone: "red",    yrs: "2024—" },
+type Partner = {
+  name: string;
+  role: string;
+  loc: string;
+  image?: string;
+  tone: "red" | "cream" | "moss" | "ocean" | "rust" | "sand" | "ink";
+};
+
+const PARTNERS: Partner[] = [
+  { name: "Ben Rennie",    role: "Co-Founder · Creative Director",        loc: "Sydney", image: "/team/ben.jpg",    tone: "ink" },
+  { name: "Nicola Rennie", role: "Co-Founder · Strategy & Operations",    loc: "Sydney", image: "/team/nicola.jpg", tone: "moss" },
+  { name: "El Moore",      role: "Studio Director",                       loc: "Sydney",                            tone: "red" },
+  { name: "Orkan Silmaz",  role: "Head of Digital",                       loc: "Sydney",                            tone: "rust" },
+];
+
+const CREDITS: { role: string; names: string[] }[] = [
+  { role: "Design",             names: ["Saoirse Doyle", "Mei-Ling Tan", "Astrid Linde", "Hayato Mori", "Pari Jafari", "Aslı Demir", "Renata Vargas", "Lukas Becker", "Min-Joo Lee"] },
+  { role: "Development",        names: ["Dilara Akın", "Min-jun Park", "Cem Yıldız", "Rohan Mehta", "Emil Hoffmann"] },
+  { role: "Creative Direction", names: ["Margot Bell", "Jelena Marković", "Aiko Watanabe", "Yara Khalil"] },
+  { role: "Production",         names: ["Tilly Ash", "Henriette Aas", "Beau Whittaker"] },
+  { role: "Writing & Research", names: ["Sofía Mendoza", "Anjali Banerjee", "Imani Okafor", "Lola Bezerra", "Hudson Reid"] },
 ];
 
 const TIMELINE = [
@@ -28,13 +40,18 @@ const TIMELINE = [
   { y: 2025, t: "Ends partnership with Reny and closes the Salt Lake City studio. Rennie Lab moves to a focused creative and advisory model." },
 ];
 
-const PRESS: [string, string, number][] = [
-  ["It’s Nice That", "On Rennie Lab’s climate-first practice", 2025],
-  ["Monocle",        "A studio split between Sydney and LA",   2024],
-  ["Brand New",      "Reny Studio becomes Rennie Lab",         2023],
-  ["Design Week",    "The agency model is broken. Here’s a fix.", 2024],
-  ["AGDA Awards",    "Distinction · Identity · Tidewatch",     2024],
-  ["D&AD Pencil",    "Wood · Service Design · Quiet Hours",    2025],
+const PRESS: { line: string; tag: string }[] = [
+  { line: "Australian New Media Agency of the Year",                          tag: "Award" },
+  { line: "Lessons in Creativity — Small Business Book of the Year (Runner Up)", tag: "Recognition" },
+  { line: "AWWWARDS Honorable Mentions × 12",                                 tag: "Recognition" },
+  { line: "Financial Review Innovation Awards · Finalist",                    tag: "Recognition" },
+  { line: "TEDx · Macquarie University",                                      tag: "Talk · Ben Rennie" },
+  { line: "SXSW Sydney 2025",                                                  tag: "Talk · Ben Rennie" },
+  { line: "Parliament House · Innovation Talk",                                tag: "Talk · Ben Rennie" },
+  { line: "World Design Congress · London",                                    tag: "Talk · Ben & Nicola Rennie" },
+  { line: "B Corp Conference",                                                 tag: "Talk · Ben & Nicola Rennie" },
+  { line: "Australian Design Conference · Brisbane",                           tag: "Talk · Ben Rennie" },
+  { line: "Melbourne Design Week",                                             tag: "Talk · Ben Rennie" },
 ];
 
 const NUMBERS: [string, string][] = [
@@ -323,7 +340,7 @@ export function StoryContent() {
         </div>
       </section>
 
-      {/* TEAM */}
+      {/* TEAM — partners + film-poster credit roll */}
       <section style={{ padding: "96px 0", borderTop: "1px solid var(--line)" }}>
         <div
           style={{
@@ -336,7 +353,7 @@ export function StoryContent() {
         >
           <div>
             <div className="mono" style={{ marginBottom: 24 }}>
-              The lab · {TEAM.length} + collaborators
+              The partners
             </div>
             <h2 className="h-1" style={{ margin: 0, maxWidth: "12ch" }}>
               One team, two cities.
@@ -349,12 +366,26 @@ export function StoryContent() {
           </p>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
-          {TEAM.map((p) => (
+          {PARTNERS.map((p) => (
             <article key={p.name} className="card">
-              <div className="ph" data-tone={p.tone} style={{ aspectRatio: "4/5" }}>
-                <span className="ph-tag">
-                  {p.loc} · {p.yrs}
-                </span>
+              <div
+                className="ph"
+                data-tone={p.tone}
+                style={{
+                  aspectRatio: "4/5",
+                  ...(p.image
+                    ? {
+                        backgroundImage: `url(${p.image})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center top",
+                        filter: "grayscale(1) contrast(1.05)",
+                      }
+                    : {}),
+                }}
+              >
+                {!p.image && (
+                  <span className="ph-tag">{p.loc}</span>
+                )}
               </div>
               <div style={{ padding: 18 }}>
                 <div
@@ -372,44 +403,51 @@ export function StoryContent() {
               </div>
             </article>
           ))}
-          <article className="card" style={{ display: "flex", flexDirection: "column" }}>
-            <div
-              className="ph"
-              data-tone="ink"
-              style={{ aspectRatio: "4/5", display: "grid", placeItems: "center" }}
-            >
+        </div>
+
+        {/* Credit roll — the wider studio */}
+        <div style={{ marginTop: 96, paddingTop: 48, borderTop: "1px solid var(--line)" }}>
+          <div className="mono" style={{ marginBottom: 12 }}>
+            The wider studio · {CREDITS.reduce((n, c) => n + c.names.length, 0)} collaborators
+          </div>
+          <h3
+            className="h-2"
+            style={{ margin: "0 0 56px", maxWidth: "22ch" }}
+          >
+            Designers, developers, directors, writers and producers — across nine countries.
+          </h3>
+          <div style={{ display: "flex", flexDirection: "column", gap: 36 }}>
+            {CREDITS.map((c) => (
               <div
+                key={c.role}
                 style={{
-                  fontFamily: "var(--sans)",
-                  fontWeight: 700,
-                  fontSize: "clamp(40px, 4vw, 64px)",
-                  color: "var(--cream)",
-                  letterSpacing: "-0.03em",
-                  textAlign: "center",
-                  lineHeight: 1,
+                  display: "grid",
+                  gridTemplateColumns: "180px 1fr",
+                  gap: 32,
+                  alignItems: "baseline",
+                  borderTop: "1px solid var(--line)",
+                  paddingTop: 24,
                 }}
               >
-                You?
+                <div className="mono">{c.role}</div>
+                <div
+                  style={{
+                    fontFamily: "var(--sans)",
+                    fontWeight: 500,
+                    fontSize: "clamp(20px, 1.8vw, 28px)",
+                    lineHeight: 1.35,
+                    letterSpacing: "-0.015em",
+                  }}
+                >
+                  {c.names.join("  ·  ")}
+                </div>
               </div>
-            </div>
-            <div style={{ padding: 18 }}>
-              <div
-                style={{
-                  fontFamily: "var(--sans)",
-                  fontWeight: 600,
-                  fontSize: 18,
-                  letterSpacing: "-0.015em",
-                }}
-              >
-                We’re hiring
-              </div>
-              <div className="mono" style={{ marginTop: 6 }}>2 open roles · SYD + LA</div>
-            </div>
-          </article>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* PRESS */}
+      {/* PRESS / RECOGNITION */}
       <section style={{ padding: "96px 0", borderTop: "1px solid var(--line)" }}>
         <div className="mono" style={{ marginBottom: 32 }}>
           Partners &amp; collaborators · selected
@@ -417,38 +455,38 @@ export function StoryContent() {
         <div style={{ marginBottom: 56 }}>
           <LogoStrip />
         </div>
-        <div className="mono" style={{ marginBottom: 32 }}>Press &amp; recognition · selected</div>
-        <h2 className="h-2" style={{ margin: "0 0 56px", maxWidth: "20ch" }}>
+        <div className="mono" style={{ marginBottom: 32 }}>
+          Press, recognition &amp; talks · selected
+        </div>
+        <h2 className="h-2" style={{ margin: "0 0 56px", maxWidth: "22ch" }}>
           The work, occasionally, gets noticed.
         </h2>
         <div>
-          {PRESS.map(([pub, line, yr], i) => (
-            <a
+          {PRESS.map((p, i) => (
+            <div
               key={i}
               style={{
                 display: "grid",
-                gridTemplateColumns: "1fr 2fr 120px 60px",
+                gridTemplateColumns: "1fr 240px",
                 gap: 32,
-                padding: "28px 0",
+                padding: "24px 0",
                 borderTop: "1px solid var(--line)",
                 alignItems: "baseline",
-                cursor: "pointer",
               }}
             >
               <div
                 style={{
                   fontFamily: "var(--sans)",
-                  fontWeight: 600,
+                  fontWeight: 500,
                   fontSize: "clamp(20px, 1.8vw, 28px)",
-                  letterSpacing: "-0.02em",
+                  letterSpacing: "-0.015em",
+                  lineHeight: 1.3,
                 }}
               >
-                {pub}
+                {p.line}
               </div>
-              <div className="body" style={{ margin: 0 }}>{line}</div>
-              <div className="mono">{yr}</div>
-              <div className="mono" style={{ textAlign: "right" }}>↗</div>
-            </a>
+              <div className="mono" style={{ textAlign: "right" }}>{p.tag}</div>
+            </div>
           ))}
           <div style={{ height: 1, background: "var(--line)" }}></div>
         </div>

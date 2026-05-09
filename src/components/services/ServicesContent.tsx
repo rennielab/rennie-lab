@@ -22,7 +22,7 @@ const SERVICES: Service[] = [
     n: "01",
     kicker: "Brand",
     title: "Brand Identity & Strategy",
-    lead: "We build brands that earn attention and keep it. Clarity of purpose, distinctiveness of expression, and a strategic core that holds up when the market shifts. We work with founders, leadership teams and movements who want a brand that feels like it was always there, waiting.",
+    lead: "We build brands for their second decade. Most identity systems are designed to win a launch. Ours are designed to outlast a CMO, a category shift, and the in-house team that will inherit them. Positioning, narrative, identity, voice, rollout, and the documentation that lets your people take it further without coming back to us for permission. The work we are proudest of looks newer at year five than it did at launch.",
     includes: [
       "Brand positioning & narrative",
       "Visual identity systems",
@@ -40,7 +40,7 @@ const SERVICES: Service[] = [
     n: "02",
     kicker: "Advisory",
     title: "Strategic Advisory",
-    lead: "A long-form partnership for founders, boards and CMOs navigating the in-between work. Repositioning, restructuring, or readying a brand for the next decade. We sit beside leadership, monthly, sometimes for years, helping the work find what it's trying to say before the world has a chance to mishear it.",
+    lead: "Strategy work that doesn't end in a deck. We sit beside founders, boards, CMOs and executive directors as a long-form retained partner. Monthly, sometimes for years. We are in the room for the hard board conversation, the capital raise, the announcement that lands wrong, the rebrand that scares the legal team. Most of what we do here never carries our name. That is the point.",
     includes: [
       "Founder & CEO advisory",
       "Brand health audits",
@@ -58,7 +58,7 @@ const SERVICES: Service[] = [
     n: "03",
     kicker: "Product",
     title: "Product Design",
-    lead: "Product, service and digital experience design for the kind of work people quietly choose to come back to. Quiet interfaces that get out of the way, designed for performance, accessibility, and one of the smallest carbon footprints on the web. We don't hand over wireframes and wave.",
+    lead: "The internet uses more electricity than most countries. We design like that matters. Product and service design end to end: research, information architecture, interaction, interface, and shipped code. Pages built to load fast on a five-year-old phone in a regional area, and to stay accessible at the AA threshold without a separate audit. Systems built so the in-house team can keep building. The work we ship tends to be among the lightest in its category. We can show you the page weight.",
     includes: [
       "Product & service design",
       "Information architecture",
@@ -76,7 +76,7 @@ const SERVICES: Service[] = [
     n: "04",
     kicker: "Climate",
     title: "Climate & Impact Design",
-    lead: "This is where craft gets pointed at the questions that matter beyond a launch. Programs and identities for charities, governments and the curious. Forty percent of our work, mostly pro-bono and at-cost. Always built with the planet in the room.",
+    lead: "Forty percent of our capacity, mostly pro-bono and at-cost. Since 2019, over a million dollars invested in Australian climate, community and movement work. Programs and identities for charities, councils, coalitions, governments, and the curious. We design with the planet in the room from the first sketch, and the next seven generations on the wall behind it. Indigenous practice on this continent has run to seven-generation arcs for tens of thousands of years. We are still learning.",
     includes: [
       "Public-facing programs",
       "Movement & coalition identities",
@@ -94,7 +94,7 @@ const SERVICES: Service[] = [
     n: "05",
     kicker: "Research",
     title: "Research & Insight",
-    lead: "Standalone research for studios, brands and policy teams who need a second mind in the room. Interviews, fieldwork, archive, ethnography. We treat research as craft, and we don't write reports nobody reads.",
+    lead: "Most studios fold research into a project. We sell it on its own. Standalone fieldwork, interviews, archive and ethnography for studios, brands, policy teams and editorial titles who need a second mind in the room. We treat research as craft, and the deliverable is whatever form the work needs to take. A printed book, a public-facing site, a board paper, a year-long ethnography that will not be published for a decade. The point is that the work is true, and that it changes what the people who commissioned it do next.",
     includes: [
       "Audience research",
       "Cultural insight reports",
