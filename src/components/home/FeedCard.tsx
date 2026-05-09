@@ -1,19 +1,65 @@
 "use client";
 
-import type { FeedItem } from "@/data/feed";
+import type { UnifiedFeedItem } from "@/data/journalFeed";
 
-export function FeedCard({ item, large = false }: { item: FeedItem; large?: boolean }) {
+function openItem(item: UnifiedFeedItem) {
+  if (item.origin === "journal" && item.journalPost) {
+    window.dispatchEvent(
+      new CustomEvent("open-journal", { detail: { post: item.journalPost } }),
+    );
+    return;
+  }
+  if (item.origin === "project" && item.project) {
+    window.dispatchEvent(
+      new CustomEvent("open-case", { detail: { project: item.project } }),
+    );
+    return;
+  }
+  if (item.origin === "impact" && item.caseStudy) {
+    window.dispatchEvent(
+      new CustomEvent("open-impact-case", {
+        detail: { caseStudy: item.caseStudy },
+      }),
+    );
+  }
+}
+
+export function FeedCard({
+  item,
+  large = false,
+}: {
+  item: UnifiedFeedItem;
+  large?: boolean;
+}) {
+  const readMin = Math.max(2, Math.round(item.bodyLength / 1200));
+  const kindLabel =
+    item.kind === "project"
+      ? "case study"
+      : item.kind === "impact"
+        ? "impact"
+        : item.kind;
   return (
     <article
       className="card"
       style={{ display: "flex", flexDirection: "column", cursor: "pointer" }}
-      onClick={() =>
-        window.dispatchEvent(new CustomEvent("open-journal", { detail: { item } }))
-      }
+      onClick={() => openItem(item)}
     >
-      <div className="ph" data-tone={item.tone} style={{ aspectRatio: large ? "16/10" : "4/3" }}>
+      <div
+        className="ph"
+        data-tone={item.tone || "ink"}
+        style={{
+          aspectRatio: large ? "16/10" : "4/3",
+          ...(item.image
+            ? {
+                backgroundImage: `linear-gradient(to top, rgba(0,0,0,0.45), rgba(0,0,0,0) 55%), url(${item.image})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }
+            : {}),
+        }}
+      >
         <span className="ph-tag">
-          {item.kind} · {item.cat}
+          {kindLabel} · {item.category}
         </span>
       </div>
       <div
@@ -25,10 +71,7 @@ export function FeedCard({ item, large = false }: { item: FeedItem; large?: bool
           flex: 1,
         }}
       >
-        <div className="mono" style={{ display: "flex", justifyContent: "space-between" }}>
-          <span>{item.client}</span>
-          <span>{item.year}</span>
-        </div>
+        <div className="mono">{item.source}</div>
         <h3 className={large ? "h-2" : "h-3"} style={{ margin: 0 }}>
           {item.title}
         </h3>
@@ -40,9 +83,13 @@ export function FeedCard({ item, large = false }: { item: FeedItem; large?: bool
             marginTop: "auto",
           }}
         >
-          <span className="mono">{item.read}</span>
+          <span className="mono">{readMin} min read</span>
           <span style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--accent)" }}>
-            READ →
+            {item.origin === "project"
+              ? "OPEN →"
+              : item.origin === "impact"
+                ? "OPEN →"
+                : "READ →"}
           </span>
         </div>
       </div>

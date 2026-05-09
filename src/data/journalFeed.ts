@@ -49,7 +49,12 @@ function fromJournalPost(p: JournalPost): UnifiedFeedItem {
     kind: p.type as FeedItemKind,
     image: p.image,
     tone: p.tone ?? "ink",
-    source: p.source === "substack" ? "Ben Rennie · Substack" : "97% · Field",
+    source:
+      p.source === "substack"
+        ? "Ben Rennie · Substack"
+        : p.source === "97percent"
+          ? "97% · Field"
+          : "Rennie Lab · Journal",
     publishedAt: p.publishedAt,
     bodyLength: p.body.length,
     journalPost: p,

@@ -55,8 +55,6 @@ const PRINCIPLES: [string, string][] = [
   ["Built to be edited", "Every system we make is a starting point for in-house teams to take further. We design for the second decade, not the launch week."],
 ];
 
-// NOTE: Studio images currently hot-link Unsplash. Swap to self-hosted
-// /public/studios/{slug}.jpg whenever a final asset is chosen.
 const STUDIOS = [
   {
     city: "Sydney",
@@ -65,8 +63,7 @@ const STUDIOS = [
     body: "The original studio. Two blocks from the harbour, runs on flat whites and the occasional ocean swim. Home base for strategy and the climate practice.",
     tone: "red",
     hours: "Mon–Fri · 9am–6pm AEST",
-    image:
-      "https://images.unsplash.com/photo-1624138784614-87fd1b6528f8?w=1600&q=80&auto=format&fit=crop",
+    image: "/studios/sydney.webp",
   },
   {
     city: "Los Angeles",
@@ -75,8 +72,7 @@ const STUDIOS = [
     body: "Opened in 2021. A WeWork in Santa Monica, then bigger. Home base for design, production and our US partners.",
     tone: "cream",
     hours: "Mon–Fri · 9am–6pm PST",
-    image:
-      "https://images.unsplash.com/photo-1661688625912-8d0191156923?w=1600&q=80&auto=format&fit=crop",
+    image: "/studios/los-angeles.jpg",
   },
 ];
 

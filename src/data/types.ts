@@ -45,7 +45,7 @@ export type Project = {
 
 export type JournalCategory = "climate" | "movement" | "community" | "design" | "impact";
 export type JournalKind = "newsletter" | "podcast" | "field-guide" | "reading" | "event";
-export type JournalSource = "substack" | "97percent";
+export type JournalSource = "substack" | "97percent" | "rennie-lab";
 
 export type JournalPost = {
   slug: string;

@@ -17,6 +17,8 @@ type DrawerData = {
   tone: string;
   sourceUrl?: string;
   image?: string;
+  /** When true, render full body. When false, truncate to a 200-char preview. */
+  fullBody?: boolean;
 };
 
 function fromJournalPost(post: JournalPost): DrawerData {
@@ -31,18 +33,25 @@ function fromJournalPost(post: JournalPost): DrawerData {
         .map((p) => p.trim())
         .filter(Boolean)
     : [post.excerpt];
+  const isNative = post.source === "rennie-lab";
   return {
     title: post.title,
     excerpt: post.excerpt,
     body: paragraphs,
     bodyAvailable: post.bodyAvailable,
-    client: post.source === "substack" ? "Ben Rennie · Substack" : "97% · Field notes",
+    client:
+      post.source === "substack"
+        ? "Ben Rennie · Substack"
+        : post.source === "97percent"
+          ? "97% · Field notes"
+          : "Rennie Lab · Journal",
     date,
     kind: post.type,
     cat: post.category ?? "design",
     tone: post.tone ?? "ink",
-    sourceUrl: post.sourceUrl,
+    sourceUrl: isNative ? undefined : post.sourceUrl,
     image: post.image,
+    fullBody: isNative,
   };
 }
 
@@ -174,11 +183,16 @@ export function JournalPostDrawer() {
                 </p>
               )}
               <div className="jp-body">
-                {(() => {
-                  const joined = data.body.join(" ").trim();
-                  const preview = joined.length > 200 ? joined.slice(0, 200).trimEnd() + "…" : joined;
-                  return <p>{preview}</p>;
-                })()}
+                {data.fullBody ? (
+                  data.body.map((p, i) => <p key={i}>{p}</p>)
+                ) : (
+                  (() => {
+                    const joined = data.body.join(" ").trim();
+                    const preview =
+                      joined.length > 200 ? joined.slice(0, 200).trimEnd() + "…" : joined;
+                    return <p>{preview}</p>;
+                  })()
+                )}
               </div>
               <div className="jp-foot">
                 <button type="button" className="btn" onClick={() => setOpen(false)}>

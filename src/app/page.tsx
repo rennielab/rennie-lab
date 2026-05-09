@@ -3,7 +3,7 @@ import { ContactButton } from "@/components/chrome/ContactButton";
 import { LogoStrip } from "@/components/home/LogoStrip";
 import { WhatWeDo } from "@/components/home/WhatWeDo";
 import { FeedCard } from "@/components/home/FeedCard";
-import { FEED } from "@/data/feed";
+import { FEED_ITEMS } from "@/data/journalFeed";
 
 export const metadata = {
   title: "Rennie Lab — A Creative Advisory Studio",
@@ -12,7 +12,7 @@ export const metadata = {
 };
 
 export default function HomePage() {
-  const recent = FEED.slice(0, 4);
+  const recent = FEED_ITEMS.slice(0, 3);
 
   return (
     <div className="container">

@@ -14,6 +14,235 @@ const REMOVED_TITLES = new Set<string>([
 
 const RAW_POSTS: JournalPost[] = [
   {
+    slug: "rl-designing-for-permanence",
+    title: "Designing for permanence in a transient economy",
+    publishedAt: "2026-05-09T10:00:00.000Z",
+    source: "rennie-lab",
+    sourceUrl: "/journal/rl-designing-for-permanence",
+    tags: ["Rennie Lab", "Journal"],
+    excerpt: "On building brands and products that earn the right to last, and what that asks of a studio practice.",
+    body: `The economy we are working in has the attention span of a startup pitch deck. Products are launched in a quarter, refreshed in a year, and forgotten by the time the next one ships. Brands chase a fortnightly trend cycle. Websites are built to be replaced, not maintained. The whole apparatus has been optimised for speed, novelty, and the next round.
+
+We are not interested in that economy.
+
+What we are trying to design for is permanence. Not the false permanence of monuments and mission statements that get walked back the moment the market shifts. The permanence of work that earns the right to last because it was built on the right thing in the first place.
+
+The Indigenous peoples of this continent have practised seven-generation thinking for sixty thousand years. The idea is simple. The decisions you make today should still hold up for the people seven generations from now. Most of what we touch in studio life could not survive a single board reshuffle, let alone two centuries. We are trying to learn.
+
+A few things this asks of a studio practice.
+
+First, it asks us to slow down. We take fewer projects. We work in partner-led teams that stay with the work end to end. The studio is sized so nothing gets handed off to someone who was not in the room when the question was first asked. Slow is not a luxury. It is the only way to make something that does not need replacing in eighteen months.
+
+Second, it asks us to design for the second decade of a brand, not the launch week. Most identity systems are built to look great on a press release and start to crack the moment they touch a real product, an internal team, a partner ecosystem. We design systems that get easier to use as the brand grows, not harder. We hand over things that in-house teams can take further without coming back to us for permission.
+
+Third, it asks us to count what most studios do not. Carbon, hosting, materials, travel, attention. The leaf in the corner of this site is the visible part of a much longer ledger. We measure pages in grams. We design with the planet in the room from the first sketch. A brand that is built to last in any honest sense has to be built on a planet that can sustain the lasting.
+
+Fourth, it asks us to stay. We come back at eighteen months. We do a second pass on the work, the metrics, the team, and the climate the work is now living in. Most agencies disappear at handover. The work does not end at handover. The work begins there.
+
+Permanence in a transient economy is not nostalgia. It is a way of treating attention, money, materials and time as if they actually matter.
+
+Because they do, and because the next seven generations are paying for the ones who pretend otherwise.
+
+That is the practice we are trying to build.`,
+    bodyAvailable: "full",
+    type: "newsletter",
+    category: "impact",
+    tone: "moss",
+    image: "/journal/in-pieces-extra.png",
+  },
+  {
+    slug: "rl-expertise-studio-and-ai",
+    title: "The expertise studio and the AI question",
+    publishedAt: "2026-05-08T10:00:00.000Z",
+    source: "rennie-lab",
+    sourceUrl: "/journal/rl-expertise-studio-and-ai",
+    tags: ["Rennie Lab", "Journal"],
+    excerpt: "What changes, what does not, and where senior judgment still earns its keep.",
+    body: `In Managing the Professional Service Firm, David Maister sorts professional firms into three types based on what their clients are actually buying.
+
+Efficiency firms compete on price and process. They have productised a known solution, so the work is more or less the same every time, and the win comes from doing it faster than the competition.
+
+Experience firms charge more because they have seen the problem before. Clients pay for the muscle memory that comes from having solved this exact thing fifty times.
+
+Expertise firms are different. Clients come to them because the problem is hard, the answer is not obvious, and they need someone who can think through it from first principles in real time, alongside them.
+
+Rennie Lab has always sat in the third category. Sixteen years of work with founders, leadership teams, governments and movements, and the throughline has been the same. Clients hire us when the brief is unclear, the stakes are high, and a faster, cheaper answer is the wrong answer. That is what we sell. It is not something you can outsource to a chatbot.
+
+For our designers and strategists, that has meant fluency across more than one specialism. Brand thinking that translates into product thinking. Research that informs strategy without being filed away. Code shipped with carbon and accessibility considered from the first sketch.
+
+AI enters the picture
+
+The last two years have been loud. LinkedIn has become a graveyard of premature obituaries for entire disciplines, and a strange number of senior creatives are now spending their days promoting the very tools designed to replace them.
+
+The noise is overstated. The shift is not.
+
+Studios built around repeating the same process are at real risk. So are designers who have leaned on templates, mood boards, and a tasteful imitation of the work already winning awards. The efficiency lane has been quietly priced down to nothing, and the experience lane is heading the same way.
+
+The expertise lane looks different. The knowledge required to range across disciplines was always there. The constraint was always time. AI tooling changes the maths on what one senior person can credibly take on inside a single engagement. Research synthesis that used to take a fortnight now takes an afternoon. A copy pass that used to require a writer for a week now requires a writer for a day. Code that used to need three developers now needs two and a careful set of eyes.
+
+What does not change
+
+Design judgment. Strategic instinct. The ability to read what a client is actually asking for, behind what they have written into the brief. The thing that makes the Orbital Process work is not the deliverables. It is the forty hours of conversation before the studio writes a word. None of that is automating itself.
+
+What changes is what we can take on inside one engagement. What changes is the speed at which we can move from research to a position. What changes is how much of the work can be carbon-light by default, because the tooling can now do the boring parts of the optimisation work without a junior developer staying late.
+
+We are rolling AI-augmented capability into engagements over the next two quarters. Carefully. Because we have seen what happens when AI is pointed at a brief without an expert behind the wheel. The output is generic, confidently wrong, and indistinguishable from a hundred other studios doing the same thing. With context, judgment, and a senior partner driving, the same tooling produces work that is sharper and faster than anything we could have shipped two years ago.
+
+More on the specifics soon.`,
+    bodyAvailable: "full",
+    type: "newsletter",
+    category: "design",
+    tone: "ink",
+    image: "/journal/clae-design-studio.webp",
+  },
+  {
+    slug: "rl-how-to-know-better",
+    title: "How to know better",
+    publishedAt: "2026-05-07T10:00:00.000Z",
+    source: "rennie-lab",
+    sourceUrl: "/journal/rl-how-to-know-better",
+    tags: ["Rennie Lab", "Journal"],
+    excerpt: "The five phases of the Orbital Design Process, and why we trust loops over lines.",
+    body: `Every client conversation starts the same way. They tell us what they need. Sometimes that is a new website. Sometimes it is a rebrand. Sometimes it is a programme of work for a coalition of councils trying to cool an inner-city heat island. The need is real and the timeline is rarely generous.
+
+The honest reply is always the same. We do not know yet.
+
+We do not know yet what the work needs to be. We do not know yet what the question really is. We do not know yet whether what they have asked for is what they actually need. The most useful thing we can do is to sit in that not-knowing with the client for as long as it takes to get to a better answer.
+
+Most studios skip this part. The brief lands, the deliverables get scoped, and the work begins. The output is on time and on budget and looks right at launch. Eighteen months later, the in-house team is rebuilding most of it because the brief was answering the wrong question.
+
+We do not know yet. That is the honest place to start. Knowing better is the place we are trying to get to.
+
+The Orbital Process is how we avoid that. Five phases, in a loop, not a line.
+
+Gravity
+
+Every engagement begins with the pull. The question, the tension, or the truth the brief is really circling. Forty hours of conversation, on average, before we write a word. We are not stalling. We are looking for the thing the brief is too polite to say out loud.
+
+Orbit
+
+Three loops, each tighter than the last. Research. Strategy. Expression. The work passes through every discipline before it lands, so the answer carries the weight of the whole team. The first loop tends to be wide and a bit loose. By the third, the work knows what it wants to be.
+
+Atmosphere
+
+The conditions the work has to live in. Codes, materials, behaviours, partners and the public-facing weather. We design the system before the surface. A beautiful brand inside a hostile rollout environment will lose every time. Most launches that fail, fail here.
+
+Re-entry
+
+Launch is the moment the brand meets the world. We stay in the room for the first burn. Rollout, training, governance, the first time the in-house team has to defend the work to a sceptical board. The deliverable is not the file. The deliverable is the first six weeks of a working system.
+
+Return
+
+Eighteen months in, we come back. A second pass on the work, the metrics and the team. The world has shifted. The audience has shifted. The work has to shift, or it stops being useful. The orbit completes, and the next one begins from a wiser place.
+
+Why a loop
+
+Brands and products are not built once. They are tended. Anyone who has ever planted a tree knows this. The first decade is the hardest. The second is when it starts to do the work it was planted for.
+
+We do not know yet. That is the honest place to start. Knowing better is the place we are trying to get to, with the client, every time.`,
+    bodyAvailable: "full",
+    type: "field-guide",
+    category: "design",
+    tone: "ocean",
+    image: "/journal/orbital-design.png",
+  },
+  {
+    slug: "rl-cost-of-a-website",
+    title: "What actually determines the cost of a website",
+    publishedAt: "2026-05-06T10:00:00.000Z",
+    source: "rennie-lab",
+    sourceUrl: "/journal/rl-cost-of-a-website",
+    tags: ["Rennie Lab", "Journal"],
+    excerpt: "Five factors that explain why one quote is eight thousand, and another is a quarter of a million.",
+    body: `You are choosing a studio for your next site. The quotes you have back are wildly different. One outfit will do it for $8K. Another quoted $250K. A friend of a friend offered to do it on the weekend for a slab of beer. They are all building, in some technical sense, the same thing. So why is the spread so absurd?
+
+The spread is not the spread. The spread tells you you are pricing five different products that all happen to be called a website.
+
+There are five things that determine what a serious site actually costs. Knowing which of them you care about is most of the job.
+
+1.  Ambition
+
+A landing page with three sections is a different product from a publishing platform with a content engine, integrations, and a design system that has to outlive its first creative director. The ambition decides almost everything else. Before you ask for a quote, decide how much of the company's story this thing has to carry. If it is the front door of the business and you want it to win awards, you are at one end of the spectrum. If it is a holding page until the real one is ready, you are at the other.
+
+2.  Return
+
+A website is a business decision. The honest question is what return it has to produce, and over what period. A site that has to convert a fifty-thousand-dollar enterprise sale will look and read very differently from a site selling thirty-five-dollar t-shirts. The bigger the return, the more sense it makes to invest in the elements that drive it. Strategy. Custom design. Performance. Real writing instead of generic copy.
+
+3.  The team
+
+Everyone in the industry has access to roughly the same tools. The difference is who is at the keyboard. A senior partner who has spent fifteen years building publishing systems will think about your site differently from a freelancer fresh out of a bootcamp. Both can be the right call, depending on the ambition. Just know which you are buying. Most studios that sell themselves as senior actually deliver junior work, because the senior person is on six other projects. Ask who is doing the work, every day, and how often they are in the room.
+
+4.  The service around it
+
+A site is not just the file that ships. It is the discovery, the strategy, the user research, the project management, the editorial pass, the rollout support, the training, the documentation, and the relationship that exists when something breaks at 11pm three months after launch. Cheap quotes usually omit most of this. The work of building the website is maybe sixty percent of the total cost of having a website. The rest is the practice around it.
+
+5.  The carbon and longevity cost
+
+Most studios do not put this on the invoice, so most clients do not pay for it. We do, because we think you should know. A bloated site with eight tracking scripts, ten-megabyte hero videos and a CMS the in-house team cannot maintain has a real cost. Carbon, money, attention, and the cost of replacing it in two years when it stops working. We design for ten years, not two. That costs a little more upfront and saves a great deal later. Ask any studio you are talking to what their average page weight is, what their carbon footprint per visit is, and what their site looks like two years after launch. Most cannot answer. The answer matters.
+
+The spread, explained
+
+If you are clear on those five, the spread in the quotes will start to make sense. The quotes are not unreasonable. The studios are quoting different products. Your job is to know which product you actually want.`,
+    bodyAvailable: "full",
+    type: "field-guide",
+    category: "design",
+    tone: "rust",
+    image: "/journal/atmospheric-1.jpeg",
+  },
+  {
+    slug: "rl-thinking-about-hiring-us",
+    title: "Thinking about hiring us",
+    publishedAt: "2026-05-05T10:00:00.000Z",
+    source: "rennie-lab",
+    sourceUrl: "/journal/rl-thinking-about-hiring-us",
+    tags: ["Rennie Lab", "Journal"],
+    excerpt: "How we approach proposals, pitches, and the first conversation.",
+    body: `If you are thinking about hiring Rennie Lab, this is what to expect when you reach out.
+
+We will reply within two business days.
+
+Usually faster. There is no sales team between you and the partners. The first email lands with one of us.
+
+The first conversation is thirty minutes. No charge, no strings.
+
+On or off the record. We listen. You tell us what you are trying to move. We will tell you whether we are the right studio for it, and if we are not, we will tell you who we think is.
+
+Our proposal is short.
+
+Most studios send fifty-page documents stuffed with stock photography and a strategic framework presented as if it were carved in stone. Ours is twelve to fifteen pages. It says who from the studio will be on the work, what the engagement looks like, what we charge, and what we expect from you. It does not pretend to have solved your problem. We have not done the work yet.
+
+We do not pitch.
+
+Specifically, we do not respond to RFPs that ask us to develop strategy, design directions or creative work as part of the selection process. We have done it. It does not produce better outcomes for the client and it produces a lot of unpaid work for the studio. The selection process should tell you whether the people in the room are the right people for the work. The work begins after the contract is signed.
+
+We have three reasons.
+
+The first is economic.
+
+Strategy and creative thinking are what we sell. If we give them away during the selection process, we are devaluing the thing the next paying client is buying. That is unfair to the next client. It is also unfair to the studios competing for the same brief who do charge for their thinking, because it sets the market rate at zero.
+
+The second is practical.
+
+A pitch deck made in two weeks without access to your data, your team, your customers, your suppliers or your internal politics is a guess. A confident, attractive guess. We have made a lot of them, and they do not survive contact with reality. The recommendation we would make six weeks into a real engagement bears almost no resemblance to the recommendation we would make in a pitch. The pitch deck would set false expectations and we would spend the first month of the engagement walking them back. Better to start clean.
+
+The third is the work.
+
+We are committed to forty percent of our capacity for climate, community and movement work, mostly pro-bono and at-cost. Time spent making pitch decks for commercial briefs we have not won is time not spent on a coastal carbon programme, a coalition of councils trying to cool a heat island, or a community organisation building its first national identity. The opportunity cost is real and we are not willing to pay it.
+
+What we will do, gladly
+
+Meet with you for as long as it takes for both of us to know if this is a fit. We will introduce you to the partners and the team who would be on your work. We will walk you through engagements that look like yours. We will share our process, our prices, and the names of clients we have worked with who will tell you the truth about what we are like to work with. We will ask you sharper questions than you are used to.
+
+If after that we both think this is the right partnership, we will send a contract. If not, we will part company on good terms and probably introduce you to a studio we think is a better fit.
+
+This is not a performance. It is a partnership. We would rather start it that way.`,
+    bodyAvailable: "full",
+    type: "newsletter",
+    category: "design",
+    tone: "sand",
+    image: "/journal/ben-rennie-portrait.webp",
+  },
+  {
     slug: "sub-higher-ground",
     title: "Higher Ground",
     publishedAt: "2026-05-07",
