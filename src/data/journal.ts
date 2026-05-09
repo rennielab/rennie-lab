@@ -1,6 +1,18 @@
 import type { JournalPost } from "./types";
 
-export const JOURNAL_POSTS: JournalPost[] = [
+const REMOVED_TITLES = new Set<string>([
+  "Serialisation Chapter 4: The Digital Drift",
+  "Serialisation Chapter 3: The Places That Shaped Us",
+  "Serialisation Chapter 2: Bored to Death!",
+  "Serialisation Chapter 1: The Body Knew First",
+  "Be Kind, Rewind Serialisation: The Introduction",
+  "Make Culture Creative Again",
+  "The Invisible Ingredient",
+  "Time After Time After Time, After!",
+  "7 Websites Dedicated to Saving the World",
+]);
+
+const RAW_POSTS: JournalPost[] = [
   {
     slug: "sub-higher-ground",
     title: "Higher Ground",
@@ -2414,3 +2426,7 @@ In 1993, I was sporting a hairstyle reminiscent of Jason Donovan from Neighbours
     tone: "ink",
   },
 ];
+
+export const JOURNAL_POSTS: JournalPost[] = RAW_POSTS.filter(
+  (p) => !REMOVED_TITLES.has(p.title),
+);

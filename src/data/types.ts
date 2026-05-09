@@ -62,6 +62,8 @@ export type JournalPost = {
   series?: string;
   seriesOrder?: number;
   tone?: "red" | "cream" | "moss" | "ocean" | "rust" | "sand" | "ink" | "dark";
+  /** Hero image URL — falls back to a tone-coloured placeholder when absent. */
+  image?: string;
 };
 
 export type ServicePillar = "impact-products" | "strategic-futures" | "creative-transformation";

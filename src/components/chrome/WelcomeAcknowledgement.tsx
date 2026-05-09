@@ -14,6 +14,7 @@ function todayKey(): string {
 export function WelcomeAcknowledgement() {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [videoOk, setVideoOk] = useState(true);
 
   useEffect(() => {
     setMounted(true);
@@ -51,7 +52,13 @@ export function WelcomeAcknowledgement() {
   if (!mounted) return null;
 
   return (
-    <div className="aoc-overlay" data-open={open} aria-hidden={!open}>
+    <>
+      <div
+        className="aoc-backdrop"
+        data-open={open}
+        aria-hidden="true"
+      />
+      <div className="aoc-overlay" data-open={open} aria-hidden={!open}>
       <div
         className="aoc-panel"
         role="dialog"
@@ -60,15 +67,20 @@ export function WelcomeAcknowledgement() {
       >
         <div className="aoc-grid">
           <div className="aoc-video">
-            {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-            <video
-              src="/welcome-to-country.mp4"
-              poster="/welcome-to-country-poster.jpg"
-              autoPlay
-              muted
-              playsInline
-              loop
-            />
+            {videoOk ? (
+              /* eslint-disable-next-line jsx-a11y/media-has-caption */
+              <video
+                src="/welcome-to-country.mp4"
+                poster="/welcome-to-country-poster.jpg"
+                autoPlay
+                muted
+                playsInline
+                loop
+                onError={() => setVideoOk(false)}
+              />
+            ) : (
+              <div className="aoc-video-fallback" aria-hidden="true" />
+            )}
           </div>
           <div className="aoc-text">
             <div className="mono" id="aoc-title">
@@ -84,5 +96,6 @@ export function WelcomeAcknowledgement() {
         </div>
       </div>
     </div>
+    </>
   );
 }

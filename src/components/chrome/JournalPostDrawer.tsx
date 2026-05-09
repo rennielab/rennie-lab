@@ -16,6 +16,7 @@ type DrawerData = {
   cat: string;
   tone: string;
   sourceUrl?: string;
+  image?: string;
 };
 
 function fromJournalPost(post: JournalPost): DrawerData {
@@ -41,6 +42,7 @@ function fromJournalPost(post: JournalPost): DrawerData {
     cat: post.category ?? "design",
     tone: post.tone ?? "ink",
     sourceUrl: post.sourceUrl,
+    image: post.image,
   };
 }
 
@@ -138,7 +140,19 @@ export function JournalPostDrawer() {
             <div className="jp-scroll">
               <h1 className="jp-title">{data.title}</h1>
               <p className="jp-lede">{data.excerpt}</p>
-              <div className="jp-hero ph" data-tone={data.tone}>
+              <div
+                className="jp-hero ph"
+                data-tone={data.tone}
+                style={
+                  data.image
+                    ? {
+                        backgroundImage: `linear-gradient(to top, rgba(0,0,0,0.45), rgba(0,0,0,0) 55%), url(${data.image})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                      }
+                    : undefined
+                }
+              >
                 <span className="ph-tag">
                   {data.kind} · {data.cat}
                 </span>
@@ -160,9 +174,11 @@ export function JournalPostDrawer() {
                 </p>
               )}
               <div className="jp-body">
-                {data.body.map((p, i) => (
-                  <p key={i}>{p}</p>
-                ))}
+                {(() => {
+                  const joined = data.body.join(" ").trim();
+                  const preview = joined.length > 200 ? joined.slice(0, 200).trimEnd() + "…" : joined;
+                  return <p>{preview}</p>;
+                })()}
               </div>
               <div className="jp-foot">
                 <button type="button" className="btn" onClick={() => setOpen(false)}>

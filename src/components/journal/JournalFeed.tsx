@@ -38,7 +38,16 @@ function JournalCard({ post, large = false }: { post: JournalPost; large?: boole
       <div
         className="ph"
         data-tone={post.tone || "ink"}
-        style={{ aspectRatio: large ? "16/10" : "4/3" }}
+        style={{
+          aspectRatio: large ? "16/10" : "4/3",
+          ...(post.image
+            ? {
+                backgroundImage: `linear-gradient(to top, rgba(0,0,0,0.45), rgba(0,0,0,0) 55%), url(${post.image})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }
+            : {}),
+        }}
       >
         <span className="ph-tag">
           {post.type} · {post.category ?? "design"}
