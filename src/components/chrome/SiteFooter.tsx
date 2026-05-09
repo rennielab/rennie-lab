@@ -52,8 +52,7 @@ export function SiteFooter() {
           <div className="foot-col-title">Acknowledgement of Country</div>
           <p>
             Rennie Lab works on the lands of the Gadigal people of the Eora
-            Nation in Sydney, the Tongva people in Los Angeles, and the
-            Núuchiu, Goshute and Shoshone peoples in Salt Lake City. We
+            Nation in Sydney and the Tongva people in Los Angeles. We
             acknowledge the Traditional Owners and Custodians of these lands
             and waters, and pay our respects to Elders past, present and
             emerging. Indigenous peoples have practised seven-generation
@@ -96,13 +95,6 @@ export function SiteFooter() {
               <br />
               <span className="mono" style={{ color: "rgba(244,241,222,0.5)" }}>
                 Tongva · 34°N
-              </span>
-            </li>
-            <li style={{ marginTop: 18 }}>
-              Salt Lake City
-              <br />
-              <span className="mono" style={{ color: "rgba(244,241,222,0.5)" }}>
-                Núuchiu · 40°N
               </span>
             </li>
           </ul>

@@ -624,12 +624,12 @@ main {
   background: var(--ink);
   color: var(--bg);
 }
-.btn-primary:hover { background: var(--accent); }
+.btn-primary:hover { background: var(--accent) !important; color: var(--cream) !important; border-color: var(--accent) !important; }
 .btn-ghost {
   border-color: var(--line-2);
   color: var(--ink);
 }
-.btn-ghost:hover { border-color: var(--ink); }
+.btn-ghost:hover { border-color: var(--accent) !important; color: var(--accent) !important; }
 .btn .arrow { transition: transform 250ms var(--easing); }
 .btn:hover .arrow { transform: translateX(4px); }
 

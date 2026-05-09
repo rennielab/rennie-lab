@@ -25,7 +25,7 @@ const TIMELINE = [
   { y: 2022, t: "Begins the B Corp journey for the second time. Starts working with clients and agencies in New York." },
   { y: 2023, t: "Certified B Corp. One of the first creative agencies in Australia to make it through." },
   { y: 2024, t: "Opens a third studio in Salt Lake City." },
-  { y: 2025, t: "Ends partnership with Reny. Rennie Lab moves to a focused creative and advisory model." },
+  { y: 2025, t: "Ends partnership with Reny and closes the Salt Lake City studio. Rennie Lab moves to a focused creative and advisory model." },
 ];
 
 const PRESS: [string, string, number][] = [
@@ -38,7 +38,7 @@ const PRESS: [string, string, number][] = [
 ];
 
 const NUMBERS: [string, string][] = [
-  ["3", "studios on two continents"],
+  ["2", "studios on two continents"],
   ["16", "years of work"],
   ["26", "partner brands"],
   ["1,820", "pro-bono hours · 2025"],
@@ -58,7 +58,6 @@ const PRINCIPLES: [string, string][] = [
 const STUDIOS = [
   { city: "Sydney", country: "Australia", addr: "Surry Hills · Eora · 33°S", body: "The original studio. Two blocks from the harbour, runs on flat whites and the occasional ocean swim. Home base for strategy and the climate practice.", tone: "red",   hours: "Mon–Fri · 9am–6pm AEST" },
   { city: "Los Angeles", country: "USA", addr: "Santa Monica · Tongva · 34°N", body: "Opened in 2021. A WeWork in Santa Monica, then bigger. Home base for design, production and our US partners.", tone: "cream", hours: "Mon–Fri · 9am–6pm PST" },
-  { city: "Salt Lake City", country: "USA", addr: "Wasatch Front · Shoshone · 40°N", body: "Opened in 2024. The newest of the three, between the mountains and the lake.", tone: "moss", hours: "Mon–Fri · 9am–6pm MST" },
 ];
 
 export function StoryContent() {
@@ -89,11 +88,11 @@ export function StoryContent() {
             style={{ margin: 0, maxWidth: "60ch" }}
           >
             A small, deliberately decentralised practice of strategists, designers and
-            writers across Sydney, Los Angeles and Salt Lake City. Forty percent of our
-            work is impact: climate, community and movement, mostly pro-bono or at-cost.
-            The other sixty is the commercial work that funds it. Since we shifted to
-            the impact model in 2019, over a million dollars invested in Australian
-            impact work, and counting.
+            writers across Sydney and Los Angeles. Forty percent of our work is impact:
+            climate, community and movement, mostly pro-bono or at-cost. The other
+            sixty is the commercial work that funds it. Since we shifted to the impact
+            model in 2019, over a million dollars invested in Australian impact work,
+            and counting.
           </p>
           <div
             className="rise delay-3"
@@ -270,10 +269,10 @@ export function StoryContent() {
         </div>
       </section>
 
-      {/* THREE STUDIOS */}
+      {/* TWO STUDIOS */}
       <section style={{ padding: "96px 0", borderTop: "1px solid var(--line)" }}>
-        <div className="mono" style={{ marginBottom: 32 }}>Three studios · one weather front</div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
+        <div className="mono" style={{ marginBottom: 32 }}>Two studios · one weather front</div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32 }}>
           {STUDIOS.map((s, i) => (
             <article key={i} className="card" style={{ display: "flex", flexDirection: "column" }}>
               <div className="ph" data-tone={s.tone} style={{ aspectRatio: "4/3" }}>
@@ -314,14 +313,14 @@ export function StoryContent() {
             <div className="mono" style={{ marginBottom: 24 }}>
               The lab · {TEAM.length} + collaborators
             </div>
-            <h2 className="h-1" style={{ margin: 0, maxWidth: "14ch" }}>
-              One team, three cities.
+            <h2 className="h-1" style={{ margin: 0, maxWidth: "12ch" }}>
+              One team, two cities.
             </h2>
           </div>
           <p className="body-lg" style={{ margin: 0, maxWidth: "52ch" }}>
             We&apos;re small on purpose. Partner-led, generalist by training, specialist
             by instinct. Every project is run end to end by the people who scoped it.
-            Three time zones, one set of standards.
+            Two time zones, one set of standards.
           </p>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
@@ -379,7 +378,7 @@ export function StoryContent() {
               >
                 We’re hiring
               </div>
-              <div className="mono" style={{ marginTop: 6 }}>2 open roles · SYD + LA + SLC</div>
+              <div className="mono" style={{ marginTop: 6 }}>2 open roles · SYD + LA</div>
             </div>
           </article>
         </div>
@@ -430,32 +429,6 @@ export function StoryContent() {
         </div>
       </section>
 
-      {/* CLOSING CTA */}
-      <section
-        style={{ padding: "120px 0 96px", borderTop: "1px solid var(--line)" }}
-      >
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1.4fr 1fr",
-            gap: 80,
-            alignItems: "end",
-          }}
-        >
-          <h2 className="h-display" style={{ margin: 0, maxWidth: "12ch" }}>
-            Working on something quietly important?
-          </h2>
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <p className="body-lg" style={{ margin: 0, maxWidth: "36ch" }}>
-              We open one or two new partnerships a quarter. Tell us what you’re building —
-              we read every brief.
-            </p>
-            <ContactButton style={{ alignSelf: "flex-start" }}>
-              Open the brief <span className="arrow">→</span>
-            </ContactButton>
-          </div>
-        </div>
-      </section>
     </div>
   );
 }

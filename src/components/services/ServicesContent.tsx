@@ -160,7 +160,7 @@ export function ServicesContent() {
             </div>
             <div>
               <div className="mono">Geography</div>
-              <div className="svc-meta-v">Sydney · Los Angeles · Salt Lake City</div>
+              <div className="svc-meta-v">Sydney · Los Angeles</div>
             </div>
             <div
               style={{
