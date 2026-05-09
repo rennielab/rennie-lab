@@ -22,7 +22,7 @@ const SERVICES: Service[] = [
     n: "01",
     kicker: "Brand",
     title: "Brand Identity & Strategy",
-    lead: "We build brands that earn attention and keep it — through clarity of purpose, distinctiveness of expression, and a strategic core that holds up under pressure.",
+    lead: "We build brands that earn attention and keep it. Clarity of purpose, distinctiveness of expression, and a strategic core that holds up when the market shifts. We work with founders, leadership teams and movements who want a brand that feels like it was always there, waiting.",
     includes: [
       "Brand positioning & narrative",
       "Visual identity systems",
@@ -40,7 +40,7 @@ const SERVICES: Service[] = [
     n: "02",
     kicker: "Advisory",
     title: "Strategic Advisory",
-    lead: "A long-form partnership for founders, boards and CMOs navigating the in-between work — repositioning, restructuring, or readying a brand for the next decade.",
+    lead: "A long-form partnership for founders, boards and CMOs navigating the in-between work. Repositioning, restructuring, or readying a brand for the next decade. We sit beside leadership, monthly, sometimes for years, helping the work find what it's trying to say before the world has a chance to mishear it.",
     includes: [
       "Founder & CEO advisory",
       "Brand health audits",
@@ -56,18 +56,18 @@ const SERVICES: Service[] = [
   },
   {
     n: "03",
-    kicker: "UX",
-    title: "User Experience Design",
-    lead: "Editorial-grade product, service and digital experience design — the kind of work people choose to come back to. We design quiet interfaces that get out of the way.",
+    kicker: "Product",
+    title: "Product Design",
+    lead: "Product, service and digital experience design for the kind of work people quietly choose to come back to. Quiet interfaces that get out of the way, designed for performance, accessibility, and one of the smallest carbon footprints on the web. We don't hand over wireframes and wave.",
     includes: [
       "Product & service design",
       "Information architecture",
       "Interaction & prototyping",
       "Editorial digital experiences",
       "Design systems & component libraries",
-      "Accessibility & low-carbon UX",
+      "Carbon-aware web & low-impact UX",
     ],
-    crafts: ["Research", "IA", "UX", "UI", "Systems", "Prototype"],
+    crafts: ["Research", "IA", "UI", "Systems", "Prototype", "Carbon"],
     caseTitle: "A public ledger for measuring carbon held in seagrass",
     caseClient: "CSIRO + State Lab",
     tone: "ocean",
@@ -76,7 +76,7 @@ const SERVICES: Service[] = [
     n: "04",
     kicker: "Climate",
     title: "Climate & Impact Design",
-    lead: "Programs and identities for the climate, community and movement work — built with charities, governments and the curious. The studio's pro-bono and at-cost lane.",
+    lead: "This is where craft gets pointed at the questions that matter beyond a launch. Programs and identities for charities, governments and the curious. Forty percent of our work, mostly pro-bono and at-cost. Always built with the planet in the room.",
     includes: [
       "Public-facing programs",
       "Movement & coalition identities",
@@ -94,7 +94,7 @@ const SERVICES: Service[] = [
     n: "05",
     kicker: "Research",
     title: "Research & Insight",
-    lead: "Quiet, deep-end research as a standalone engagement — interviews, fieldwork, archive and ethnography for studios, brands and policy teams who need a second mind in the room.",
+    lead: "Standalone research for studios, brands and policy teams who need a second mind in the room. Interviews, fieldwork, archive, ethnography. We treat research as craft, and we don't write reports nobody reads.",
     includes: [
       "Audience research",
       "Cultural insight reports",
@@ -111,11 +111,11 @@ const SERVICES: Service[] = [
 ];
 
 const PROCESS = [
-  { n: "01", t: "Gravity", d: "Every engagement starts with the pull — the question, the tension, or the truth that the brief is really circling. Forty hours of conversation, on average, before the studio writes a word." },
-  { n: "02", t: "Orbit", d: "Three loops, each tighter than the last — research, strategy, expression. The work passes through every discipline before it lands, so the answer carries the weight of the whole team." },
-  { n: "03", t: "Atmosphere", d: "The conditions the work has to live in. Codes, materials, behaviours, partners and the public-facing weather. We design the system before we design the surface." },
-  { n: "04", t: "Re-entry", d: "Launch is not the end of the engagement, it is the moment the brand meets the world. We stay in the room for the first burn — rollout, training, governance." },
-  { n: "05", t: "Return", d: "Eighteen months in, we come back. A second pass on the work, the metrics and the team — the orbit completes, and the next one begins from a wiser place." },
+  { n: "01", t: "Gravity", d: "Every engagement starts with the pull. The question, the tension, or the truth the brief is really circling. Forty hours of conversation, on average, before the studio writes a word." },
+  { n: "02", t: "Orbit", d: "Three loops, each tighter than the last. Research, strategy, expression. The work passes through every discipline before it lands, so the answer carries the weight of the whole team." },
+  { n: "03", t: "Atmosphere", d: "The conditions the work has to live in. Codes, materials, behaviours, partners and the public-facing weather. We design the system before the surface." },
+  { n: "04", t: "Re-entry", d: "Launch is the moment the brand meets the world. We stay in the room for the first burn. Rollout, training, governance." },
+  { n: "05", t: "Return", d: "Eighteen months in, we come back. A second pass on the work, the metrics and the team. The orbit completes, and the next one begins from a wiser place." },
 ];
 
 export function ServicesContent() {
@@ -141,9 +141,9 @@ export function ServicesContent() {
         </h1>
         <div className="svc-hero-grid rise delay-2">
           <p className="body-lg" style={{ margin: 0, maxWidth: "46ch" }}>
-            Rennie Lab works in five overlapping disciplines — brand, advisory, experience,
-            climate and research. Most engagements move across two or three at once. None of
-            them are sold by the hour.
+            Rennie Lab works in five overlapping disciplines: brand, advisory, product,
+            climate and research. Most engagements move across two or three at once.
+            None of them are sold by the hour.
           </p>
           <div className="svc-hero-meta">
             <div>
@@ -155,8 +155,12 @@ export function ServicesContent() {
               <div className="svc-meta-v">2 partners minimum</div>
             </div>
             <div>
+              <div className="mono">Commitment</div>
+              <div className="svc-meta-v">40% impact, 60% commercial</div>
+            </div>
+            <div>
               <div className="mono">Geography</div>
-              <div className="svc-meta-v">Sydney · Los Angeles</div>
+              <div className="svc-meta-v">Sydney · Los Angeles · Salt Lake City</div>
             </div>
             <div
               style={{
@@ -285,8 +289,8 @@ export function ServicesContent() {
               process.
             </h2>
             <p className="body" style={{ marginTop: 24, maxWidth: "36ch" }}>
-              Our work doesn&apos;t move in a straight line. It loops — around purpose,
-              audience and consequence — with each pass tighter than the last.
+              Our work doesn&apos;t move in a straight line. It loops around purpose,
+              audience and consequence, each pass tighter than the last.
             </p>
           </div>
           <div className="svc-process-steps">
@@ -323,9 +327,9 @@ export function ServicesContent() {
         </h2>
         <div className="svc-cta-row">
           <p className="body-lg" style={{ margin: 0, maxWidth: "42ch" }}>
-            Most engagements start with a 30-minute conversation, on or off the record.
-            Tell us what you are working on and we will tell you whether we are the right
-            studio for it.
+            Most engagements start with a thirty-minute conversation, on or off the
+            record. Tell us what you&apos;re working on. We&apos;ll tell you whether
+            we&apos;re the right studio for it.
           </p>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
             <ContactButton>

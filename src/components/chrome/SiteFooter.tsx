@@ -51,12 +51,15 @@ export function SiteFooter() {
         <div className="foot-ack">
           <div className="foot-col-title">Acknowledgement of Country</div>
           <p>
-            Reny acknowledge the Traditional Owners of Country throughout
-            Australia and pay our respects to Elders past, present and
-            emerging. We honour their enduring connection to land, waters,
-            skies and culture. As the first storytellers of these lands, we
-            give thanks for their care and share our respect and friendship
-            with all First Nations peoples.
+            Rennie Lab works on the lands of the Gadigal people of the Eora
+            Nation in Sydney, the Tongva people in Los Angeles, and the
+            Núuchiu, Goshute and Shoshone peoples in Salt Lake City. We
+            acknowledge the Traditional Owners and Custodians of these lands
+            and waters, and pay our respects to Elders past, present and
+            emerging. Indigenous peoples have practised seven-generation
+            thinking for tens of thousands of years. We are still learning.
+            We honour the enduring connection of First Peoples to country,
+            and the first storytellers of these places.
           </p>
         </div>
         <div className="foot-cols">
@@ -95,6 +98,13 @@ export function SiteFooter() {
                 Tongva · 34°N
               </span>
             </li>
+            <li style={{ marginTop: 18 }}>
+              Salt Lake City
+              <br />
+              <span className="mono" style={{ color: "rgba(244,241,222,0.5)" }}>
+                Núuchiu · 40°N
+              </span>
+            </li>
           </ul>
         </div>
         <div className="foot-col foot-col-mono">
@@ -111,7 +121,7 @@ export function SiteFooter() {
           <div className="foot-col-title">Impact</div>
           <ul>
             <li>1% for the Planet</li>
-            <li>B-Corp · Pending</li>
+            <li>B-Corp Certified</li>
             <li>Climate Active</li>
             <li>Green hosting</li>
             <li>Carbon report ↓</li>
@@ -153,7 +163,7 @@ export function SiteFooter() {
       </div>
 
       <div className="foot-bottom">
-        <span>© 2017—2026 · Rennie Lab Pty Ltd · Formerly Reny Studio</span>
+        <span>© 2009—2026 · Rennie Lab Pty Ltd</span>
         <span style={{ display: "flex", gap: 24 }}>
           <span>Privacy</span>
           <span>Terms</span>

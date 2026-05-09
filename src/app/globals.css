@@ -1235,7 +1235,7 @@ footer.site-foot {
   border-top: 1px solid var(--line);
   padding-top: 40px;
 }
-.svc-hero-meta { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 32px; }
+.svc-hero-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
 .svc-meta-v {
   font-family: var(--sans);
   font-weight: 500;
