@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const STORAGE_KEY = "rl-aoc-shown";
 
@@ -15,6 +15,7 @@ export function WelcomeAcknowledgement() {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [videoOk, setVideoOk] = useState(true);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -38,8 +39,20 @@ export function WelcomeAcknowledgement() {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") close();
     };
+    const onDocClick = (e: MouseEvent) => {
+      const target = e.target as Node | null;
+      if (target && panelRef.current && !panelRef.current.contains(target)) {
+        close();
+      }
+    };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    // delay 1 tick so the click that opened the panel doesn't immediately close it
+    const t = setTimeout(() => document.addEventListener("click", onDocClick), 0);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      clearTimeout(t);
+      document.removeEventListener("click", onDocClick);
+    };
   }, [open]);
 
   function close() {
@@ -60,6 +73,7 @@ export function WelcomeAcknowledgement() {
       />
       <div className="aoc-overlay" data-open={open} aria-hidden={!open}>
       <div
+        ref={panelRef}
         className="aoc-panel"
         role="dialog"
         aria-modal="false"

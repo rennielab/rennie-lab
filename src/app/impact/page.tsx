@@ -1,7 +1,6 @@
 import { ContactButton } from "@/components/chrome/ContactButton";
 import { IMPACT_CASE_STUDIES } from "@/data/impactProjects";
 import { ImpactGrid } from "@/components/impact/ImpactGrid";
-import { ImpactCaseStudyDrawer } from "@/components/impact/ImpactCaseStudyDrawer";
 import { AffiliationStrip } from "@/components/affiliations/AffiliationStrip";
 
 export const metadata = {
@@ -113,8 +112,6 @@ export default function ImpactPage() {
           </div>
         </div>
       </section>
-
-      <ImpactCaseStudyDrawer />
     </div>
   );
 }

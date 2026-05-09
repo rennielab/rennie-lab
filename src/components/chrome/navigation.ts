@@ -11,7 +11,7 @@ export const NAV_ITEMS: NavItem[] = [
   { id: "services", label: "Services", num: "02", href: "/services" },
   { id: "projects", label: "Projects", num: "03", href: "/projects" },
   { id: "impact", label: "Impact", num: "04", href: "/impact" },
-  { id: "journal", label: "Journal", num: "05", href: "/journal" },
+  { id: "journal", label: "Off Climate", num: "05", href: "/journal" },
 ];
 
 export function routeIdFromPath(pathname: string): string {

@@ -160,7 +160,7 @@ export default function HomePage() {
           }}
         >
           <h2 className="h-2" style={{ margin: 0 }}>
-            Latest from the Journal
+            Latest from Off Climate
           </h2>
           <Link className="btn btn-ghost" href="/journal">
             All entries →

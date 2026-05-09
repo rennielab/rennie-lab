@@ -11,6 +11,7 @@ import { DownloadSlide } from "./DownloadSlide";
 import { CaseStudyDrawer } from "./CaseStudyDrawer";
 import { JournalPostDrawer } from "./JournalPostDrawer";
 import { WelcomeAcknowledgement } from "./WelcomeAcknowledgement";
+import { ImpactCaseStudyDrawer } from "@/components/impact/ImpactCaseStudyDrawer";
 
 export function Chrome({ children }: { children: ReactNode }) {
   return (
@@ -24,6 +25,7 @@ export function Chrome({ children }: { children: ReactNode }) {
       <DownloadSlide />
       <CaseStudyDrawer />
       <JournalPostDrawer />
+      <ImpactCaseStudyDrawer />
       <WelcomeAcknowledgement />
     </ThemeProvider>
   );

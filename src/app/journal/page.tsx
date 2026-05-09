@@ -1,10 +1,10 @@
-import { JOURNAL_POSTS } from "@/data/journal";
+import { FEED_ITEMS } from "@/data/journalFeed";
 import { JournalFeed } from "@/components/journal/JournalFeed";
 
 export const metadata = {
-  title: "Journal — Rennie Lab",
+  title: "Off Climate — Rennie Lab Journal",
   description:
-    "Notes from the edge of the work — essays, field guides, podcasts and reading. From benrennie.substack.com and 97percent.co.",
+    "Off Climate is the Rennie Lab journal — essays, field guides, podcasts and the studio's case studies in one feed.",
 };
 
 export default function JournalPage() {
@@ -12,18 +12,19 @@ export default function JournalPage() {
     <div className="container">
       <section style={{ padding: "40px 0 32px" }}>
         <div className="mono rise" style={{ marginBottom: 32 }}>
-          Journal · since 2017 · {JOURNAL_POSTS.length}+ entries
+          Off Climate · the Rennie Lab journal · {FEED_ITEMS.length} entries
         </div>
         <h1 className="h-1 rise delay-1" style={{ margin: 0, maxWidth: "14ch" }}>
-          Notes from the <span style={{ color: "var(--accent)" }}>edge</span> of the work.
+          Off <span style={{ color: "var(--accent)" }}>Climate</span>.
         </h1>
         <p className="body-lg rise delay-2" style={{ marginTop: 24, maxWidth: "52ch" }}>
-          Essays, field guides, podcasts and the occasional reading list. Everything we
-          make and write — collected, tagged, and built to be read in any direction.
+          Essays, field guides, case studies and impact projects — everything the
+          studio makes and writes, collected in one feed. Filter by what matters,
+          read in any direction.
         </p>
       </section>
 
-      <JournalFeed posts={JOURNAL_POSTS} />
+      <JournalFeed items={FEED_ITEMS} />
     </div>
   );
 }

@@ -1172,7 +1172,6 @@ footer.site-foot {
 }
 .aoc-backdrop[data-open="true"] {
   opacity: 1;
-  pointer-events: auto;
 }
 .aoc-video-fallback {
   width: 100%;

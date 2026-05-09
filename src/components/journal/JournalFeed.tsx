@@ -1,9 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { JournalPost, JournalCategory, JournalKind } from "@/data/types";
+import type {
+  FeedItemCategory,
+  FeedItemKind,
+  UnifiedFeedItem,
+} from "@/data/journalFeed";
 
-const CATS: { id: JournalCategory | "all"; label: string }[] = [
+const CATS: { id: FeedItemCategory | "all"; label: string }[] = [
   { id: "all", label: "All" },
   { id: "climate", label: "Climate" },
   { id: "movement", label: "Movement" },
@@ -12,37 +16,66 @@ const CATS: { id: JournalCategory | "all"; label: string }[] = [
   { id: "impact", label: "Impact" },
 ];
 
-const KINDS: { id: JournalKind | "all"; label: string }[] = [
+const KINDS: { id: FeedItemKind | "all"; label: string }[] = [
   { id: "all", label: "All formats" },
   { id: "newsletter", label: "Essays" },
   { id: "field-guide", label: "Field Guides" },
   { id: "podcast", label: "Podcasts" },
   { id: "reading", label: "Reading" },
+  { id: "project", label: "Projects" },
+  { id: "impact", label: "Impact" },
 ];
 
-function JournalCard({ post, large = false }: { post: JournalPost; large?: boolean }) {
-  const date = new Date(post.publishedAt).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-  const readMin = Math.max(2, Math.round(post.body.length / 1200));
+function openItem(item: UnifiedFeedItem) {
+  if (item.origin === "journal" && item.journalPost) {
+    window.dispatchEvent(
+      new CustomEvent("open-journal", { detail: { post: item.journalPost } }),
+    );
+    return;
+  }
+  if (item.origin === "project" && item.project) {
+    window.dispatchEvent(
+      new CustomEvent("open-case", { detail: { project: item.project } }),
+    );
+    return;
+  }
+  if (item.origin === "impact" && item.caseStudy) {
+    window.dispatchEvent(
+      new CustomEvent("open-impact-case", {
+        detail: { caseStudy: item.caseStudy },
+      }),
+    );
+  }
+}
+
+function FeedCardItem({
+  item,
+  large = false,
+}: {
+  item: UnifiedFeedItem;
+  large?: boolean;
+}) {
+  const readMin = Math.max(2, Math.round(item.bodyLength / 1200));
+  const kindLabel =
+    item.kind === "project"
+      ? "case study"
+      : item.kind === "impact"
+        ? "impact"
+        : item.kind;
   return (
     <article
       className="card"
       style={{ display: "flex", flexDirection: "column", cursor: "pointer" }}
-      onClick={() =>
-        window.dispatchEvent(new CustomEvent("open-journal", { detail: { post } }))
-      }
+      onClick={() => openItem(item)}
     >
       <div
         className="ph"
-        data-tone={post.tone || "ink"}
+        data-tone={item.tone || "ink"}
         style={{
           aspectRatio: large ? "16/10" : "4/3",
-          ...(post.image
+          ...(item.image
             ? {
-                backgroundImage: `linear-gradient(to top, rgba(0,0,0,0.45), rgba(0,0,0,0) 55%), url(${post.image})`,
+                backgroundImage: `linear-gradient(to top, rgba(0,0,0,0.45), rgba(0,0,0,0) 55%), url(${item.image})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
               }
@@ -50,7 +83,7 @@ function JournalCard({ post, large = false }: { post: JournalPost; large?: boole
         }}
       >
         <span className="ph-tag">
-          {post.type} · {post.category ?? "design"}
+          {kindLabel} · {item.category}
         </span>
       </div>
       <div
@@ -62,12 +95,9 @@ function JournalCard({ post, large = false }: { post: JournalPost; large?: boole
           flex: 1,
         }}
       >
-        <div className="mono" style={{ display: "flex", justifyContent: "space-between" }}>
-          <span>{post.source === "substack" ? "Ben Rennie · Substack" : "97% · Field"}</span>
-          <span>{date}</span>
-        </div>
+        <div className="mono">{item.source}</div>
         <h3 className={large ? "h-2" : "h-3"} style={{ margin: 0 }}>
-          {post.title}
+          {item.title}
         </h3>
         <div
           style={{
@@ -79,7 +109,11 @@ function JournalCard({ post, large = false }: { post: JournalPost; large?: boole
         >
           <span className="mono">{readMin} min read</span>
           <span style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--accent)" }}>
-            READ →
+            {item.origin === "project"
+              ? "OPEN →"
+              : item.origin === "impact"
+                ? "OPEN →"
+                : "READ →"}
           </span>
         </div>
       </div>
@@ -87,30 +121,26 @@ function JournalCard({ post, large = false }: { post: JournalPost; large?: boole
   );
 }
 
-export function JournalFeed({ posts }: { posts: JournalPost[] }) {
-  const [cat, setCat] = useState<JournalCategory | "all">("all");
-  const [kind, setKind] = useState<JournalKind | "all">("all");
+export function JournalFeed({ items }: { items: UnifiedFeedItem[] }) {
+  const [cat, setCat] = useState<FeedItemCategory | "all">("all");
+  const [kind, setKind] = useState<FeedItemKind | "all">("all");
   const [count, setCount] = useState(9);
   const sentinel = useRef<HTMLDivElement>(null);
 
   const filtered = useMemo(
     () =>
-      posts.filter(
-        (it) => (cat === "all" || it.category === cat) && (kind === "all" || it.type === kind),
+      items.filter(
+        (it) =>
+          (cat === "all" || it.category === cat) &&
+          (kind === "all" || it.kind === kind),
       ),
-    [posts, cat, kind],
+    [items, cat, kind],
   );
 
-  // duplicate to simulate forever scroll, like the prototype
-  const items = useMemo(() => {
-    const base = filtered.length ? filtered : posts;
-    const out: { post: JournalPost; key: string }[] = [];
-    for (let i = 0; i < count; i++) {
-      const post = base[i % base.length]!;
-      out.push({ post, key: `${post.slug}-${i}` });
-    }
-    return out;
-  }, [filtered, posts, count]);
+  const visible = useMemo(() => {
+    const base = filtered.length ? filtered : items;
+    return base.slice(0, count);
+  }, [filtered, items, count]);
 
   useEffect(() => {
     if (!sentinel.current) return;
@@ -185,31 +215,33 @@ export function JournalFeed({ posts }: { posts: JournalPost[] }) {
           marginBottom: 64,
         }}
       >
-        {items.map(({ post, key }, i) => {
+        {visible.map((item, i) => {
           const n = i % 6;
           const span = n === 0 ? 4 : 2;
           const isLarge = n === 0;
           return (
-            <div key={key} style={{ gridColumn: `span ${span}` }}>
-              <JournalCard post={post} large={isLarge} />
+            <div key={`${item.id}-${i}`} style={{ gridColumn: `span ${span}` }}>
+              <FeedCardItem item={item} large={isLarge} />
             </div>
           );
         })}
       </div>
 
-      <div
-        ref={sentinel}
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "48px 0",
-          gap: 12,
-        }}
-      >
-        <span className="dot dot-pulse" style={{ background: "var(--ink-3)" }}></span>
-        <span className="mono">Loading more from the archive…</span>
-      </div>
+      {visible.length < (filtered.length || items.length) && (
+        <div
+          ref={sentinel}
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "48px 0",
+            gap: 12,
+          }}
+        >
+          <span className="dot dot-pulse" style={{ background: "var(--ink-3)" }}></span>
+          <span className="mono">Loading more from the archive…</span>
+        </div>
+      )}
     </>
   );
 }

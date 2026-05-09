@@ -79,7 +79,7 @@ export function SiteFooter() {
               <Link href="/impact">Impact</Link>
             </li>
             <li>
-              <Link href="/journal">Journal</Link>
+              <Link href="/journal">Off Climate</Link>
             </li>
             <li onClick={openContact}>Contact</li>
           </ul>
