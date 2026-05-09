@@ -121,7 +121,7 @@ export function StoryContent() {
         <div className="mono" style={{ marginBottom: 40 }}>Manifesto · 01</div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80 }}>
           <h2 className="h-1" style={{ margin: 0, maxWidth: "14ch" }}>
-            Most creative work was built for a faster, hungrier century.
+            The work that earns the right to last.
           </h2>
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
             <p className="body-lg" style={{ margin: 0 }}>
