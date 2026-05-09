@@ -1006,33 +1006,45 @@ footer.site-foot {
   color: var(--cream);
 }
 
-/* Journal-post variant: deep red wash, cream text — distinct from project drawers */
+/* Journal-post variant: brand red ground, cream text — distinct from project drawers */
 .contact-panel.is-journal-post,
 .contact-panel.is-journal-post[data-theme="dark"],
 .contact-panel.is-journal-post[data-theme="light"] {
-  background: #3d1112;
+  background: #e84d4d;
   color: var(--cream);
 }
 .contact-panel.is-journal-post .jp-head {
-  border-bottom-color: rgba(244, 241, 222, 0.08);
+  border-bottom-color: rgba(244, 241, 222, 0.18);
 }
+.contact-panel.is-journal-post .jp-title { color: var(--cream); }
 .contact-panel.is-journal-post .jp-body p,
 .contact-panel.is-journal-post .jp-lede {
-  color: rgba(244, 241, 222, 0.78);
+  color: var(--cream);
 }
-.contact-panel.is-journal-post .mono { color: rgba(244, 241, 222, 0.45); }
+.contact-panel.is-journal-post .mono { color: rgba(244, 241, 222, 0.7); }
+.contact-panel.is-journal-post .jp-chip-t { color: var(--cream); }
+.contact-panel.is-journal-post .jp-chip-d { color: rgba(244, 241, 222, 0.7); }
 .contact-panel.is-journal-post .jp-cta {
-  border-color: rgba(244, 241, 222, 0.18);
+  border-color: rgba(244, 241, 222, 0.4);
   color: var(--cream);
 }
 .contact-panel.is-journal-post .jp-cta:hover {
   background: var(--cream);
-  color: #1a0a0a;
+  color: #e84d4d;
 }
-.contact-panel.is-journal-post .jp-foot { border-top-color: rgba(244, 241, 222, 0.08); }
+.contact-panel.is-journal-post .jp-foot { border-top-color: rgba(244, 241, 222, 0.18); }
 .contact-panel.is-journal-post .jp-foot .btn {
-  border-color: rgba(244, 241, 222, 0.18);
+  border-color: rgba(244, 241, 222, 0.4);
   color: var(--cream);
+}
+.contact-panel.is-journal-post .jp-foot .btn-primary {
+  background: var(--cream);
+  color: #e84d4d;
+}
+.contact-panel.is-journal-post .jp-foot .btn-primary:hover {
+  background: var(--carbon) !important;
+  color: var(--cream) !important;
+  border-color: var(--carbon) !important;
 }
 
 /* Shared X close — both drawer types use this */
