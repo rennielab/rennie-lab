@@ -1490,12 +1490,33 @@ footer.site-foot {
 }
 .svc-lead {
   font-family: var(--sans);
-  font-size: clamp(20px, 2vw, 28px);
-  line-height: 1.3;
-  letter-spacing: -0.015em;
+  font-size: clamp(14px, 1.4vw, 19.6px);
+  line-height: 1.45;
+  letter-spacing: -0.01em;
   margin: 0 0 24px;
   color: var(--ink);
   font-weight: 400;
+}
+
+/* Orbital section: 30% smaller than the rest of the site for editorial density */
+.svc-process .body {
+  font-size: 11.2px;
+  line-height: 1.7;
+}
+.svc-process .body-lg {
+  font-size: clamp(12px, 1vw, 15.4px);
+  line-height: 1.5;
+}
+.svc-process h2.h-1 {
+  font-size: clamp(28px, 4.6vw, 67px);
+}
+.svc-process h2.h-2,
+.svc-process h3.h-2 {
+  font-size: clamp(17px, 2.24vw, 28px);
+  line-height: 1.2;
+}
+.svc-process h3.h-3 {
+  font-size: clamp(14px, 1.5vw, 22px);
 }
 .svc-crafts { display: flex; flex-wrap: wrap; gap: 6px; }
 .svc-includes { list-style: none; margin: 0; padding: 0; }
