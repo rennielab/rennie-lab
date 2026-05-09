@@ -29,6 +29,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Rennie Lab led a comprehensive brand, strategy, and digital engagement for HalfCut across halfcut.org. This included repositioning the brand narrative, rebuilding the digital platform, developing campaign assets, and providing ongoing strategic advisory to support scaling and partnership development. The work gave HalfCut the visual and strategic language to operate at a global level.",
     impact:
       "HalfCut now operates as a credible and compelling global reforestation movement with a brand and platform capable of attracting corporate ESG partners, philanthropic investment, and community participation at scale.",
+    hero: "/impact/halfcut.jpg",
     tone: "moss",
   },
   {
@@ -70,6 +71,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Rennie Lab developed the ad concept, designed the campaign assets, and managed digital deployment across web channels. The work balanced emotional resonance with clear calls to action, ensuring the campaign worked at every level of the funnel.",
     impact:
       "The campaign delivered meaningful reach and engagement for one of Australia's most important health organisations, connecting Australians with Cancer Council's resources and support services.",
+    hero: "/impact/cancer-council.jpg",
     tone: "red",
   },
   {
@@ -97,6 +99,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Rennie Lab designed and developed the hospital's brand identity and digital platforms, creating a visual and digital language that felt approachable for children and families while conveying the professionalism and trust that healthcare demands.",
     impact:
       "The hospital now operates with a brand and digital platform that better serves its community, from the families walking through the doors to the staff working within them.",
+    hero: "/impact/canberra-childrens-hospital.jpeg",
     tone: "cream",
   },
   {
@@ -110,6 +113,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Building on the Canberra engagement, Rennie Lab designed and developed the brand identity and digital platforms for Sydney Children's Hospital, maintaining consistency across both institutions while tailoring the work to Sydney's specific community and context.",
     impact:
       "Sydney Children's Hospital gained a brand and digital infrastructure capable of serving one of Australia's most beloved and important healthcare institutions.",
+    hero: "/impact/sydney-childrens-hospital.webp",
     tone: "cream",
   },
   {
@@ -123,6 +127,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Rennie Lab delivered brand identity, design, digital platform development, and UX across Green Our Planet's core digital presence. The work gave the organisation the tools to communicate its mission clearly, engage schools and communities, and build the credibility needed to attract funding and partnerships.",
     impact:
       "Green Our Planet now operates with a brand and digital infrastructure that supports their national expansion, connecting schools and communities across the US with environmental education programs.",
+    hero: "/impact/green-our-planet.jpg",
     tone: "moss",
   },
   {
@@ -136,6 +141,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Rennie Lab delivered a comprehensive brand, design, and digital platform engagement for GRO, creating the visual identity and digital infrastructure needed to grow a community-driven environmental organisation.",
     impact:
       "GRO launched with a clear brand and digital presence capable of supporting community engagement and organisational growth in the US environmental sector.",
+    hero: "/impact/gro-usa.jpeg",
     tone: "sand",
   },
   {
@@ -149,6 +155,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Rennie Lab provided early stage brand strategy, visual identity development, and digital platform design and development. The work helped Beard Season find its voice and build the foundations for a movement that would eventually reach a global audience.",
     impact:
       "Beard Season grew into one of Australia's most recognised skin cancer awareness movements, credited with saving lives by encouraging regular skin checks. The early brand and digital work helped establish the credibility and community that made that growth possible.",
+    hero: "/impact/beard-season.png",
     tone: "rust",
   },
   {
@@ -162,6 +169,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Rennie Lab provided UX design, strategic advisory, and brand development for Skin Check Champions. The work focused on reducing friction in the user journey and building a brand that felt credible, warm, and motivating for everyday Australians.",
     impact:
       "Skin Check Champions launched with a platform and brand designed to drive real behaviour change, contributing to Australia's broader effort to reduce skin cancer mortality through early detection.",
+    hero: "/impact/skin-check-champions.jpeg",
     tone: "red",
   },
   {
@@ -189,6 +197,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Rennie Lab delivered brand design, strategic advisory, UX design, and full digital development for the Foundation. The work was done with deep care for Chumpy's story, his family, and the snowboarding and broader sporting community. Every design decision was made in service of honouring his spirit.",
     impact:
       "The Chumpy Pullin Foundation launched with a brand and platform worthy of one of Australia's most beloved athletes, giving his legacy a home and a vehicle for the community work that continues in his name.",
+    hero: "/impact/chumpy-pullin-foundation.webp",
     tone: "ocean",
   },
   {
@@ -202,6 +211,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Rennie Lab delivered brand design, advisory, strategy, and digital development for the Winner Foundation, creating the identity and infrastructure needed to launch and grow the organisation's programs.",
     impact:
       "The Winner Foundation launched with a clear brand and digital presence capable of supporting its community health mission and attracting the partners and funding needed to scale its impact.",
+    hero: "/impact/winner-foundation.jpg",
     tone: "red",
   },
   {
@@ -228,6 +238,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Rennie Lab provided strategy, advisory, branding, website design and development, fundraising infrastructure, and event activations across the entire campaign. The work turned a remarkable personal feat into a movement with commercial and community impact.",
     impact:
       "Blake Johnston broke the world record and the campaign raised $500,000 for men's mental health. The brand and digital work gave the story the platform it deserved, reaching a national audience and cementing the project as one of Australia's great sporting and charitable achievements.",
+    hero: "/impact/blake-johnston.webp",
     tone: "ocean",
   },
   {
@@ -255,6 +266,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Rennie Lab co-founded, designed, and developed the Design Declares Australia platform and led the strategic and advisory work that has grown the movement to over 1,200 members. The work was done in close partnership with D! UK and has helped establish Australia as one of the leading national chapters of the global movement.",
     impact:
       "Design Declares Australia is now one of the country's most significant climate and design organisations, with over 1,200 members, a national events program, government engagement, and a growing influence on how the Australian design industry thinks about its responsibility to the planet.",
+    hero: "/impact/design-declares-australia.webp",
     tone: "ink",
   },
   {
@@ -294,6 +306,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Rennie Lab delivered environment design, placemaking, wayfinding, and spatial design to bring the House of Chumpy to life. The work spanned every touchpoint of the physical experience, from how people move through the space to how the walls and surfaces speak to the community it serves.",
     impact:
       "House of Chumpy opened as a space that genuinely reflects its mission, giving young and marginalised community members an environment designed with care, intention, and deep respect for the person whose name it carries.",
+    hero: "/impact/house-of-chumpy.webp",
     tone: "ocean",
   },
   {
