@@ -1480,6 +1480,174 @@ footer.site-foot {
   .aoc-grid { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
 }
 
+/* ── Impact: Featured case study (magazine treatment) ── */
+.impact-featured {
+  margin: 0 0 96px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  isolation: isolate;
+}
+.impact-featured-hero {
+  position: relative;
+  aspect-ratio: 16 / 8;
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: clamp(28px, 3vw, 56px);
+  transition: transform 600ms var(--easing);
+}
+.impact-featured:hover .impact-featured-hero {
+  transform: scale(1.005);
+}
+.impact-featured-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--cream);
+  z-index: 2;
+}
+.impact-featured-meta .mono { color: var(--cream); opacity: 0.85; }
+.impact-featured-meta-sep { color: var(--cream); opacity: 0.5; }
+.impact-featured-foot {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 32ch;
+  z-index: 2;
+}
+.impact-featured-title {
+  margin: 0;
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: clamp(48px, 7.4vw, 128px);
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+  color: var(--cream);
+}
+.impact-featured-sub {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: clamp(18px, 1.5vw, 22px);
+  line-height: 1.4;
+  letter-spacing: -0.005em;
+  color: rgba(244, 241, 222, 0.85);
+  max-width: 48ch;
+}
+.impact-featured-body {
+  margin-top: -64px;
+  margin-left: clamp(28px, 4vw, 80px);
+  margin-right: clamp(28px, 4vw, 80px);
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: clamp(32px, 4vw, 56px);
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 48px;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.25);
+}
+.impact-featured-quote {
+  position: relative;
+  padding-left: 36px;
+}
+.impact-featured-quote-mark {
+  position: absolute;
+  top: -28px;
+  left: -8px;
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 96px;
+  color: var(--accent);
+  line-height: 1;
+}
+.impact-featured-quote p {
+  margin: 0;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: clamp(20px, 1.8vw, 28px);
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  max-width: 38ch;
+}
+.impact-featured-cta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  justify-content: flex-end;
+  color: var(--ink);
+  transition: color 250ms var(--easing);
+}
+.impact-featured:hover .impact-featured-cta { color: var(--accent); }
+.impact-featured-arrow {
+  font-size: 28px;
+  transition: transform 350ms var(--easing);
+}
+.impact-featured:hover .impact-featured-arrow {
+  transform: translateX(8px);
+  color: var(--accent);
+}
+@media (max-width: 900px) {
+  .impact-featured-body { grid-template-columns: 1fr; gap: 32px; }
+  .impact-featured-cta { justify-content: flex-start; }
+}
+
+/* ── Impact: Apply for support · full-bleed red panel ── */
+.impact-apply {
+  position: relative;
+  margin: 96px calc(50% - 50vw) 0;
+  width: 100vw;
+  background: var(--accent);
+  color: var(--cream);
+  padding: clamp(56px, 8vw, 128px) clamp(24px, 6vw, 96px);
+}
+.impact-apply-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.impact-apply .mono { color: rgba(244, 241, 222, 0.6); }
+.impact-apply-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 48px;
+  margin-top: clamp(48px, 6vw, 80px);
+  padding-top: clamp(32px, 4vw, 56px);
+  border-top: 1px solid rgba(244, 241, 222, 0.18);
+}
+.impact-apply-body {
+  font-family: var(--sans);
+  font-size: clamp(15px, 1.1vw, 17px);
+  line-height: 1.55;
+  color: var(--cream);
+  margin: 0;
+  max-width: 38ch;
+}
+.impact-apply-cta {
+  margin-top: 48px;
+  display: flex;
+}
+.impact-apply-cta .btn-primary {
+  background: var(--cream) !important;
+  color: var(--accent) !important;
+  border-color: var(--cream) !important;
+  padding: 18px 28px;
+  font-size: 14px;
+}
+.impact-apply-cta .btn-primary:hover {
+  background: var(--carbon) !important;
+  color: var(--cream) !important;
+  border-color: var(--carbon) !important;
+}
+@media (max-width: 900px) {
+  .impact-apply-grid { grid-template-columns: 1fr; gap: 32px; }
+}
+
 /* Logo strip */
 .logo-strip {
   display: grid;
