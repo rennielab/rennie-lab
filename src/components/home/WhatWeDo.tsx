@@ -156,16 +156,19 @@ function ProjectStackCard({ project, fallbackTone }: ProjectStackCardProps) {
       onKeyDown={(e) => {
         if (e.key === "Enter") onClick();
       }}
-      style={
-        heroSrc
-          ? {
-              backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.05) 55%), url(${heroSrc})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }
-          : undefined
-      }
     >
+      {heroSrc && (
+        /* Native lazy-load — defers ~20 preview images on home until scroll */
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img
+          src={heroSrc}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          className="stack-card-img"
+        />
+      )}
+      <div className="stack-card-shade" aria-hidden="true" />
       <div className="stack-card-label">
         {(project.categories[0] ?? "case study").toLowerCase()}
         <span className="stack-card-title">{project.name}</span>
