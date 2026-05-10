@@ -2,11 +2,29 @@
 
 import { useEffect, useState } from "react";
 
-const AVG_WEB_BYTES = 2.3 * 1024 * 1024; // ~2.3MB typical web page (HTTP Archive)
-const G_PER_MB = 0.5; // ~0.5g CO₂e per MB transferred (Sustainable Web Design model, mid-range)
+/* Carbon model — Sustainable Web Design v4 (sustainablewebdesign.org)
+   Energy intensity per GB transferred (kWh/GB):
+     · data center op  0.055   · data center embodied 0.012
+     · network op      0.059   · network embodied     0.013
+     · device op       0.080   · device embodied      0.081
+   Grid intensity: 494 gCO₂e/kWh (global average).
+   Green-hosting adjustment: data-center operational emissions removed
+   (verified by The Green Web Foundation for rennielab.com).
+*/
+const KWH_PER_GB_GREEN =
+  /* DC op skipped (green) */ 0 +
+  /* DC embodied */ 0.012 +
+  /* Net op */ 0.059 +
+  /* Net embodied */ 0.013 +
+  /* Device op */ 0.080 +
+  /* Device embodied */ 0.081; // = 0.245 kWh/GB
+const GRID_G_PER_KWH = 494; // SWD v4 global average
+const G_PER_GB_GREEN = KWH_PER_GB_GREEN * GRID_G_PER_KWH; // ≈ 121 g/GB
+const G_PER_MB_GREEN = G_PER_GB_GREEN / 1024; // ≈ 0.118 g/MB
+const AVG_WEB_BYTES = 2.3 * 1024 * 1024; // 2.3MB typical page (HTTP Archive)
 
 function bytesToGrams(bytes: number) {
-  return (bytes / (1024 * 1024)) * G_PER_MB;
+  return (bytes / (1024 * 1024 * 1024)) * G_PER_GB_GREEN;
 }
 
 type Metrics = { bytes: number; requests: number };
@@ -219,8 +237,11 @@ export function CarbonTracker() {
         </section>
 
         <footer className="carbon-panel-foot mono">
-          Estimate based on actual bytes transferred (~0.5g CO₂e/MB · Sustainable
-          Web Design methodology). Hosting verified by The Green Web Foundation.
+          Live estimate from actual bytes transferred this visit. Sustainable Web
+          Design v4 model · 494 gCO₂e/kWh global grid · green-hosting
+          adjustment applied (data-centre operational emissions removed, verified
+          by The Green Web Foundation) · ~{G_PER_MB_GREEN.toFixed(3)}g CO₂e per
+          MB transferred.
         </footer>
       </aside>
     </>
