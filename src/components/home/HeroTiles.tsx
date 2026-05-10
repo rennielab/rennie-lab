@@ -61,6 +61,16 @@ function imageFor(tile: Tile): string {
   return cs?.hero ?? "";
 }
 
+/* Return a CSS image-set so phones at 1x DPR fetch the small variant
+   (~10–50 KB) and retina screens fetch the 1200px version. */
+function backgroundFor(tile: Tile): string {
+  const large = imageFor(tile);
+  if (!large) return "";
+  // Convention: file-name.ext → file-name-600.ext for 1x
+  const small = large.replace(/(\.[^.]+)$/, "-600$1");
+  return `image-set(url("${small}") 1x, url("${large}") 2x)`;
+}
+
 function nameFor(tile: Tile): string {
   if (tile.source === "project") {
     return PROJECTS.find((p) => p.slug === tile.slug)?.name ?? "";
@@ -85,7 +95,10 @@ export function HeroTiles() {
         >
           <div
             className="hero-tile-img"
-            style={{ backgroundImage: `url(${imageFor(tile)})` }}
+            style={{
+              backgroundImage:
+                backgroundFor(tile) || `url(${imageFor(tile)})`,
+            }}
           />
           <div className="hero-tile-shade" aria-hidden="true" />
           <div className="hero-tile-content">
