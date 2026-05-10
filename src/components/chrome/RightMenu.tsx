@@ -165,7 +165,7 @@ export function RightMenu() {
         </div>
         <div className="dots-row">
           <span className="dots-row-label">Low-carbon mode</span>
-          <ToggleSwitch storageKey="rl-lc" defaultOn />
+          <ToggleSwitch storageKey="rl-lc" />
         </div>
         <div className="dots-row" style={{ flexDirection: "column", alignItems: "flex-start", gap: 8 }}>
           <span className="dots-row-label">Studios</span>

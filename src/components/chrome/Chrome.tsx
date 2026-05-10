@@ -11,6 +11,7 @@ import { DownloadSlide } from "./DownloadSlide";
 import { CaseStudyDrawer } from "./CaseStudyDrawer";
 import { JournalPostDrawer } from "./JournalPostDrawer";
 import { WelcomeAcknowledgement } from "./WelcomeAcknowledgement";
+import { AccessibilityModes } from "./AccessibilityModes";
 import { ImpactCaseStudyDrawer } from "@/components/impact/ImpactCaseStudyDrawer";
 
 export function Chrome({ children }: { children: ReactNode }) {
@@ -27,6 +28,7 @@ export function Chrome({ children }: { children: ReactNode }) {
       <JournalPostDrawer />
       <ImpactCaseStudyDrawer />
       <WelcomeAcknowledgement />
+      <AccessibilityModes />
     </ThemeProvider>
   );
 }

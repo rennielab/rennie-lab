@@ -1240,6 +1240,92 @@ footer.site-foot {
   .stack-title { font-size: clamp(56px, 16vw, 120px); }
 }
 
+/* ── Accessibility modes ───────────────────────────────── */
+
+/* Reduce motion — kill all CSS animations + transitions sitewide */
+[data-reduce-motion="true"] *,
+[data-reduce-motion="true"] *::before,
+[data-reduce-motion="true"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Low-carbon — strip images, videos, decorative SVGs and tinted backgrounds.
+   Keep wordmark text, structure, and chrome. */
+[data-low-carbon="true"] img,
+[data-low-carbon="true"] video {
+  display: none !important;
+}
+[data-low-carbon="true"] .ph,
+[data-low-carbon="true"] .stack-card,
+[data-low-carbon="true"] .jp-hero,
+[data-low-carbon="true"] .svc-case-img,
+[data-low-carbon="true"] .dots-news-thumb {
+  background-image: none !important;
+  background-color: transparent !important;
+  border: 1px dashed rgba(127, 127, 127, 0.25) !important;
+  filter: none !important;
+}
+[data-low-carbon="true"] .ph-tag { display: none !important; }
+[data-low-carbon="true"] .logo-strip,
+[data-low-carbon="true"] .orb-diagram-wrap,
+[data-low-carbon="true"] .stack-cards,
+[data-low-carbon="true"] .aoc-video,
+[data-low-carbon="true"] .aoc-video-fallback,
+[data-low-carbon="true"] .dots-news-thumb {
+  display: none !important;
+}
+[data-low-carbon="true"] .stack-section {
+  background: var(--bg) !important;
+}
+[data-low-carbon="true"] .aoc-grid {
+  grid-template-columns: 1fr !important;
+}
+
+/* Mode badge — loud + clear, top-right beneath the chrome pill */
+.mode-badge-wrap {
+  position: fixed;
+  top: 76px;
+  right: 18px;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+  align-items: flex-end;
+}
+.mode-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cream);
+  pointer-events: auto;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+.mode-badge-lc { background: var(--accent); }
+.mode-badge-rm { background: var(--carbon-2, #1c1c1f); }
+.mode-badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cream);
+  animation: mode-badge-pulse 2s ease-in-out infinite;
+}
+[data-reduce-motion="true"] .mode-badge-dot { animation: none !important; }
+@keyframes mode-badge-pulse {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50%      { opacity: 1;   transform: scale(1.3); }
+}
+
 /* Welcome / Acknowledgement of Country slide-up */
 .aoc-backdrop {
   position: fixed;
