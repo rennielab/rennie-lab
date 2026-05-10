@@ -41,6 +41,25 @@ const SERVICES: Service[] = [
   },
   {
     n: "02",
+    kicker: "Products",
+    title: "Digital Products",
+    lead: "Websites, apps and the digital products that bring brands to life. End-to-end product and service design: research, information architecture, interaction, interface, and shipped code. Pages built to load fast on a five-year-old phone in a regional area, and to stay accessible at the AA threshold without a separate audit. Systems built so the in-house team can keep building. The work we ship tends to be among the lightest in its category. We can show you the page weight.",
+    includes: [
+      "Websites & web platforms",
+      "Native & web apps",
+      "Information architecture",
+      "Interaction & prototyping",
+      "Design systems & component libraries",
+      "Carbon-aware web & low-impact UX",
+    ],
+    crafts: ["Research", "IA", "UI", "Systems", "Prototype", "Carbon"],
+    caseTitle: "Unifying a National Foundation",
+    caseClient: "Heart Foundation Australia",
+    caseImage: "/projects/heartfoundation.webp",
+    tone: "ocean",
+  },
+  {
+    n: "03",
     kicker: "Advisory",
     title: "Strategic Advisory",
     lead: "Strategy work that doesn't end in a deck. We sit beside founders, boards, CMOs and executive directors as a long-form retained partner. Monthly, sometimes for years. We are in the room for the hard board conversation, the capital raise, the announcement that lands wrong, the rebrand that scares the legal team. Most of what we do here never carries our name. That is the point.",
@@ -59,41 +78,22 @@ const SERVICES: Service[] = [
     tone: "cream",
   },
   {
-    n: "03",
-    kicker: "Product",
-    title: "Product Design",
-    lead: "The internet uses more electricity than most countries. We design like that matters. Product and service design end to end: research, information architecture, interaction, interface, and shipped code. Pages built to load fast on a five-year-old phone in a regional area, and to stay accessible at the AA threshold without a separate audit. Systems built so the in-house team can keep building. The work we ship tends to be among the lightest in its category. We can show you the page weight.",
-    includes: [
-      "Product & service design",
-      "Information architecture",
-      "Interaction & prototyping",
-      "Editorial digital experiences",
-      "Design systems & component libraries",
-      "Carbon-aware web & low-impact UX",
-    ],
-    crafts: ["Research", "IA", "UI", "Systems", "Prototype", "Carbon"],
-    caseTitle: "Unifying a National Foundation",
-    caseClient: "Heart Foundation Australia",
-    caseImage: "/projects/heartfoundation.webp",
-    tone: "ocean",
-  },
-  {
     n: "04",
-    kicker: "Climate",
-    title: "Climate & Impact Design",
-    lead: "Forty percent of our capacity, mostly pro-bono and at-cost. Since 2019, over a million dollars invested in Australian climate, community and movement work. Programs and identities for charities, councils, coalitions, governments, and the curious. We design with the planet in the room from the first sketch, and the next seven generations on the wall behind it. Indigenous practice on this continent has run to seven-generation arcs for tens of thousands of years. We are still learning.",
+    kicker: "Environments",
+    title: "Environments & Spaces",
+    lead: "Spaces that work as hard as the people inside them. Retail, training facilities, exhibition design, brand environments — designed end to end with our partners. From the National Snowsports Training Centre in Jindabyne (a $12.8M facility for Snow Australia, NSWIS and the AIS) to flagship retail concepts for Buck Mason, Herschel and Mr Simple, the work is the same: read the brief, understand how people will move through the space, design with the operator and the long term in mind.",
     includes: [
-      "Public-facing programs",
-      "Movement & coalition identities",
-      "Carbon-aware web & product",
-      "Behavioural design for adaptation",
-      "Editorial & reporting design",
-      "Co-design with community",
+      "Retail & flagship store design",
+      "Training & high-performance environments",
+      "Exhibition & brand activations",
+      "Wayfinding & signage systems",
+      "Material specification & joinery detail",
+      "Fitout coordination with builders",
     ],
-    crafts: ["Programs", "Coalition", "Co-design", "Editorial", "Reporting"],
-    caseTitle: "Architecting a Movement's Trust",
-    caseClient: "1% For The Planet",
-    caseImage: "/projects/1percentfortheplanet.png",
+    crafts: ["Retail", "Wayfinding", "Spec", "Materials", "Activation"],
+    caseTitle: "Designing for Olympic Performance",
+    caseClient: "Snow Australia · NSWIS · AIS — National Snowsports Training Centre",
+    caseImage: "/projects/nswis.webp",
     tone: "moss",
   },
   {
@@ -161,9 +161,9 @@ export function ServicesContent() {
         </h1>
         <div className="svc-hero-grid rise delay-2">
           <p className="body-lg" style={{ margin: 0, maxWidth: "46ch" }}>
-            Rennie Lab works in five overlapping disciplines: brand, advisory, product,
-            climate and research. Most engagements move across two or three at once.
-            None of them are sold by the hour.
+            Rennie Lab works in five overlapping disciplines: brand, products, advisory,
+            environments and research. Most engagements move across two or three at
+            once. None of them are sold by the hour.
           </p>
           <div className="svc-hero-meta">
             <div>
