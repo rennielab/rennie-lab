@@ -6,7 +6,13 @@ import { usePathname } from "next/navigation";
 import { NAV_ITEMS, routeIdFromPath } from "./navigation";
 import { useTheme } from "./ThemeProvider";
 
-const CHANNELS = ["INSTAGRAM", "LINKEDIN", "SUBSTACK", "OFF.CLIMATE"];
+type Channel = { label: string; href: string; external: boolean };
+const CHANNELS: Channel[] = [
+  { label: "INSTAGRAM",  href: "https://instagram.com/benrennie",      external: true  },
+  { label: "LINKEDIN",   href: "https://linkedin.com/in/benrennie",    external: true  },
+  { label: "SUBSTACK",   href: "https://benrennie.substack.com",       external: true  },
+  { label: "OFF CLIMATE", href: "/journal",                            external: false },
+];
 
 export function LeftMenu() {
   const [open, setOpen] = useState(false);
@@ -78,12 +84,31 @@ export function LeftMenu() {
           <div className="nav-divider"></div>
           <div className="nav-meta">
             <div className="nav-meta-title">Channels</div>
-            {CHANNELS.map((c) => (
-              <div key={c} className="nav-channel">
-                <span>{c}</span>
-                <span style={{ opacity: 0.5 }}>↗</span>
-              </div>
-            ))}
+            {CHANNELS.map((c) =>
+              c.external ? (
+                <a
+                  key={c.label}
+                  href={c.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="nav-channel"
+                  onClick={close}
+                >
+                  <span>{c.label}</span>
+                  <span style={{ opacity: 0.5 }}>↗</span>
+                </a>
+              ) : (
+                <Link
+                  key={c.label}
+                  href={c.href}
+                  className="nav-channel"
+                  onClick={close}
+                >
+                  <span>{c.label}</span>
+                  <span style={{ opacity: 0.5 }}>→</span>
+                </Link>
+              ),
+            )}
           </div>
         </div>
       </div>
