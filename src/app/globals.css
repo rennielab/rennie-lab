@@ -272,8 +272,11 @@ em, i, .italic { font-style: normal; color: inherit !important; }
   object-fit: contain;
   display: block;
   background: transparent;
-  filter: none;
+  filter: brightness(0); /* light mode: force ink-black wordmark */
   image-rendering: -webkit-optimize-contrast;
+}
+[data-theme="dark"] .brand-logo {
+  filter: brightness(0) invert(1); /* dark mode: force pure white wordmark */
 }
 .brand-label {
   font-family: var(--mono);
@@ -625,8 +628,8 @@ em, i, .italic { font-style: normal; color: inherit !important; }
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #6fa663;
-  box-shadow: 0 0 0 3px rgba(111, 166, 99, 0.18);
+  background: #d4ff37;
+  box-shadow: 0 0 0 3px rgba(212, 255, 55, 0.22);
 }
 .carbon-num {
   font-family: var(--mono);
@@ -645,7 +648,7 @@ em, i, .italic { font-style: normal; color: inherit !important; }
 .carbon-bar > div {
   position: absolute;
   inset: 0;
-  background: #6fa663;
+  background: #d4ff37;
   width: 0%;
   transition: width 300ms var(--easing);
 }
