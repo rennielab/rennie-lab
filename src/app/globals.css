@@ -2227,6 +2227,146 @@ footer.site-foot {
   .stack-cards { gap: 10px; }
 }
 
+/* ── Mobile pass (≤ 768px) ────────────────────────────────
+   Catches inline-styled grids on every page via attribute
+   selectors, then targets specific class-based components
+   that still need mobile breakpoints.
+*/
+@media (max-width: 768px) {
+  :root { --gutter: 16px; }
+
+  /* Default: any inline grid inside a page section becomes 1-col */
+  .container [style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+    gap: 28px !important;
+  }
+  /* Stats / number grids that work better as 2-up on mobile */
+  .container [style*="repeat(4, 1fr)"] {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 16px !important;
+  }
+  /* Off-Climate / journal feed 6-col grid → single column,
+     drop the col-span overrides */
+  .container > section > div[style*="repeat(6, 1fr)"] {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+  .container > section > div[style*="repeat(6, 1fr)"] > div[style*="grid-column"] {
+    grid-column: 1 / -1 !important;
+  }
+
+  /* Big hardcoded section paddings — cut roughly in half */
+  .container > section[style*="padding: 96px"],
+  .container > section > div[style*="padding: 96px"],
+  .container > section[style*="padding: 64px"] {
+    padding-top: 48px !important;
+    padding-bottom: 48px !important;
+  }
+
+  /* Hero h-display feels heavy on phones — reel it in slightly */
+  .h-display { font-size: clamp(36px, 9vw, 64px) !important; }
+  .h-1       { font-size: clamp(28px, 7vw, 48px) !important; }
+
+  /* Story · parallax + press hero */
+  .story-parallax { min-height: 44vh !important; margin-bottom: 56px !important; }
+  .press-hero { aspect-ratio: 16 / 11 !important; }
+
+  /* Story · partners grid 4-col → 2-col on mobile (already a 4-col grid) */
+  .container > section [style*="repeat(4, 1fr)"][style*="gap: 16px"] {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px !important;
+  }
+  /* Story · credit roll role/names stack */
+  .container [style*="180px 1fr"] {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+    padding-top: 18px !important;
+  }
+  /* Story · press list rows stack tag below */
+  .container [style*="1fr 240px"] {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+  .container [style*="1fr 240px"] > div[style*="text-align: right"],
+  .container [style*="1fr 240px"] > div.mono {
+    text-align: left !important;
+  }
+
+  /* Impact · featured magazine card overlap */
+  .impact-featured-body {
+    margin-top: -28px !important;
+    margin-left: 16px !important;
+    margin-right: 16px !important;
+    padding: 24px !important;
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+  .impact-featured-quote { padding-left: 24px !important; }
+  .impact-featured-quote-mark { font-size: 64px !important; top: -18px !important; }
+  .impact-featured-title { font-size: clamp(40px, 11vw, 72px) !important; }
+  .impact-featured-hero { aspect-ratio: 4 / 5 !important; padding: 24px !important; }
+
+  /* Impact · pillar header (1fr 2fr) → stack */
+  .container [style*="1fr 2fr"] {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+
+  /* Impact · "running a charity" closer apply panel — already responsive,
+     but the heading needs tightening */
+  .impact-apply h2 { font-size: clamp(36px, 9vw, 56px) !important; }
+
+  /* Home · WhatWeDo project preview cards single column */
+  .stack-cards { grid-template-columns: 1fr !important; gap: 8px !important; }
+  .stack-card { aspect-ratio: 16 / 10 !important; }
+  .stack-card-title { font-size: 14px !important; }
+
+  /* Drawer panels stretch full width — already 100vw at 900,
+     but make the inner copy a bit tighter */
+  .contact-panel { width: 100vw !important; }
+  .jp-scroll { padding: 32px 18px 64px !important; }
+  .jp-head { padding: 14px 18px !important; }
+  .jp-title { font-size: clamp(28px, 7vw, 40px) !important; }
+  .jp-foot { flex-direction: column !important; align-items: stretch !important; gap: 12px !important; }
+  .jp-foot .btn { justify-content: center !important; }
+
+  /* Welcome to Country slide-up — taller for mobile readability */
+  .aoc-overlay { height: 88vh !important; }
+  .aoc-text { padding: 24px !important; gap: 16px !important; }
+  .aoc-body { font-size: 14px !important; }
+
+  /* Mode badge — drop below the chrome on mobile */
+  .mode-badge-wrap {
+    top: 76px !important;
+    right: 14px !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+  }
+  .mode-badge { padding: 8px 12px !important; font-size: 10px !important; }
+
+  /* Carbon counter — nudge up the page so it doesn't crowd content */
+  .carbon-tracker { padding: 8px 12px !important; gap: 8px !important; }
+
+  /* Service rows on accordion — tighten */
+  .svc-row-num { font-size: 10px !important; }
+  .svc-row-kicker { font-size: 11px !important; }
+
+  /* Project list cards — image stack above content */
+  .container > section > article[style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+    padding: 32px 0 !important;
+  }
+}
+
+/* ≤ 600px — extra-small adjustments */
+@media (max-width: 600px) {
+  .foot-cols { grid-template-columns: 1fr !important; gap: 24px !important; }
+  .impact-apply { padding: 56px 18px !important; }
+  .impact-apply h2 { font-size: clamp(32px, 10vw, 48px) !important; }
+  .stack-title { font-size: clamp(48px, 18vw, 96px) !important; }
+}
+
 /* ── Reduce motion ── */
 @media (prefers-reduced-motion: reduce) {
   *,
