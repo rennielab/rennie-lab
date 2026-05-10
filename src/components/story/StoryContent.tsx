@@ -182,6 +182,30 @@ export function StoryContent() {
         </div>
       </section>
 
+      {/* IN THE STUDIO — parallax atmosphere band */}
+      <section className="story-parallax" style={{ backgroundImage: "url(/journal/rl-studio-1.jpg)" }}>
+        <div className="story-parallax-overlay" />
+        <div className="story-parallax-inner">
+          <div className="mono" style={{ color: "rgba(244,241,222,0.7)", marginBottom: 16 }}>
+            Inside the studio · Surry Hills
+          </div>
+          <h2
+            style={{
+              margin: 0,
+              fontFamily: "var(--sans)",
+              fontWeight: 600,
+              fontSize: "clamp(40px, 5.4vw, 88px)",
+              lineHeight: 1.02,
+              letterSpacing: "-0.025em",
+              color: "var(--cream)",
+              maxWidth: "20ch",
+            }}
+          >
+            Where the work gets argued out.
+          </h2>
+        </div>
+      </section>
+
       {/* NUMBERS */}
       <section style={{ padding: "64px 0 96px" }}>
         <div className="mono" style={{ marginBottom: 32 }}>Lab · in numbers</div>
@@ -458,9 +482,31 @@ export function StoryContent() {
         <div className="mono" style={{ marginBottom: 32 }}>
           Press, recognition &amp; talks · selected
         </div>
-        <h2 className="h-2" style={{ margin: "0 0 56px", maxWidth: "22ch" }}>
+        <h2 className="h-2" style={{ margin: "0 0 40px", maxWidth: "22ch" }}>
           The work, occasionally, gets noticed.
         </h2>
+        <div
+          className="press-hero"
+          style={{ backgroundImage: "url(/journal/ben-tim-ross.jpg)" }}
+        >
+          <div className="press-hero-cap">
+            <span className="mono" style={{ color: "rgba(244,241,222,0.75)" }}>
+              Gleebooks · Sydney · Lessons in Creativity
+            </span>
+            <span
+              style={{
+                fontFamily: "var(--sans)",
+                fontWeight: 500,
+                fontSize: "clamp(18px, 1.6vw, 24px)",
+                letterSpacing: "-0.01em",
+                lineHeight: 1.3,
+                maxWidth: "32ch",
+              }}
+            >
+              Ben Rennie in conversation with Tim Ross.
+            </span>
+          </div>
+        </div>
         <div>
           {PRESS.map((p, i) => (
             <div

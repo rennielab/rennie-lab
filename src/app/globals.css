@@ -1648,6 +1648,78 @@ footer.site-foot {
   .impact-apply-grid { grid-template-columns: 1fr; gap: 32px; }
 }
 
+/* ── Story · parallax atmosphere band ─────────────────── */
+.story-parallax {
+  position: relative;
+  margin: 64px calc(50% - 50vw) 80px;
+  width: 100vw;
+  min-height: 70vh;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  isolation: isolate;
+}
+@supports (-webkit-touch-callout: none) {
+  /* iOS doesn't support background-attachment: fixed reliably */
+  .story-parallax { background-attachment: scroll; }
+}
+.story-parallax-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.2) 0%,
+    rgba(0, 0, 0, 0.05) 30%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+  z-index: 1;
+  pointer-events: none;
+}
+.story-parallax-inner {
+  position: relative;
+  z-index: 2;
+  padding: 0 clamp(24px, 6vw, 96px) clamp(48px, 6vw, 96px);
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+@media (max-width: 900px) {
+  .story-parallax { min-height: 50vh; }
+}
+
+/* Press section hero photo */
+.press-hero {
+  position: relative;
+  margin: 0 0 56px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  aspect-ratio: 21 / 9;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: flex-end;
+}
+.press-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.05) 55%);
+  pointer-events: none;
+}
+.press-hero-cap {
+  position: relative;
+  z-index: 2;
+  padding: clamp(24px, 3vw, 48px);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--cream);
+}
+
 /* Logo strip */
 .logo-strip {
   display: grid;
