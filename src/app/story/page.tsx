@@ -1,7 +1,7 @@
 import { StoryContent } from "@/components/story/StoryContent";
 
 export const metadata = {
-  title: "Story — Rennie Lab",
+  title: "Story",
   description:
     "A creative advisory studio built for the long now — manifesto, principles, timeline and team.",
 };

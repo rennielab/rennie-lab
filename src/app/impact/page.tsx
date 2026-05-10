@@ -5,7 +5,7 @@ import { AffiliationStrip } from "@/components/affiliations/AffiliationStrip";
 import { ImpactFeatured } from "@/components/impact/ImpactFeatured";
 
 export const metadata = {
-  title: "Impact — Rennie Lab",
+  title: "Impact",
   description:
     "Forty percent of our capacity, given to the commons. Climate, community and movement work — pro-bono and at-cost programs across seventeen years.",
 };

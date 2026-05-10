@@ -2,7 +2,7 @@ import { FEED_ITEMS } from "@/data/journalFeed";
 import { JournalFeed } from "@/components/journal/JournalFeed";
 
 export const metadata = {
-  title: "Off Climate — Rennie Lab Journal",
+  title: "Off Climate",
   description:
     "Off Climate is the Rennie Lab journal — essays, field guides, podcasts and the studio's case studies in one feed.",
 };

@@ -14,9 +14,9 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: RouteProps) {
   const { slug } = await params;
   const post = JOURNAL_POSTS.find((p) => p.slug === slug);
-  if (!post) return { title: "Journal — Rennie Lab" };
+  if (!post) return { title: "Journal" };
   return {
-    title: `${post.title} — Rennie Lab Journal`,
+    title: `${post.title} — Off Climate`,
     description: post.excerpt,
   };
 }

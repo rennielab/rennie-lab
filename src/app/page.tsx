@@ -114,7 +114,7 @@ export default function HomePage() {
               { v: "0.21g", l: "per page load" },
               { v: "100%", l: "green-hosted" },
               { v: "94%", l: "cleaner than the average web page" },
-              { v: "40%", l: "impact, 60% rad" },
+              { v: "0", l: "third-party trackers" },
             ].map((s, i) => (
               <div key={i}>
                 <div className="serif" style={{ fontSize: 56, lineHeight: 1 }}>{s.v}</div>

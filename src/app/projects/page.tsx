@@ -2,7 +2,7 @@ import { PROJECTS } from "@/data/projects";
 import { ProjectsList } from "@/components/projects/ProjectsList";
 
 export const metadata = {
-  title: "Projects — Rennie Lab",
+  title: "Projects",
   description:
     "A short list of recent partnerships across brand, UX, climate and impact work.",
 };
