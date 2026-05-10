@@ -159,7 +159,7 @@ function ProjectStackCard({ project, fallbackTone }: ProjectStackCardProps) {
       style={
         heroSrc
           ? {
-              backgroundImage: `linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0.05) 60%), url(${heroSrc})`,
+              backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.05) 55%), url(${heroSrc})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
             }

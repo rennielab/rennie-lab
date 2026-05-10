@@ -1267,7 +1267,7 @@ footer.site-foot {
 .stack-card-label {
   position: absolute;
   left: 14px;
-  bottom: 14px;
+  top: 14px;
   right: 14px;
   font-family: var(--mono);
   font-size: 11px;
