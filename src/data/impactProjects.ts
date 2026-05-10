@@ -141,7 +141,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Rennie Lab delivered a comprehensive brand, design, and digital platform engagement for GRO, creating the visual identity and digital infrastructure needed to grow a community-driven environmental organisation.",
     impact:
       "GRO launched with a clear brand and digital presence capable of supporting community engagement and organisational growth in the US environmental sector.",
-    hero: "/impact/gro-usa.jpeg",
+    hero: "/impact/gro-usa.jpg",
     tone: "sand",
   },
   {
@@ -266,7 +266,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Rennie Lab co-founded, designed, and developed the Design Declares Australia platform and led the strategic and advisory work that has grown the movement to over 1,200 members. The work was done in close partnership with D! UK and has helped establish Australia as one of the leading national chapters of the global movement.",
     impact:
       "Design Declares Australia is now one of the country's most significant climate and design organisations, with over 1,200 members, a national events program, government engagement, and a growing influence on how the Australian design industry thinks about its responsibility to the planet.",
-    hero: "/impact/design-declares-australia.webp",
+    hero: "/impact/design-declares-australia.jpg",
     tone: "ink",
   },
   {
@@ -280,6 +280,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Rennie Lab delivered UX design, development, and strategy for Farmers Footprint, building digital tools that communicated the regenerative agriculture message with clarity and emotional resonance. The work supported both the organisation's storytelling mission and its operational needs.",
     impact:
       "Farmers Footprint gained digital platforms and UX that helped bring the regenerative agriculture story to a wider global audience, supporting the movement's mission to transition farming away from chemical dependency.",
+    hero: "/impact/farmers-footprint.jpg",
     tone: "sand",
   },
   {
@@ -293,6 +294,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Rennie Lab delivered design and development for the Invisible Ingredient platform, alongside podcast design, strategy, and advisory. The work was built to make a complex and contested scientific and agricultural topic accessible, engaging, and shareable for a broad audience.",
     impact:
       "The Invisible Ingredient launched as a compelling and well-designed platform for one of the most important conversations in food and agriculture, helping Farmers Footprint bring the glyphosate story to audiences beyond the farming community.",
+    hero: "/impact/invisible-ingredient.jpg",
     tone: "rust",
   },
   {
