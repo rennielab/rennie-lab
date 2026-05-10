@@ -17,17 +17,24 @@ export default function HomePage() {
 
   return (
     <div className="container">
-      {/* Hero text */}
+      {/* Eyebrow only — the work does the talking */}
       <section style={{ padding: "24px 0 0", position: "relative" }}>
-        <div className="mono rise" style={{ marginBottom: 32 }}>
+        <div className="mono rise">
           <span
             className="dot dot-pulse"
             style={{ background: "var(--ink)", marginRight: 10 }}
           ></span>
           A creative advisory studio · Sydney + Los Angeles · est. 2017
         </div>
+      </section>
+
+      {/* Featured work — 4 tiles, image-led fold */}
+      <HeroTiles />
+
+      {/* Headline + body + CTAs below the tiles */}
+      <section style={{ padding: "16px 0 80px", position: "relative" }}>
         <h1
-          className="h-display rise delay-1"
+          className="h-display rise"
           style={{ margin: 0, maxWidth: "14ch", fontFamily: "var(--sans)", fontWeight: 600 }}
         >
           Creative Work
@@ -43,13 +50,13 @@ export default function HomePage() {
             alignItems: "end",
           }}
         >
-          <p className="body-lg rise delay-2" style={{ maxWidth: "44ch", margin: 0 }}>
+          <p className="body-lg rise delay-1" style={{ maxWidth: "44ch", margin: 0 }}>
             A small studio of strategists, designers and writers working out of Sydney
             and Los Angeles. We partner with bolder brands on climate, digital, and the
             work of moving people somewhere worth going.
           </p>
           <div
-            className="rise delay-3"
+            className="rise delay-2"
             style={{ display: "flex", gap: 12, justifyContent: "flex-end" }}
           >
             <Link className="btn btn-primary" href="/projects">
@@ -61,9 +68,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* Featured work — 4 tiles below the fold */}
-      <HeroTiles />
 
       {/* Logo strip — single row, rotating */}
       <section style={{ padding: "24px 0 64px" }}>
