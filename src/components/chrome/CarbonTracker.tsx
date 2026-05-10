@@ -27,6 +27,22 @@ function bytesToGrams(bytes: number) {
   return (bytes / (1024 * 1024 * 1024)) * G_PER_GB_GREEN;
 }
 
+/* Approximate inverse percentile from HTTP Archive 2024 desktop page-weight
+   distribution. Input: page weight in bytes. Output: rough % of measured
+   web pages that this page is LIGHTER than (i.e. higher = better). */
+function lighterThanPct(bytes: number): number {
+  const mb = bytes / (1024 * 1024);
+  // Reference points (HTTP Archive Web Almanac, MB):
+  //   p10 = 0.6 · p25 = 1.2 · p50 = 2.3 · p75 = 4.2 · p90 = 7.5
+  if (mb >= 7.5) return 5;
+  if (mb >= 4.2) return 5  + ((7.5 - mb) / (7.5 - 4.2)) * 20; //  5–25
+  if (mb >= 2.3) return 25 + ((4.2 - mb) / (4.2 - 2.3)) * 25; // 25–50
+  if (mb >= 1.2) return 50 + ((2.3 - mb) / (2.3 - 1.2)) * 25; // 50–75
+  if (mb >= 0.6) return 75 + ((1.2 - mb) / (1.2 - 0.6)) * 15; // 75–90
+  if (mb >= 0.3) return 90 + ((0.6 - mb) / (0.6 - 0.3)) * 8;  // 90–98
+  return 99;
+}
+
 type Metrics = { bytes: number; requests: number };
 
 function readMetrics(): Metrics {
@@ -91,8 +107,8 @@ export function CarbonTracker() {
 
   const grams = bytesToGrams(metrics.bytes);
   const avgGrams = bytesToGrams(AVG_WEB_BYTES);
+  const lighterPct = Math.round(lighterThanPct(metrics.bytes));
   const pctOfAvg = avgGrams > 0 ? (grams / avgGrams) * 100 : 0;
-  const lighterPct = Math.max(0, Math.round(100 - pctOfAvg));
 
   return (
     <>
@@ -166,19 +182,23 @@ export function CarbonTracker() {
           </div>
         </div>
 
-        {/* Comparison bar */}
+        {/* Percentile rank against the HTTP Archive distribution */}
         <div className="carbon-panel-vs">
-          <div className="mono carbon-panel-vs-label">Vs the average web page</div>
-          <div className="carbon-panel-vs-num">{lighterPct}% lighter</div>
+          <div className="mono carbon-panel-vs-label">
+            Compared to web pages tested by HTTP Archive
+          </div>
+          <div className="carbon-panel-vs-num">
+            Lighter than {lighterPct}%
+          </div>
           <div className="carbon-panel-vs-bar">
             <div
               className="carbon-panel-vs-fill"
-              style={{ width: `${Math.min(100, pctOfAvg)}%` }}
+              style={{ width: `${lighterPct}%` }}
             ></div>
           </div>
           <div className="mono carbon-panel-vs-sub">
-            {grams.toFixed(2)}g · this page &nbsp;·&nbsp; {avgGrams.toFixed(2)}g ·
-            average page (~2.3MB)
+            {(metrics.bytes / (1024 * 1024)).toFixed(2)}MB this visit ·
+            median page ~2.3MB · 99% lighter requires &lt; 0.3MB
           </div>
         </div>
 

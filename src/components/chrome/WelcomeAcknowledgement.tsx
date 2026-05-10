@@ -81,7 +81,9 @@ export function WelcomeAcknowledgement() {
       >
         <div className="aoc-grid">
           <div className="aoc-video">
-            {videoOk ? (
+            {/* Lazy-load: only mount the video when the panel actually opens.
+                Saves ~16 MB on first paint for every visitor. */}
+            {open && videoOk ? (
               /* eslint-disable-next-line jsx-a11y/media-has-caption */
               <video
                 src="/video/welcome-to-country.mp4"
@@ -89,6 +91,7 @@ export function WelcomeAcknowledgement() {
                 muted
                 playsInline
                 loop
+                preload="metadata"
                 onError={() => setVideoOk(false)}
               />
             ) : (
