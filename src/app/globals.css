@@ -471,13 +471,14 @@ em, i, .italic { font-style: normal; color: inherit !important; }
   transform: scale(0.94) translateY(-8px);
   opacity: 0;
   pointer-events: none;
-  transition: transform 350ms var(--easing), opacity 250ms;
+  transition: transform 350ms var(--easing), opacity 250ms, background 250ms var(--easing);
   backdrop-filter: blur(36px) saturate(180%);
   -webkit-backdrop-filter: blur(36px) saturate(180%);
   box-shadow:
     inset 0 0.5px 0 rgba(255, 255, 255, 0.75),
     inset 0 0 0 0.5px rgba(255, 255, 255, 0.4),
     0 24px 60px -18px rgba(0, 0, 0, 0.22);
+  color: var(--ink);
 }
 [data-theme="dark"] .dots-panel {
   background: rgba(28, 28, 31, 0.55);
@@ -485,6 +486,12 @@ em, i, .italic { font-style: normal; color: inherit !important; }
     inset 0 0.5px 0 rgba(255, 255, 255, 0.08),
     inset 0 0 0 0.5px rgba(255, 255, 255, 0.06),
     0 24px 60px -18px rgba(0, 0, 0, 0.55);
+}
+.dots-panel[data-open="true"] {
+  background: rgba(255, 248, 230, 0.96);
+}
+[data-theme="dark"] .dots-panel[data-open="true"] {
+  background: rgba(28, 28, 31, 0.96);
 }
 .dots-panel[data-open="true"] {
   transform: scale(1) translateY(0);
