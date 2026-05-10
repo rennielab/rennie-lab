@@ -19,12 +19,6 @@ const TILES: Tile[] = [
     tagline: "Making Generosity Visible",
   },
   {
-    source: "impact",
-    slug: "halfcut",
-    eyebrow: "Climate · Reforestation",
-    tagline: "A movement, not a campaign",
-  },
-  {
     source: "project",
     slug: "marlee",
     eyebrow: "Community · Rebrand",
@@ -35,6 +29,12 @@ const TILES: Tile[] = [
     slug: "boody",
     eyebrow: "Climate · Conscious Brand",
     tagline: "A Brand for the Conscious",
+  },
+  {
+    source: "project",
+    slug: "packer",
+    eyebrow: "Community · Brand Refresh",
+    tagline: "Re-Positioning an Icon",
   },
 ];
 

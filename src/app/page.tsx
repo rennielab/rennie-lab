@@ -17,11 +17,8 @@ export default function HomePage() {
 
   return (
     <div className="container">
-      {/* Image-led hero — 4 featured projects */}
-      <HeroTiles />
-
       {/* Hero text */}
-      <section style={{ padding: "24px 0 48px", position: "relative" }}>
+      <section style={{ padding: "24px 0 0", position: "relative" }}>
         <div className="mono rise" style={{ marginBottom: 32 }}>
           <span
             className="dot dot-pulse"
@@ -64,6 +61,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Featured work — 4 tiles below the fold */}
+      <HeroTiles />
 
       {/* Logo strip — single row, rotating */}
       <section style={{ padding: "24px 0 64px" }}>
