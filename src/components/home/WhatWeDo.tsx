@@ -124,6 +124,7 @@ export function WhatWeDo() {
                     key={project.slug}
                     project={project}
                     fallbackTone={s.fallbackTone}
+                    eyebrow={s.title}
                   />
                 ))}
               </div>
@@ -138,9 +139,10 @@ export function WhatWeDo() {
 type ProjectStackCardProps = {
   project: Project;
   fallbackTone: "red" | "moss" | "cream" | "sand" | "rust" | "ocean" | "ink";
+  eyebrow: string;
 };
 
-function ProjectStackCard({ project, fallbackTone }: ProjectStackCardProps) {
+function ProjectStackCard({ project, fallbackTone, eyebrow }: ProjectStackCardProps) {
   const onClick = () => {
     if (typeof window === "undefined") return;
     window.dispatchEvent(new CustomEvent("open-case", { detail: { project } }));
@@ -170,7 +172,7 @@ function ProjectStackCard({ project, fallbackTone }: ProjectStackCardProps) {
       )}
       <div className="stack-card-shade" aria-hidden="true" />
       <div className="stack-card-label">
-        {(project.categories[0] ?? "case study").toLowerCase()}
+        {eyebrow.toLowerCase()}
         <span className="stack-card-title">{project.name}</span>
       </div>
     </div>

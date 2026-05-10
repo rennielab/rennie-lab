@@ -4,14 +4,15 @@ import { useEffect, useState } from "react";
 import { useTheme } from "./ThemeProvider";
 import { FormField } from "./FormField";
 
-const CATEGORIES = ["Brand", "Advisory", "UX Design", "Impact Project"];
+const CATEGORIES = ["Brand", "Products", "Advisory", "Environments", "Research"];
 const SERVICES = [
   "Brand Strategy",
-  "User Experience",
-  "Climate Design",
-  "Impact Programs",
+  "Website / App",
+  "Retail / Space",
+  "Identity System",
   "Creative Direction",
-  "Advisory",
+  "Advisory Retainer",
+  "Research",
 ];
 const BUDGETS = ["< $20k", "$20–50k", "$50–100k", "$100–250k", "$250k+", "Let’s talk"];
 const TIMELINES = ["ASAP", "This quarter", "Next 6 months", "Just exploring"];
@@ -139,7 +140,7 @@ export function ContactSlide() {
           }}
         >
           {step === 0 && (
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64 }} className="rise">
+            <div className="contact-step rise">
               <div>
                 <div className="mono" style={{ marginBottom: 12 }}>
                   01 — Tell us about it
@@ -148,8 +149,10 @@ export function ContactSlide() {
                   What kind of change are you trying to make?
                 </h2>
                 <p className="body-lg" style={{ marginTop: 24, maxWidth: 520 }}>
-                  We work in three lanes — brand and strategic advisory, user experience design, and
-                  impact programs across climate, community and movement.
+                  We work across five disciplines — brand, digital products, advisory,
+                  environments and research. Most engagements move between two or three at
+                  once. Tell us where you&apos;re trying to get to and we&apos;ll come back
+                  with the right shape.
                 </p>
                 <div
                   style={{
@@ -164,43 +167,13 @@ export function ContactSlide() {
                     Direct contact
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                    <a
-                      href="mailto:press@rennielab.com"
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "baseline",
-                        textDecoration: "none",
-                        color: "inherit",
-                        fontFamily: "var(--sans)",
-                        fontWeight: 500,
-                        fontSize: 18,
-                        letterSpacing: "-0.01em",
-                      }}
-                    >
-                      <span>press@rennielab.com</span>
-                      <span className="mono" style={{ opacity: 0.6 }}>
-                        Press →
-                      </span>
+                    <a href="mailto:press@rennielab.com" className="contact-mail">
+                      <span className="contact-mail-addr">press@rennielab.com</span>
+                      <span className="mono contact-mail-label">Press →</span>
                     </a>
-                    <a
-                      href="mailto:eli@rennielab.com"
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "baseline",
-                        textDecoration: "none",
-                        color: "inherit",
-                        fontFamily: "var(--sans)",
-                        fontWeight: 500,
-                        fontSize: 18,
-                        letterSpacing: "-0.01em",
-                      }}
-                    >
-                      <span>eli@rennielab.com</span>
-                      <span className="mono" style={{ opacity: 0.6 }}>
-                        Direct →
-                      </span>
+                    <a href="mailto:eli@rennielab.com" className="contact-mail">
+                      <span className="contact-mail-addr">eli@rennielab.com</span>
+                      <span className="mono contact-mail-label">Direct →</span>
                     </a>
                   </div>
                 </div>
@@ -282,7 +255,7 @@ export function ContactSlide() {
             </div>
           )}
           {step === 1 && (
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64 }} className="rise">
+            <div className="contact-step rise">
               <div>
                 <div className="mono" style={{ marginBottom: 12 }}>
                   02 — Who&apos;s saying hello
@@ -317,7 +290,7 @@ export function ContactSlide() {
             </div>
           )}
           {step === 2 && status === "sent" && (
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64 }} className="rise">
+            <div className="contact-step rise">
               <div>
                 <div className="mono" style={{ marginBottom: 12 }}>
                   Sent ✓
@@ -334,7 +307,7 @@ export function ContactSlide() {
             </div>
           )}
           {step === 2 && status !== "sent" && (
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64 }} className="rise">
+            <div className="contact-step rise">
               <div>
                 <div className="mono" style={{ marginBottom: 12 }}>
                   03 — The detail

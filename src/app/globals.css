@@ -1458,6 +1458,43 @@ footer.site-foot {
   display: flex;
   flex-direction: column;
 }
+
+/* Contact slide-out step grid — 2-col on desktop, 1-col on narrow widths */
+.contact-step {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+}
+@media (max-width: 900px) {
+  .contact-step { grid-template-columns: 1fr; gap: 40px; }
+}
+
+/* Direct-contact mail rows — wrap label below address on narrow widths */
+.contact-mail {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+  flex-wrap: wrap;
+}
+.contact-mail-addr {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.contact-mail-label {
+  opacity: 0.6;
+  flex: 0 0 auto;
+}
+@media (max-width: 480px) {
+  .contact-mail-label { display: none; }
+}
 .contact-panel[data-open="true"] { transform: translateX(0); }
 .contact-panel[data-theme="dark"] {
   background: var(--carbon-2);
@@ -1596,8 +1633,8 @@ footer.site-foot {
 .stack-head {
   flex: 1;
   display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 48px;
+  grid-template-columns: 1fr 1.05fr;
+  gap: 56px;
   align-items: stretch;
   padding: clamp(32px, 5vw, 64px) 0 clamp(32px, 4vw, 48px);
   width: 100%;
@@ -1606,10 +1643,11 @@ footer.site-foot {
   font-family: var(--sans);
   font-weight: 600;
   text-transform: none;
-  font-size: clamp(64px, 10.5vw, 160px);
+  font-size: clamp(48px, 6.5vw, 104px);
   line-height: 0.95;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.035em;
   margin: 0;
+  text-wrap: balance;
 }
 .stack-tags {
   display: inline-flex;
@@ -2724,7 +2762,7 @@ footer.site-foot {
     padding-top: 72px;
     padding-bottom: 24px;
   }
-  .stack-title { font-size: clamp(56px, 9vw, 120px); }
+  .stack-title { font-size: clamp(44px, 6vw, 80px); }
   .wordmark { font-size: clamp(64px, 11vw, 168px); margin-top: 40px; }
   .h-display { font-size: clamp(40px, 6.6vw, 96px); }
   .h-1 { font-size: clamp(30px, 4.6vw, 60px); }
@@ -2878,7 +2916,7 @@ footer.site-foot {
   .foot-cols { grid-template-columns: 1fr !important; gap: 24px !important; }
   .impact-apply { padding: 56px 18px !important; }
   .impact-apply h2 { font-size: clamp(32px, 10vw, 48px) !important; }
-  .stack-title { font-size: clamp(48px, 18vw, 96px) !important; }
+  .stack-title { font-size: clamp(40px, 12vw, 64px) !important; }
 
   /* Buttons need to fit narrow viewports — tighten padding,
      allow them to flex full-width in stacked rows. */
