@@ -405,20 +405,34 @@ export function ServicesContent() {
             Sometimes you start at Junctions. Sometimes you loop back to Origins after
             Reflections. The framework adapts because reality is complex.
           </p>
-          <div className="svc-process-steps">
-            {PROCESS.map((p) => (
-              <div key={p.n} className="svc-step">
-                <div className="svc-step-n mono">{p.n}</div>
-                <div>
-                  <h3
-                    className="h-3"
-                    style={{ margin: "0 0 12px", fontFamily: "var(--sans)", fontWeight: 600 }}
-                  >
-                    {p.t}
-                  </h3>
-                  <p className="body" style={{ margin: 0, maxWidth: "62ch" }}>{p.d}</p>
+          <div className="svc-phases">
+            {PROCESS.map((p, i) => (
+              <article key={p.n} className="svc-phase" style={{ animationDelay: `${i * 70}ms` }}>
+                <div className="svc-phase-meta">
+                  <span className="svc-phase-num mono">{p.n}</span>
+                  <span className="svc-phase-dot" aria-hidden="true"></span>
+                  <span className="svc-phase-of mono">of 06</span>
                 </div>
-              </div>
+                <h3 className="svc-phase-title">{p.t}</h3>
+                <p className="svc-phase-desc">{p.d}</p>
+                <span className="svc-phase-loop" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                    <path
+                      d="M3 11a8 8 0 1 0 2.4-5.7"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                    />
+                    <path
+                      d="M3 3v4h4"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
+              </article>
             ))}
           </div>
         </div>

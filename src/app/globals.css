@@ -1713,6 +1713,137 @@ footer.site-foot {
 .svc-step:last-child { border-bottom: 1px solid var(--line); }
 .svc-step-n { padding-top: 4px; }
 
+/* ── Six phases · glass tile grid ─────────────────────── */
+.svc-phases {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.svc-phase {
+  position: relative;
+  padding: 28px 24px 24px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  box-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.7),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.4),
+    0 12px 36px -18px rgba(0, 0, 0, 0.18);
+  transition:
+    transform 350ms var(--easing),
+    background 250ms var(--easing),
+    box-shadow 350ms var(--easing);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 230px;
+  isolation: isolate;
+  cursor: default;
+  overflow: hidden;
+}
+.svc-phase::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(120% 80% at 50% -10%, rgba(232, 77, 77, 0.18), transparent 60%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 350ms var(--easing);
+  z-index: -1;
+}
+.svc-phase:hover {
+  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.85),
+    inset 0 0 0 0.5px rgba(232, 77, 77, 0.5),
+    0 24px 48px -18px rgba(232, 77, 77, 0.28);
+}
+.svc-phase:hover::after { opacity: 1; }
+
+[data-theme="dark"] .svc-phase {
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.08),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.06),
+    0 12px 36px -18px rgba(0, 0, 0, 0.5);
+}
+[data-theme="dark"] .svc-phase:hover {
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.14),
+    inset 0 0 0 0.5px rgba(232, 77, 77, 0.5),
+    0 24px 48px -18px rgba(232, 77, 77, 0.45);
+}
+
+.svc-phase-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.svc-phase-num {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--ink);
+  font-weight: 600;
+  transition: color 250ms var(--easing);
+}
+.svc-phase:hover .svc-phase-num { color: var(--accent); }
+.svc-phase-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--ink-3);
+  display: inline-block;
+}
+.svc-phase:hover .svc-phase-dot { background: var(--accent); }
+.svc-phase-of {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--ink-4);
+}
+.svc-phase-title {
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: clamp(28px, 2.4vw, 38px);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  margin: 0;
+  color: var(--ink);
+}
+.svc-phase-desc {
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.55;
+  letter-spacing: -0.005em;
+  color: var(--ink-2);
+  margin: 0;
+  flex: 1;
+}
+.svc-phase-loop {
+  position: absolute;
+  bottom: 22px;
+  right: 22px;
+  color: var(--accent);
+  opacity: 0;
+  transform: rotate(-25deg);
+  transition: opacity 350ms var(--easing), transform 700ms var(--easing);
+}
+.svc-phase:hover .svc-phase-loop {
+  opacity: 1;
+  transform: rotate(0deg);
+}
+
+@media (max-width: 1100px) {
+  .svc-phases { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 700px) {
+  .svc-phases { grid-template-columns: 1fr; }
+  .svc-phase { min-height: auto; }
+}
+
 /* ── Orbital Diagram ───────────────────────────────────── */
 .orb-diagram-wrap {
   width: 100%;
