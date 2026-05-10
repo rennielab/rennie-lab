@@ -10,7 +10,7 @@ export const PROJECT_HERO: Record<string, string> = {
   "heartfoundation": "/projects/heartfoundation.webp",
   "herschel": "/projects/herschel.webp",
   "imf": "/projects/imf.webp",
-  "in-pieces": "/projects/in-pieces.png",
+  "in-pieces": "/projects/in-pieces.jpg",
   "johnston-advisory": "/projects/johnston-advisory.webp",
   "marlee": "/projects/marlee.webp",
   "mr-simple": "/projects/mr-simple.webp",

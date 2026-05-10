@@ -48,7 +48,7 @@ That is the practice we are trying to build.`,
     type: "newsletter",
     category: "impact",
     tone: "moss",
-    image: "/journal/orbital-design.png",
+    image: "/journal/orbital-design.jpg",
   },
   {
     slug: "rl-expertise-studio-and-ai",
@@ -144,7 +144,7 @@ We do not know yet. That is the honest place to start. Knowing better is the pla
     type: "field-guide",
     category: "design",
     tone: "ocean",
-    image: "/journal/orbital-design.png",
+    image: "/journal/orbital-design.jpg",
   },
   {
     slug: "rl-cost-of-a-website",

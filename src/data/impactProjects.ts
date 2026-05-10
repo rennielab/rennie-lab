@@ -155,7 +155,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Rennie Lab provided early stage brand strategy, visual identity development, and digital platform design and development. The work helped Beard Season find its voice and build the foundations for a movement that would eventually reach a global audience.",
     impact:
       "Beard Season grew into one of Australia's most recognised skin cancer awareness movements, credited with saving lives by encouraging regular skin checks. The early brand and digital work helped establish the credibility and community that made that growth possible.",
-    hero: "/impact/beard-season.png",
+    hero: "/impact/beard-season.jpg",
     tone: "rust",
   },
   {
@@ -183,7 +183,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Rennie Lab delivered strategy, brand design, UX design, and website design for inpieces.com. The work balanced aesthetic excellence with accessibility, ensuring the project's powerful conservation message reached the widest possible audience.",
     impact:
       "In Pieces gained a brand and digital presence that matched the quality and ambition of the project itself, helping it reach a global audience and raise awareness for endangered species through the power of design.",
-    hero: "/projects/in-pieces.png",
+    hero: "/projects/in-pieces.jpg",
     tone: "moss",
   },
   {
