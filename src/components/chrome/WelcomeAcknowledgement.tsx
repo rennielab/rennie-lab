@@ -17,7 +17,10 @@ export function WelcomeAcknowledgement() {
   const [videoOk, setVideoOk] = useState(true);
   const panelRef = useRef<HTMLDivElement>(null);
 
+  // Mount-only effect: gate the modal on a localStorage flag (per-day).
+  // setMounted is the standard mounted-flag pattern; setOpen runs in setTimeout.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     try {
       const lastShown = localStorage.getItem(STORAGE_KEY);
@@ -84,7 +87,6 @@ export function WelcomeAcknowledgement() {
             {/* Lazy-load: only mount the video when the panel actually opens.
                 Saves ~16 MB on first paint for every visitor. */}
             {open && videoOk ? (
-              /* eslint-disable-next-line jsx-a11y/media-has-caption */
               <video
                 src="/video/welcome-to-country.mp4"
                 autoPlay

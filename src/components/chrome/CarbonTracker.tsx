@@ -157,7 +157,6 @@ const ICONS = {
 export function CarbonTracker() {
   const [open, setOpen] = useState(false);
   const [sessionBytes, setSessionBytes] = useState(0);
-  const [pageBytes, setPageBytes] = useState(0);
   const [pageRequests, setPageRequests] = useState(0);
   const [pageCount, setPageCount] = useState(1);
   const [scrolled, setScrolled] = useState(0);
@@ -170,17 +169,19 @@ export function CarbonTracker() {
     }
   }, []);
 
-  /* Restore carry-in from prior pages and start polling */
+  /* Restore carry-in from prior pages and start polling. Reads sessionStorage
+     on mount and seeds the counter from there — synchronous setState is the
+     point: we don't want a flash-of-zero before the carry-in lands. */
   useEffect(() => {
     if (typeof window === "undefined") return;
     const carryIn = parseInt(sessionStorage.getItem(SESSION_BYTES_KEY) || "0", 10) || 0;
     const carryPages = parseInt(sessionStorage.getItem(SESSION_PAGES_KEY) || "0", 10) || 0;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPageCount(Math.max(1, carryPages + 1));
     sessionStorage.setItem(SESSION_PAGES_KEY, String(Math.max(1, carryPages + 1)));
 
     const update = () => {
       const m = readPageMetrics();
-      setPageBytes(m.bytes);
       setPageRequests(m.requests);
       const total = carryIn + m.bytes;
       setSessionBytes(total);
