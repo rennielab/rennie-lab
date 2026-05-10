@@ -135,6 +135,7 @@ export function AffiliationStrip({ variant = "page", forceTheme }: Props) {
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
+              className="logo-asset"
               src={a.src}
               alt={a.label}
               style={{
