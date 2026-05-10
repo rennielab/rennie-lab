@@ -3,6 +3,7 @@ import { ContactButton } from "@/components/chrome/ContactButton";
 import { LogoStrip } from "@/components/home/LogoStrip";
 import { WhatWeDo } from "@/components/home/WhatWeDo";
 import { FeedCard } from "@/components/home/FeedCard";
+import { HeroTiles } from "@/components/home/HeroTiles";
 import { FEED_ITEMS } from "@/data/journalFeed";
 
 export const metadata = {
@@ -16,7 +17,10 @@ export default function HomePage() {
 
   return (
     <div className="container">
-      {/* Hero */}
+      {/* Image-led hero — 4 featured projects */}
+      <HeroTiles />
+
+      {/* Hero text */}
       <section style={{ padding: "24px 0 48px", position: "relative" }}>
         <div className="mono rise" style={{ marginBottom: 32 }}>
           <span

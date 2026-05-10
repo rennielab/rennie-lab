@@ -1651,6 +1651,124 @@ footer.site-foot {
   .impact-apply-grid { grid-template-columns: 1fr; gap: 32px; }
 }
 
+/* ── Home · 4-tile image-led hero ─────────────────────── */
+.hero-tiles {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 6px;
+  height: 82vh;
+  min-height: 560px;
+  margin: 0 calc(50% - 50vw) clamp(48px, 6vw, 96px);
+  width: 100vw;
+}
+.hero-tile {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  isolation: isolate;
+  background: var(--ink);
+  outline: 0;
+}
+.hero-tile-img {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: transform 1400ms cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 1;
+}
+.hero-tile:hover .hero-tile-img,
+.hero-tile:focus-visible .hero-tile-img {
+  transform: scale(1.05);
+}
+.hero-tile-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.18) 0%,
+    rgba(0, 0, 0, 0.04) 35%,
+    rgba(0, 0, 0, 0.65) 100%
+  );
+  transition: background 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hero-tile:hover .hero-tile-shade {
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.22) 0%,
+    rgba(0, 0, 0, 0.06) 30%,
+    rgba(232, 77, 77, 0.32) 100%
+  );
+}
+.hero-tile-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: clamp(20px, 2.4vw, 36px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 3;
+  color: var(--cream);
+  transform: translateY(0);
+  transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hero-tile:hover .hero-tile-content {
+  transform: translateY(-6px);
+}
+.hero-tile-eyebrow {
+  color: rgba(244, 241, 222, 0.78);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+}
+.hero-tile-title {
+  margin: 0;
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: clamp(28px, 2.6vw, 44px);
+  letter-spacing: -0.02em;
+  line-height: 1.02;
+  color: var(--cream);
+}
+.hero-tile-tagline {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: clamp(13px, 1.05vw, 16px);
+  line-height: 1.4;
+  letter-spacing: -0.005em;
+  color: rgba(244, 241, 222, 0.85);
+  max-width: 28ch;
+}
+.hero-tile[data-lead="true"] .hero-tile-title {
+  font-size: clamp(40px, 4.4vw, 84px);
+  letter-spacing: -0.03em;
+}
+.hero-tile[data-lead="true"] .hero-tile-tagline {
+  font-size: clamp(15px, 1.3vw, 20px);
+  max-width: 34ch;
+}
+@media (max-width: 1100px) {
+  .hero-tiles {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: minmax(280px, 40vh) minmax(280px, 40vh);
+    height: auto;
+    min-height: auto;
+  }
+  .hero-tile[data-lead="true"] .hero-tile-title {
+    font-size: clamp(32px, 4vw, 56px);
+  }
+}
+@media (max-width: 700px) {
+  .hero-tiles {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(4, 56vh);
+    gap: 4px;
+  }
+}
+
 /* ── Story · parallax atmosphere band ─────────────────── */
 .story-parallax {
   position: relative;
