@@ -160,7 +160,7 @@ export function JournalFeed({ items }: { items: UnifiedFeedItem[] }) {
         style={{
           margin: "8px 0 32px",
           padding: "10px 16px",
-          border: "1px solid var(--line)",
+          background: "var(--bg-soft)",
           borderRadius: "var(--radius)",
         }}
       >

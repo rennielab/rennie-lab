@@ -51,13 +51,13 @@ export function AccessibilityModes() {
       {lowCarbon && (
         <div className="mode-badge mode-badge-lc">
           <span className="mode-badge-dot" aria-hidden="true"></span>
-          <span>LOW-CARBON · TEXT ONLY</span>
+          <span>LOW CARBON MODE ACTIVE</span>
         </div>
       )}
       {reduceMotion && (
         <div className="mode-badge mode-badge-rm">
           <span className="mode-badge-dot" aria-hidden="true"></span>
-          <span>REDUCED MOTION</span>
+          <span>REDUCED MOTION ACTIVE</span>
         </div>
       )}
     </div>

@@ -95,7 +95,6 @@ export default function HomePage() {
           <div
             style={{
               background: "var(--bg-card)",
-              border: "1px solid var(--line)",
               borderRadius: "var(--radius)",
               padding: 32,
               display: "grid",

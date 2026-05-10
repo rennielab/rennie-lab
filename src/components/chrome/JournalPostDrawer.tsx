@@ -120,7 +120,7 @@ export function JournalPostDrawer() {
               <div className="jp-chip">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  className="jp-chip-img"
+                  className="jp-chip-img logo-asset"
                   src="/r-icon.png"
                   alt="Rennie Lab"
                   width={44}

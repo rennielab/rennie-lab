@@ -37,7 +37,7 @@ export function ProjectsList({ projects }: { projects: Project[] }) {
         style={{
           margin: "0 0 32px",
           padding: "10px 16px",
-          border: "1px solid var(--line)",
+          background: "var(--bg-soft)",
           borderRadius: "var(--radius)",
           display: "flex",
           gap: 16,
