@@ -139,9 +139,14 @@ export default function HomePage() {
               <ContactButton>
                 Open the brief <span className="arrow">→</span>
               </ContactButton>
-              <button type="button" className="btn btn-ghost">
+              <a
+                href="https://cal.com/benrennie/30min"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-ghost"
+              >
                 Book a call
-              </button>
+              </a>
             </div>
           </div>
         </div>

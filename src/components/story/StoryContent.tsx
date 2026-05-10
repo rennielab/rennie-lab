@@ -14,8 +14,8 @@ type Partner = {
 const PARTNERS: Partner[] = [
   { name: "Ben Rennie",    role: "Co-Founder · Creative Director",        loc: "Sydney", image: "/team/ben.jpg",    tone: "ink" },
   { name: "Nicola Rennie", role: "Co-Founder · Strategy & Operations",    loc: "Sydney", image: "/team/nicola.jpg", tone: "moss" },
-  { name: "El Moore",      role: "Studio Director",                       loc: "Sydney",                            tone: "red" },
-  { name: "Orkan Silmaz",  role: "Head of Digital",                       loc: "Sydney",                            tone: "rust" },
+  { name: "El Moore",      role: "Studio Director",                       loc: "Sydney", image: "/team/el.jpg",     tone: "red" },
+  { name: "Orkan Silmaz",  role: "Head of Digital",                       loc: "Sydney", image: "/team/orkan.jpg",  tone: "rust" },
 ];
 
 const CREDITS: { role: string; names: string[] }[] = [

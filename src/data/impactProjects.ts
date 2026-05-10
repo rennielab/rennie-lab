@@ -225,6 +225,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Rennie Lab designed the Pulse CPR app for the Winner Foundation, building a UX experience specifically engineered for high-stress, real-time use. Clear, calm, and instantly navigable, the app was designed to give bystanders the confidence to act when every second counts.",
     impact:
       "The Pulse CPR app was built with a single stated mission: to save one million Australians. The design work gave that mission a tool worthy of its ambition.",
+    hero: "/impact/pulse-cpr.jpg",
     tone: "red",
   },
   {
@@ -322,6 +323,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Reny Studio held B Corp certification from 2008 to 2009, among the earliest design agencies in Australia to do so, and again from 2023 to 2025. In 2025 the decision was made to step back from certification and redirect that investment of time, energy, and resources into building Design Declares Australia and developing our own direct impact programs. We chose to put the B Corp spend into D! and into our own work rather than into a certification process.",
     impact:
       "Two chapters of B Corp certification helped establish Reny Studio and Rennie Lab as purpose-led organisations at a time when that was genuinely rare in Australian design. The decision to exit certification in favour of deeper investment in Design Declares Australia reflects a belief that direct action now outweighs the value of the badge.",
+    hero: "/impact/b-corp-certification.jpg",
     tone: "moss",
   },
 ];

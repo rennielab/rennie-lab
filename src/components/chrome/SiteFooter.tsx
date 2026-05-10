@@ -36,13 +36,15 @@ export function SiteFooter() {
             >
               Open the brief <span className="arrow">→</span>
             </button>
-            <button
+            <a
               className="btn btn-ghost"
               style={{ borderColor: "rgba(244,241,222,0.2)", color: "var(--cream)" }}
-              type="button"
+              href="https://cal.com/benrennie/30min"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               Book a call
-            </button>
+            </a>
           </div>
         </div>
       </div>
@@ -106,11 +108,24 @@ export function SiteFooter() {
         <div className="foot-col foot-col-mono">
           <div className="foot-col-title">Channels</div>
           <ul>
-            <li>Instagram ↗</li>
-            <li>LinkedIn ↗</li>
-            <li>Substack ↗</li>
-            <li>OFF.Climate ↗</li>
-            <li>Vimeo ↗</li>
+            <li>
+              <a href="https://instagram.com/benrennie" target="_blank" rel="noopener noreferrer">
+                Instagram ↗
+              </a>
+            </li>
+            <li>
+              <a href="https://linkedin.com/in/benrennie" target="_blank" rel="noopener noreferrer">
+                LinkedIn ↗
+              </a>
+            </li>
+            <li>
+              <a href="https://benrennie.substack.com" target="_blank" rel="noopener noreferrer">
+                Substack ↗
+              </a>
+            </li>
+            <li>
+              <Link href="/journal">Off Climate ↗</Link>
+            </li>
           </ul>
         </div>
         <div className="foot-col foot-col-mono">
