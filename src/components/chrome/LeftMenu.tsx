@@ -38,15 +38,15 @@ export function LeftMenu() {
           type="button"
         >
           {open ? (
-            <svg width="18" height="18" viewBox="0 0 18 18">
-              <path d="M3 9h12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+            <svg width="24" height="24" viewBox="0 0 24 24">
+              <path d="M5 12h14" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
             </svg>
           ) : (
-            <svg width="18" height="18" viewBox="0 0 18 18">
+            <svg width="24" height="24" viewBox="0 0 24 24">
               <path
-                d="M3 5h12M3 9h12M3 13h12"
+                d="M4 7h16M4 12h16M4 17h16"
                 stroke="currentColor"
-                strokeWidth="1.6"
+                strokeWidth="2.4"
                 strokeLinecap="round"
               />
             </svg>

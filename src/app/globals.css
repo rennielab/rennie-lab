@@ -296,18 +296,34 @@ em, i, .italic { font-style: normal; color: inherit !important; }
   display: none;
 }
 .icon-btn {
-  width: 32px;
-  height: 32px;
+  width: 42px;
+  height: 42px;
   flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--ink-3);
-  transition: color 200ms, background 200ms;
-  border-radius: 3px;
+  color: #0a0a0c;
+  background: rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  transition: color 200ms, background 200ms, border-color 200ms, transform 200ms;
+  border-radius: 4px;
+  cursor: pointer;
 }
-.icon-btn svg { width: 18px; height: 18px; }
-.icon-btn:hover { color: var(--ink); background: var(--bg-soft); }
+[data-theme="dark"] .icon-btn {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.30);
+}
+.icon-btn svg { width: 24px; height: 24px; }
+.icon-btn:hover {
+  background: rgba(0, 0, 0, 0.12);
+  border-color: rgba(0, 0, 0, 0.30);
+  transform: scale(1.05);
+}
+[data-theme="dark"] .icon-btn:hover {
+  background: rgba(255, 255, 255, 0.20);
+  border-color: rgba(255, 255, 255, 0.50);
+}
 
 .left-menu-body {
   display: grid;
