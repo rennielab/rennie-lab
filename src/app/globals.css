@@ -236,6 +236,13 @@ em, i, .italic { font-style: normal; color: inherit !important; }
     0 12px 40px -18px rgba(0, 0, 0, 0.5);
 }
 .left-menu[data-open="false"] { width: 230px; }
+.left-menu[data-open="true"] {
+  background: rgba(255, 248, 230, 0.96);
+  transition: width 500ms var(--easing), height 500ms var(--easing), background 250ms var(--easing);
+}
+[data-theme="dark"] .left-menu[data-open="true"] {
+  background: rgba(28, 28, 31, 0.96);
+}
 .left-menu-head {
   display: flex;
   align-items: center;

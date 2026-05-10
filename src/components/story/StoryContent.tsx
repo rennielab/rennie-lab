@@ -55,12 +55,12 @@ const PRESS: { line: string; tag: string }[] = [
 ];
 
 const NUMBERS: [string, string][] = [
-  ["2", "studios on two continents"],
-  ["16", "years of work"],
-  ["26", "partner brands"],
-  ["1,820", "pro-bono hours · 2025"],
-  ["0.21g", "avg CO₂e per page"],
-  ["100%", "green-grid hosting"],
+  ["17", "years"],
+  ["1,900+", "projects"],
+  ["233", "clients"],
+  ["$1.1M", "in impact"],
+  ["40%", "impact, by capacity"],
+  ["9", "countries worked in"],
 ];
 
 const PRINCIPLES: [string, string][] = [

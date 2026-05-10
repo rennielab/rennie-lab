@@ -351,7 +351,7 @@ export function ServicesContent() {
                 key={p.letter}
                 style={{
                   padding: "32px 28px",
-                  background: "var(--bg-soft)",
+                  border: "1px solid var(--line)",
                   borderRadius: "var(--radius)",
                   display: "flex",
                   flexDirection: "column",
