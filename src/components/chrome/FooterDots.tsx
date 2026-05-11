@@ -1,38 +1,42 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-/* Dot-matrix footer display — Fourmula-inspired.
-   Renders a faint cream grid of dots; each frame illuminates a subset to
-   form a shape (heart, tree, leaf) or render a text/number string ("91%",
-   "40%", "2026") via a tiny 5×7 pixel font. Cycles every CYCLE_MS with a
-   smooth opacity transition per cell.
+/* Dot-matrix display — Fourmula-inspired with halo "stitching" effect.
 
-   Coordinate system: rows top→bottom, cols left→right. Cell value:
-     0 = off (faint)   · 1 = cream (lit)   · 2 = accent red
+   Each frame is a binary shape (1 cell per pixel). Before render we
+   DILATE the shape with a distance kernel so each lit cell radiates
+   intensity outward — adjacent cells get bright, two cells away get
+   medium, three away get a soft glow, four away fade to base. This is
+   what gives Fourmula's matrix its diffuse-edge "stitching" feel,
+   instead of the hard pixel edge of a naive shape.
 
-   ASCII art format: '#' lights cream, '*' lights accent red, '.' off.    */
+   Coordinate system: rows top→bottom, cols left→right. ASCII art:
+     '#'  shape pixel (cream)    '*'  shape pixel (accent red)
+     '.'  off (still gets faint base intensity from the field)         */
 
-const COLS = 56;
-const ROWS = 14;
-const DOT_R = 3;
+const COLS = 96;
+const ROWS = 20;
+const DOT_R = 3.2;
 const STEP = 14;
-const PAD = 8;
+const PAD = 12;
 const W = COLS * STEP + PAD * 2;
 const H = ROWS * STEP + PAD * 2;
 const CYCLE_MS = 4500;
+const HALO_RADIUS = 3.5; // dot intensity decays linearly to 0 at this distance
 
 type Cell = 0 | 1 | 2;
-type Grid = Cell[][];
+type CellInfo = { intensity: number; isAccent: boolean };
+type ShapeGrid = Cell[][];
+type IntensityGrid = CellInfo[][];
 
-function emptyGrid(): Grid {
+function emptyShape(): ShapeGrid {
   return Array.from({ length: ROWS }, () => Array<Cell>(COLS).fill(0));
 }
 
-/* Stamp ASCII art onto a fresh grid at (offsetCol, offsetRow). Default
-   value can be overridden — passing 2 maps every '#' to accent red.      */
-function stamp(art: string, offsetCol: number, offsetRow: number, defaultValue: Cell = 1): Grid {
-  const g = emptyGrid();
+/* Stamp ASCII art into a fresh shape grid at (offsetCol, offsetRow). */
+function stamp(art: string, offsetCol: number, offsetRow: number): ShapeGrid {
+  const g = emptyShape();
   const lines = art.split("\n").filter((l) => l.length > 0);
   for (let r = 0; r < lines.length; r++) {
     const line = lines[r];
@@ -42,12 +46,45 @@ function stamp(art: string, offsetCol: number, offsetRow: number, defaultValue: 
         const tr = r + offsetRow;
         const tc = c + offsetCol;
         if (tr >= 0 && tr < ROWS && tc >= 0 && tc < COLS) {
-          g[tr][tc] = ch === "*" ? 2 : defaultValue;
+          g[tr][tc] = ch === "*" ? 2 : 1;
         }
       }
     }
   }
   return g;
+}
+
+/* Dilate a shape into an intensity field with a soft falloff per cell. */
+function dilate(shape: ShapeGrid): IntensityGrid {
+  const out: IntensityGrid = Array.from({ length: ROWS }, () =>
+    Array.from({ length: COLS }, () => ({ intensity: 0, isAccent: false })),
+  );
+  const kernel = Math.ceil(HALO_RADIUS);
+
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      let maxI = 0;
+      let isAccent = false;
+      for (let dr = -kernel; dr <= kernel; dr++) {
+        for (let dc = -kernel; dc <= kernel; dc++) {
+          const sr = r + dr;
+          const sc = c + dc;
+          if (sr < 0 || sr >= ROWS || sc < 0 || sc >= COLS) continue;
+          const sv = shape[sr][sc];
+          if (!sv) continue;
+          const dist = Math.sqrt(dr * dr + dc * dc);
+          if (dist > HALO_RADIUS) continue;
+          const i = 1 - dist / HALO_RADIUS;
+          if (i > maxI) {
+            maxI = i;
+            isAccent = sv === 2;
+          }
+        }
+      }
+      out[r][c] = { intensity: maxI, isAccent };
+    }
+  }
+  return out;
 }
 
 /* ---- Pixel font · 5 wide × 7 tall ---- */
@@ -70,126 +107,134 @@ const FONT: Record<string, string[]> = {
   " ": [".....", ".....", ".....", ".....", ".....", ".....", "....."],
 };
 
-/* Build ASCII art for a string. charSpacing is # of empty cols between
-   chars. Optional accentChars set marks specific characters as accent red. */
-function textArt(text: string, charSpacing: number = 1, accentChars?: Set<string>): { art: string; width: number; accentCols: Set<number> } {
-  const chars = text.toUpperCase().split("");
-  const knownChars = chars.filter((c) => FONT[c]);
-  if (knownChars.length === 0) return { art: "", width: 0, accentCols: new Set() };
-
-  const accentCols = new Set<number>();
-  let runningCol = 0;
-  if (accentChars) {
-    knownChars.forEach((c) => {
-      const charWidth = FONT[c][0].length;
-      if (accentChars.has(c)) {
-        for (let i = 0; i < charWidth; i++) accentCols.add(runningCol + i);
-      }
-      runningCol += charWidth + charSpacing;
-    });
-  }
-
+/* Render a string at 5×7 with N empty cols between chars. accentChars
+   is a set of characters to render as accent red (only those characters
+   inside the string get '*' instead of '#').                            */
+function buildText(text: string, charSpacing = 1, accentChars?: Set<string>): { lines: string[]; width: number } {
+  const chars = text.toUpperCase().split("").filter((c) => FONT[c]);
+  if (chars.length === 0) return { lines: [], width: 0 };
   const lines: string[] = [];
   for (let r = 0; r < 7; r++) {
     let line = "";
-    knownChars.forEach((c, i) => {
-      line += FONT[c][r];
-      if (i < knownChars.length - 1) line += ".".repeat(charSpacing);
+    chars.forEach((c, i) => {
+      const isAccent = accentChars?.has(c) ?? false;
+      const sym = isAccent ? "*" : "#";
+      line += FONT[c][r].replace(/#/g, sym);
+      if (i < chars.length - 1) line += ".".repeat(charSpacing);
     });
     lines.push(line);
   }
-  const width = lines[0].length;
-  return { art: lines.join("\n"), width, accentCols };
+  return { lines, width: lines[0].length };
 }
 
-function stampText(text: string, accentChars?: Set<string>): Grid {
-  const { art, width, accentCols } = textArt(text, 1, accentChars);
-  const offsetCol = Math.floor((COLS - width) / 2);
-  const offsetRow = Math.floor((ROWS - 7) / 2);
-  const g = emptyGrid();
-  const lines = art.split("\n");
-  for (let r = 0; r < lines.length; r++) {
-    const line = lines[r];
-    for (let c = 0; c < line.length; c++) {
-      if (line[c] === "#") {
-        const tr = r + offsetRow;
-        const tc = c + offsetCol;
-        if (tr >= 0 && tr < ROWS && tc >= 0 && tc < COLS) {
-          g[tr][tc] = accentCols.has(c) ? 2 : 1;
-        }
-      }
-    }
+function stampText(text: string, accentChars?: Set<string>, charSpacing = 1, scale = 2): ShapeGrid {
+  const { lines, width } = buildText(text, charSpacing, accentChars);
+  // Scale up the bitmap by repeating each pixel `scale` times in both axes.
+  const scaledLines: string[] = [];
+  for (const line of lines) {
+    let scaled = "";
+    for (const ch of line) scaled += ch.repeat(scale);
+    for (let s = 0; s < scale; s++) scaledLines.push(scaled);
   }
-  return g;
+  const scaledWidth = width * scale;
+  const scaledHeight = 7 * scale;
+  const offsetCol = Math.floor((COLS - scaledWidth) / 2);
+  const offsetRow = Math.floor((ROWS - scaledHeight) / 2);
+  return stamp(scaledLines.join("\n"), offsetCol, offsetRow);
 }
 
-/* ---- shape art ---- */
+/* ---- Shape art ---- larger now (28-30 wide) for the bigger 96-col grid */
 
 const HEART = `
-..####....####..
-.######..######.
-################
-################
-################
-.##############.
-..############..
-...##########...
-....########....
-.....######.....
-......####......
-.......##.......
+.....######......######.....
+....########....########....
+..############..############
+..##########################
+..##########################
+..##########################
+..##########################
+..##########################
+...########################.
+....######################..
+.....####################...
+......##################....
+.......################.....
+........##############......
+.........############.......
+..........##########........
+...........########.........
+............######..........
+.............####...........
+..............##............
 `;
 
 const LEAF = `
-.......##.......
-.....######.....
-....########....
-...##########...
-..############..
-.##############.
-##############..
-.##############.
-..############..
-...##########...
-....########....
-.....######.....
-......####......
-.......##.......
+..............##............
+............######..........
+..........##########........
+.........############.......
+........##############......
+.......################.....
+......##################....
+.....####################...
+....######################..
+...########################.
+..##########################
+..########################..
+..######################....
+.######################.....
+.####################.......
+.##################.........
+.################...........
+.##############.............
+.############...............
+.##########.................
 `;
 
 const TREE = `
-......####......
-.....######.....
-....########....
-...##########...
-..############..
-.##############.
-####********####
-##**********####
-.##**********##.
-.....######.....
-......####......
-......####......
-......####......
-.....######.....
+.............####...........
+............######..........
+...........########.........
+..........##########........
+.........############.......
+........##############......
+.......################.....
+......##################....
+.....####################...
+....######################..
+...########################.
+..##########################
+.############################
+########********########.
+######************######....
+.....****************.......
+.....****************.......
+.....****************.......
+.....****************.......
+.....****************.......
 `;
 
-/* Cycle frames — heart in red, leaf cream, tree mixed (red trunk),
-   then text frames showing the studio's headline numbers + LOVE.        */
-const FRAMES: Grid[] = [
-  stamp(HEART, Math.floor((COLS - 16) / 2), 1, 2), // accent red heart
-  stamp(LEAF, Math.floor((COLS - 16) / 2), 0, 1),
-  stamp(TREE, Math.floor((COLS - 16) / 2), 0, 1),
-  stampText("91%", new Set(["%"])),  // 91 cream, % red
-  stampText("40%", new Set(["%"])),
-  stampText("LOVE"),
-  stampText("2026"),
+const FRAMES: ShapeGrid[] = [
+  stamp(HEART, Math.floor((COLS - 28) / 2), 0),       // heart cream by default
+  stamp(LEAF, Math.floor((COLS - 28) / 2), 0),
+  stamp(TREE, Math.floor((COLS - 30) / 2), 0),        // tree (cream foliage + red trunk via *)
+  stampText("91%", new Set(["%"]), 1, 2),
+  stampText("40%", new Set(["%"]), 1, 2),
+  stampText("LOVE", undefined, 1, 2),
+  stampText("2026", undefined, 1, 2),
 ];
+
+/* Convert HEART to all-accent for the love frame (overrides default cream) */
+const HEART_RED: ShapeGrid = stamp(HEART.replace(/#/g, "*"), Math.floor((COLS - 28) / 2), 0);
+FRAMES[0] = HEART_RED;
 
 const FRAME_NAMES = ["love", "leaf", "tree", "lighter than", "impact, by capacity", "love", "year"];
 
 export function FooterDots() {
   const [frameIdx, setFrameIdx] = useState(0);
+
+  // Precompute the dilated intensity grid for every frame once.
+  const fields = useMemo(() => FRAMES.map(dilate), []);
 
   useEffect(() => {
     const t = setInterval(() => {
@@ -198,7 +243,7 @@ export function FooterDots() {
     return () => clearInterval(t);
   }, []);
 
-  const grid = FRAMES[frameIdx];
+  const field = fields[frameIdx];
 
   return (
     <div className="footer-dots-wrap" aria-hidden="true">
@@ -206,14 +251,17 @@ export function FooterDots() {
         className="footer-dots-svg"
         viewBox={`0 0 ${W} ${H}`}
         xmlns="http://www.w3.org/2000/svg"
+        preserveAspectRatio="xMidYMid meet"
       >
-        {grid.flatMap((row, r) =>
+        {field.flatMap((row, r) =>
           row.map((cell, c) => {
             const cx = PAD + c * STEP + STEP / 2;
             const cy = PAD + r * STEP + STEP / 2;
-            const fill = cell === 2 ? "#e84d4d" : "#fbfbf7";
-            const opacity = cell === 0 ? 0.10 : cell === 2 ? 0.96 : 0.92;
-            const r2 = cell === 0 ? DOT_R * 0.75 : DOT_R;
+            // Base faint grey under everything, shape lifts intensity.
+            const opacity = 0.08 + cell.intensity * 0.92;
+            const fill = cell.isAccent ? "#e84d4d" : "#fbfbf7";
+            // Slightly grow the dot under heavy intensity for extra punch.
+            const r2 = DOT_R * (0.85 + cell.intensity * 0.25);
             return (
               <circle
                 key={`${r}-${c}`}

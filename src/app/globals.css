@@ -1225,30 +1225,22 @@ footer.site-foot {
   padding: 56px 0;
   align-items: start;
 }
-/* Solo variant — Acknowledgement of Country with no menu columns alongside */
-.foot-ack-row-solo {
-  grid-template-columns: 1fr;
-  max-width: 720px;
-  padding: 56px 0 24px;
-}
-
-/* Dot-matrix display block */
+/* Dot-matrix display block — centerpiece full-width */
 .foot-dots {
-  padding: 24px 0 56px;
+  padding: 56px 0 56px;
   border-top: 1px solid rgba(244, 241, 222, 0.10);
   border-bottom: 1px solid rgba(244, 241, 222, 0.10);
-  margin-top: 32px;
+  margin-top: 48px;
 }
 .footer-dots-wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
-  padding-top: 24px;
+  gap: 24px;
 }
 .footer-dots-svg {
   width: 100%;
-  max-width: 880px;
+  max-width: none;
   height: auto;
   display: block;
 }
@@ -1258,6 +1250,22 @@ footer.site-foot {
   text-transform: uppercase;
   color: rgba(244, 241, 222, 0.45);
   transition: color 700ms;
+}
+
+/* Full-width Acknowledgement of Country band at the very bottom */
+.foot-ack-band {
+  margin-top: 56px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(244, 241, 222, 0.10);
+}
+.foot-ack-band-body {
+  font-family: var(--sans);
+  font-size: 13px;
+  line-height: 1.65;
+  letter-spacing: -0.005em;
+  color: rgba(244, 241, 222, 0.6);
+  margin: 16px 0 0;
+  max-width: none;
 }
 .foot-ack p {
   font-family: var(--sans);

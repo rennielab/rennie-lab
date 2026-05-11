@@ -50,28 +50,7 @@ export function SiteFooter() {
         </div>
       </div>
 
-      {/* Middle — Acknowledgement of Country (always present, culturally important) */}
-      <div className="foot-ack-row foot-ack-row-solo">
-        <div className="foot-ack">
-          <button
-            type="button"
-            className="foot-col-title foot-ack-title-button"
-            onClick={() => window.dispatchEvent(new CustomEvent("open-acknowledgement"))}
-          >
-            Acknowledgement of Country ↑
-          </button>
-          <p>
-            Rennie Lab acknowledge the Traditional Owners of Country
-            throughout Australia and pay our respects to Elders past,
-            present and emerging. We honour their enduring connection to
-            land, waters, skies and culture. As the first storytellers of
-            these lands, we give thanks for their care and share our
-            respect and friendship with all First Nations peoples.
-          </p>
-        </div>
-      </div>
-
-      {/* Dot-matrix display — cycles through love / leaf / tree / energy */}
+      {/* Dot-matrix display — full-width, centerpiece block */}
       <div className="foot-dots">
         <FooterDots />
       </div>
@@ -107,6 +86,25 @@ export function SiteFooter() {
           </div>
           <AffiliationStrip variant="footer" forceTheme="dark" />
         </div>
+      </div>
+
+      {/* Acknowledgement of Country — full-width band at the bottom */}
+      <div className="foot-ack-band">
+        <button
+          type="button"
+          className="foot-col-title foot-ack-title-button"
+          onClick={() => window.dispatchEvent(new CustomEvent("open-acknowledgement"))}
+        >
+          Acknowledgement of Country ↑
+        </button>
+        <p className="foot-ack-band-body">
+          Rennie Lab acknowledge the Traditional Owners of Country throughout
+          Australia and pay our respects to Elders past, present and emerging.
+          We honour their enduring connection to land, waters, skies and
+          culture. As the first storytellers of these lands, we give thanks for
+          their care and share our respect and friendship with all First
+          Nations peoples.
+        </p>
       </div>
 
       {/* Bottom strip — copyright + trust statements */}
