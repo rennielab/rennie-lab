@@ -1,13 +1,14 @@
 "use client";
 
-import Link from "next/link";
 import { AffiliationStrip } from "@/components/affiliations/AffiliationStrip";
+import { FooterDots } from "./FooterDots";
 
 export function SiteFooter() {
   const openContact = () => window.dispatchEvent(new CustomEvent("open-contact"));
 
   return (
     <footer className="site-foot">
+      {/* Top — closer + contact card. The big "let's make something" moment */}
       <div className="foot-grid">
         <div className="foot-headline">
           Let&apos;s make
@@ -49,7 +50,8 @@ export function SiteFooter() {
         </div>
       </div>
 
-      <div className="foot-ack-row">
+      {/* Middle — Acknowledgement of Country (always present, culturally important) */}
+      <div className="foot-ack-row foot-ack-row-solo">
         <div className="foot-ack">
           <button
             type="button"
@@ -67,80 +69,14 @@ export function SiteFooter() {
             respect and friendship with all First Nations peoples.
           </p>
         </div>
-        <div className="foot-cols">
-        <div className="foot-col">
-          <div className="foot-col-title">Sitemap</div>
-          <ul>
-            <li>
-              <Link href="/story">Story</Link>
-            </li>
-            <li>
-              <Link href="/projects">Projects</Link>
-            </li>
-            <li>
-              <Link href="/impact">Impact</Link>
-            </li>
-            <li>
-              <Link href="/journal">Off Climate</Link>
-            </li>
-            <li onClick={openContact}>Contact</li>
-          </ul>
-        </div>
-        <div className="foot-col">
-          <div className="foot-col-title">Studios</div>
-          <ul>
-            <li>
-              Sydney
-              <br />
-              <span className="mono" style={{ color: "rgba(244,241,222,0.5)" }}>
-                Eora · 33°S
-              </span>
-            </li>
-            <li style={{ marginTop: 18 }}>
-              Los Angeles
-              <br />
-              <span className="mono" style={{ color: "rgba(244,241,222,0.5)" }}>
-                Tongva · 34°N
-              </span>
-            </li>
-          </ul>
-        </div>
-        <div className="foot-col foot-col-mono">
-          <div className="foot-col-title">Channels</div>
-          <ul>
-            <li>
-              <a href="https://instagram.com/benrennie" target="_blank" rel="noopener noreferrer">
-                Instagram ↗
-              </a>
-            </li>
-            <li>
-              <a href="https://linkedin.com/in/benrennie" target="_blank" rel="noopener noreferrer">
-                LinkedIn ↗
-              </a>
-            </li>
-            <li>
-              <a href="https://benrennie.substack.com" target="_blank" rel="noopener noreferrer">
-                Substack ↗
-              </a>
-            </li>
-            <li>
-              <Link href="/journal">Off Climate ↗</Link>
-            </li>
-          </ul>
-        </div>
-        <div className="foot-col foot-col-mono">
-          <div className="foot-col-title">Impact</div>
-          <ul>
-            <li>1% for the Planet</li>
-            <li>B-Corp Certified</li>
-            <li>Climate Active</li>
-            <li>Green hosting</li>
-            <li>Carbon report ↓</li>
-          </ul>
-        </div>
-        </div>
       </div>
 
+      {/* Dot-matrix display — cycles through love / leaf / tree / energy */}
+      <div className="foot-dots">
+        <FooterDots />
+      </div>
+
+      {/* Wordmark + accountability badges */}
       <div
         style={{
           display: "flex",
@@ -173,6 +109,7 @@ export function SiteFooter() {
         </div>
       </div>
 
+      {/* Bottom strip — copyright + trust statements */}
       <div className="foot-bottom">
         <span>© 2009—2026 · Rennie Lab Pty Ltd</span>
         <span style={{ display: "flex", gap: 24 }}>

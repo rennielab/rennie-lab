@@ -304,25 +304,22 @@ em, i, .italic { font-style: normal; color: inherit !important; }
   justify-content: center;
   color: #0a0a0c;
   background: rgba(0, 0, 0, 0.06);
-  border: 1px solid rgba(0, 0, 0, 0.18);
-  transition: color 200ms, background 200ms, border-color 200ms, transform 200ms;
+  border: 0;
+  transition: color 200ms, background 200ms, transform 200ms;
   border-radius: 4px;
   cursor: pointer;
 }
 [data-theme="dark"] .icon-btn {
   color: #ffffff;
   background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.30);
 }
 .icon-btn svg { width: 24px; height: 24px; }
 .icon-btn:hover {
   background: rgba(0, 0, 0, 0.12);
-  border-color: rgba(0, 0, 0, 0.30);
   transform: scale(1.05);
 }
 [data-theme="dark"] .icon-btn:hover {
-  background: rgba(255, 255, 255, 0.20);
-  border-color: rgba(255, 255, 255, 0.50);
+  background: rgba(255, 255, 255, 0.22);
 }
 
 .left-menu-body {
@@ -1227,6 +1224,40 @@ footer.site-foot {
   gap: 64px;
   padding: 56px 0;
   align-items: start;
+}
+/* Solo variant — Acknowledgement of Country with no menu columns alongside */
+.foot-ack-row-solo {
+  grid-template-columns: 1fr;
+  max-width: 720px;
+  padding: 56px 0 24px;
+}
+
+/* Dot-matrix display block */
+.foot-dots {
+  padding: 24px 0 56px;
+  border-top: 1px solid rgba(244, 241, 222, 0.10);
+  border-bottom: 1px solid rgba(244, 241, 222, 0.10);
+  margin-top: 32px;
+}
+.footer-dots-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding-top: 24px;
+}
+.footer-dots-svg {
+  width: 100%;
+  max-width: 880px;
+  height: auto;
+  display: block;
+}
+.footer-dots-caption {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(244, 241, 222, 0.45);
+  transition: color 700ms;
 }
 .foot-ack p {
   font-family: var(--sans);

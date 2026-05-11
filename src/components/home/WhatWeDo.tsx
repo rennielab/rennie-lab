@@ -14,14 +14,15 @@ type StackSection = {
   fallbackTone: "red" | "moss" | "cream" | "sand" | "rust" | "ocean" | "ink";
 };
 
-// Five tinted-black backdrops — almost imperceptible warm/cool shifts that give
-// each section its discipline cue without competing with the hero card images.
+// Neutral-black gradient — Brand starts at the page-bg ink, each subsequent
+// section lifts ~3 lightness units so scrolling reads as a slow grey climb
+// against the imagery. No warm/cool tint — the cards carry the colour.
 const SECTIONS: StackSection[] = [
   {
     id: "brand",
     title: "Brand",
     desc: "We build brands for their second decade. Positioning, narrative, identity, voice, rollout. Systems that get easier to use as the company grows, and sharper as the world changes around them. The work we are proudest of looks newer at year five than it did at launch.",
-    bg: "#1a1416",
+    bg: "#0e0e10",
     fg: "#fbfbf7",
     projectSlugs: ["marlee", "re-form-projects", "robert-coopers-rare-gin", "renystudio"],
     fallbackTone: "red",
@@ -30,7 +31,7 @@ const SECTIONS: StackSection[] = [
     id: "products",
     title: "Products",
     desc: "Websites, apps and the digital products that bring brands to life. Research, information architecture, interaction, interface, and shipped code. Pages built to load fast on a five-year-old phone in a regional area, and to stay accessible at the AA threshold by default. Systems built so the in-house team can keep building.",
-    bg: "#0e1418",
+    bg: "#131316",
     fg: "#fbfbf7",
     projectSlugs: ["boody", "electric-california", "heartfoundation", "imf"],
     fallbackTone: "ocean",
@@ -39,7 +40,7 @@ const SECTIONS: StackSection[] = [
     id: "advisory",
     title: "Advisory",
     desc: "Strategy work that doesn't end in a deck. We sit beside founders, boards and leadership teams as a long-form retained partner. Monthly, sometimes for years. The work tends to outlast the brief that started it.",
-    bg: "#0c0c0e",
+    bg: "#18181c",
     fg: "#fbfbf7",
     projectSlugs: ["patagonia", "1percentfortheplanet", "johnston-advisory", "packer"],
     fallbackTone: "ink",
@@ -48,7 +49,7 @@ const SECTIONS: StackSection[] = [
     id: "environments",
     title: "Environments",
     desc: "Spaces that work as hard as the people inside them. Retail, training facilities, exhibition design, brand environments — designed end to end with our partners. From the National Snowsports Training Centre in Jindabyne to flagship stores for Buck Mason, Herschel and Mr Simple, the work is the same: read the brief, understand how people will move through the space, design with the operator and the long term in mind.",
-    bg: "#0e1410",
+    bg: "#1d1d22",
     fg: "#fbfbf7",
     projectSlugs: ["nswis", "buck-mason", "herschel", "mr-simple"],
     fallbackTone: "moss",
@@ -57,7 +58,7 @@ const SECTIONS: StackSection[] = [
     id: "research",
     title: "Research",
     desc: "Most studios fold research into a project. We sell it on its own. Standalone fieldwork, ethnography, archive and synthesis for studios, brands and policy teams who need a second mind in the room. Reports designed to be read, used, and argued with.",
-    bg: "#1a140e",
+    bg: "#222229",
     fg: "#fbfbf7",
     projectSlugs: ["rozelleinterchange", "benbaker", "in-pieces", "canva"],
     fallbackTone: "rust",
