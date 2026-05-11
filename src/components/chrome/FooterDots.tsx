@@ -1,19 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
-/* Dot-matrix display — Fourmula-inspired with halo "stitching" effect.
-
-   Each frame is a binary shape (1 cell per pixel). Before render we
-   DILATE the shape with a distance kernel so each lit cell radiates
-   intensity outward — adjacent cells get bright, two cells away get
-   medium, three away get a soft glow, four away fade to base. This is
-   what gives Fourmula's matrix its diffuse-edge "stitching" feel,
-   instead of the hard pixel edge of a naive shape.
-
-   Coordinate system: rows top→bottom, cols left→right. ASCII art:
-     '#'  shape pixel (cream)    '*'  shape pixel (accent red)
-     '.'  off (still gets faint base intensity from the field)         */
+/* Dot-matrix display — Fourmula style.
+   Hard-edged shape (no halo), uniform dot size, with a deterministic
+   mid-tone scatter across the dead field giving the matrix that quiet
+   printed-page density. ASCII art:
+     '#'  shape pixel (cream, fully lit)
+     '*'  shape pixel (accent red, fully lit)
+     '.'  off (will pick up the static scatter or stay at base)         */
 
 const COLS = 96;
 const ROWS = 20;
@@ -23,12 +18,9 @@ const PAD = 12;
 const W = COLS * STEP + PAD * 2;
 const H = ROWS * STEP + PAD * 2;
 const CYCLE_MS = 4500;
-const HALO_RADIUS = 3.5; // dot intensity decays linearly to 0 at this distance
 
 type Cell = 0 | 1 | 2;
-type CellInfo = { intensity: number; isAccent: boolean };
 type ShapeGrid = Cell[][];
-type IntensityGrid = CellInfo[][];
 
 function emptyShape(): ShapeGrid {
   return Array.from({ length: ROWS }, () => Array<Cell>(COLS).fill(0));
@@ -54,13 +46,10 @@ function stamp(art: string, offsetCol: number, offsetRow: number): ShapeGrid {
   return g;
 }
 
-/* Deterministic mid-tone "scatter" — a static field of randomly-placed
-   half-bright dots across the dead area of the matrix. Borrowed from
-   Fourmula: their footer's quiet density comes from ~15-20% of the
-   "off" cells sitting at a medium opacity, like newsprint halftone.
-   Generated once at module load with a seeded PRNG so it doesn't
-   flicker between renders or frames.                                    */
-
+/* Deterministic mid-tone scatter — the quiet density Fourmula uses to
+   make the dead field feel alive. Two-tier intensity (light + darker)
+   so the scatter has visible variety like Fourmula's halftone field.
+   Generated once at module load with a seeded PRNG so it's stable.     */
 type ScatterCell = { lit: boolean; intensity: number };
 
 function makeScatter(seed: number, density: number): ScatterCell[][] {
@@ -74,47 +63,17 @@ function makeScatter(seed: number, density: number): ScatterCell[][] {
   return Array.from({ length: ROWS }, () =>
     Array.from({ length: COLS }, () => {
       const roll = rng();
-      const intensityRoll = rng();
-      // intensity range 0.18–0.42 — visible but never as bright as halo
-      return { lit: roll < density, intensity: 0.18 + intensityRoll * 0.24 };
+      const tierRoll = rng();
+      // 22% of scattered cells are "dark" (heavier weight), the rest "light"
+      const intensity = tierRoll < 0.22
+        ? 0.48 + (rng() * 0.18) // 0.48–0.66 (darker)
+        : 0.18 + (rng() * 0.18); // 0.18–0.36 (lighter)
+      return { lit: roll < density, intensity };
     }),
   );
 }
 
-const SCATTER = makeScatter(73, 0.18);
-
-/* Dilate a shape into an intensity field with a soft falloff per cell. */
-function dilate(shape: ShapeGrid): IntensityGrid {
-  const out: IntensityGrid = Array.from({ length: ROWS }, () =>
-    Array.from({ length: COLS }, () => ({ intensity: 0, isAccent: false })),
-  );
-  const kernel = Math.ceil(HALO_RADIUS);
-
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
-      let maxI = 0;
-      let isAccent = false;
-      for (let dr = -kernel; dr <= kernel; dr++) {
-        for (let dc = -kernel; dc <= kernel; dc++) {
-          const sr = r + dr;
-          const sc = c + dc;
-          if (sr < 0 || sr >= ROWS || sc < 0 || sc >= COLS) continue;
-          const sv = shape[sr][sc];
-          if (!sv) continue;
-          const dist = Math.sqrt(dr * dr + dc * dc);
-          if (dist > HALO_RADIUS) continue;
-          const i = 1 - dist / HALO_RADIUS;
-          if (i > maxI) {
-            maxI = i;
-            isAccent = sv === 2;
-          }
-        }
-      }
-      out[r][c] = { intensity: maxI, isAccent };
-    }
-  }
-  return out;
-}
+const SCATTER = makeScatter(73, 0.20);
 
 /* ---- Pixel font · 5 wide × 7 tall ---- */
 const FONT: Record<string, string[]> = {
@@ -136,9 +95,6 @@ const FONT: Record<string, string[]> = {
   " ": [".....", ".....", ".....", ".....", ".....", ".....", "....."],
 };
 
-/* Render a string at 5×7 with N empty cols between chars. accentChars
-   is a set of characters to render as accent red (only those characters
-   inside the string get '*' instead of '#').                            */
 function buildText(text: string, charSpacing = 1, accentChars?: Set<string>): { lines: string[]; width: number } {
   const chars = text.toUpperCase().split("").filter((c) => FONT[c]);
   if (chars.length === 0) return { lines: [], width: 0 };
@@ -158,7 +114,6 @@ function buildText(text: string, charSpacing = 1, accentChars?: Set<string>): { 
 
 function stampText(text: string, accentChars?: Set<string>, charSpacing = 1, scale = 2): ShapeGrid {
   const { lines, width } = buildText(text, charSpacing, accentChars);
-  // Scale up the bitmap by repeating each pixel `scale` times in both axes.
   const scaledLines: string[] = [];
   for (const line of lines) {
     let scaled = "";
@@ -172,7 +127,7 @@ function stampText(text: string, accentChars?: Set<string>, charSpacing = 1, sca
   return stamp(scaledLines.join("\n"), offsetCol, offsetRow);
 }
 
-/* ---- Shape art ---- larger now (28-30 wide) for the bigger 96-col grid */
+/* ---- shape art ---- 28-30 wide for the 96-col grid */
 
 const HEART = `
 .....######......######.....
@@ -244,26 +199,19 @@ const TREE = `
 `;
 
 const FRAMES: ShapeGrid[] = [
-  stamp(HEART, Math.floor((COLS - 28) / 2), 0),       // heart cream by default
+  stamp(HEART.replace(/#/g, "*"), Math.floor((COLS - 28) / 2), 0), // heart in red
   stamp(LEAF, Math.floor((COLS - 28) / 2), 0),
-  stamp(TREE, Math.floor((COLS - 30) / 2), 0),        // tree (cream foliage + red trunk via *)
+  stamp(TREE, Math.floor((COLS - 30) / 2), 0),
   stampText("91%", new Set(["%"]), 1, 2),
   stampText("40%", new Set(["%"]), 1, 2),
   stampText("LOVE", undefined, 1, 2),
   stampText("2026", undefined, 1, 2),
 ];
 
-/* Convert HEART to all-accent for the love frame (overrides default cream) */
-const HEART_RED: ShapeGrid = stamp(HEART.replace(/#/g, "*"), Math.floor((COLS - 28) / 2), 0);
-FRAMES[0] = HEART_RED;
-
 const FRAME_NAMES = ["love", "leaf", "tree", "lighter than", "impact, by capacity", "love", "year"];
 
 export function FooterDots() {
   const [frameIdx, setFrameIdx] = useState(0);
-
-  // Precompute the dilated intensity grid for every frame once.
-  const fields = useMemo(() => FRAMES.map(dilate), []);
 
   useEffect(() => {
     const t = setInterval(() => {
@@ -272,7 +220,7 @@ export function FooterDots() {
     return () => clearInterval(t);
   }, []);
 
-  const field = fields[frameIdx];
+  const shape = FRAMES[frameIdx];
 
   return (
     <div className="footer-dots-wrap" aria-hidden="true">
@@ -282,33 +230,37 @@ export function FooterDots() {
         xmlns="http://www.w3.org/2000/svg"
         preserveAspectRatio="xMidYMid meet"
       >
-        {field.flatMap((row, r) =>
+        {shape.flatMap((row, r) =>
           row.map((cell, c) => {
             const cx = PAD + c * STEP + STEP / 2;
             const cy = PAD + r * STEP + STEP / 2;
 
-            // Base faint grey under everything, shape lifts intensity.
-            // For cells where the halo is low, layer in the static scatter
-            // so the dead field carries Fourmula-style printed-page texture.
-            const haloI = cell.intensity;
-            const sc = SCATTER[r][c];
-            const scatterI = sc.lit && haloI < 0.15 ? sc.intensity : 0;
-            const effectiveI = Math.max(haloI, scatterI);
+            // Hard-edged shape: cell is either fully lit or off.
+            // Off cells either pick up the scatter (mid-tone) or sit at base.
+            let opacity: number;
+            let fill: string;
+            if (cell === 1) {
+              opacity = 0.95;
+              fill = "#fbfbf7";
+            } else if (cell === 2) {
+              opacity = 0.95;
+              fill = "#e84d4d";
+            } else {
+              const sc = SCATTER[r][c];
+              opacity = sc.lit ? sc.intensity : 0.08;
+              fill = "#fbfbf7";
+            }
 
-            const opacity = 0.08 + effectiveI * 0.92;
-            const fill = cell.isAccent ? "#e84d4d" : "#fbfbf7";
-            // Halo cells grow under intensity; scatter dots stay base size.
-            const r2 = DOT_R * (haloI > 0 ? 0.85 + haloI * 0.25 : 1);
             return (
               <circle
                 key={`${r}-${c}`}
                 cx={cx}
                 cy={cy}
-                r={r2}
+                r={DOT_R}
                 fill={fill}
                 style={{
                   transition:
-                    "opacity 700ms cubic-bezier(0.22,1,0.36,1), r 700ms cubic-bezier(0.22,1,0.36,1), fill 700ms cubic-bezier(0.22,1,0.36,1)",
+                    "opacity 700ms cubic-bezier(0.22,1,0.36,1), fill 700ms cubic-bezier(0.22,1,0.36,1)",
                   opacity,
                 }}
               />
