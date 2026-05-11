@@ -54,6 +54,35 @@ function stamp(art: string, offsetCol: number, offsetRow: number): ShapeGrid {
   return g;
 }
 
+/* Deterministic mid-tone "scatter" — a static field of randomly-placed
+   half-bright dots across the dead area of the matrix. Borrowed from
+   Fourmula: their footer's quiet density comes from ~15-20% of the
+   "off" cells sitting at a medium opacity, like newsprint halftone.
+   Generated once at module load with a seeded PRNG so it doesn't
+   flicker between renders or frames.                                    */
+
+type ScatterCell = { lit: boolean; intensity: number };
+
+function makeScatter(seed: number, density: number): ScatterCell[][] {
+  let s = seed | 0;
+  const rng = () => {
+    s = (s + 0x6d2b79f5) | 0;
+    let t = Math.imul(s ^ (s >>> 15), 1 | s);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  return Array.from({ length: ROWS }, () =>
+    Array.from({ length: COLS }, () => {
+      const roll = rng();
+      const intensityRoll = rng();
+      // intensity range 0.18–0.42 — visible but never as bright as halo
+      return { lit: roll < density, intensity: 0.18 + intensityRoll * 0.24 };
+    }),
+  );
+}
+
+const SCATTER = makeScatter(73, 0.18);
+
 /* Dilate a shape into an intensity field with a soft falloff per cell. */
 function dilate(shape: ShapeGrid): IntensityGrid {
   const out: IntensityGrid = Array.from({ length: ROWS }, () =>
@@ -257,11 +286,19 @@ export function FooterDots() {
           row.map((cell, c) => {
             const cx = PAD + c * STEP + STEP / 2;
             const cy = PAD + r * STEP + STEP / 2;
+
             // Base faint grey under everything, shape lifts intensity.
-            const opacity = 0.08 + cell.intensity * 0.92;
+            // For cells where the halo is low, layer in the static scatter
+            // so the dead field carries Fourmula-style printed-page texture.
+            const haloI = cell.intensity;
+            const sc = SCATTER[r][c];
+            const scatterI = sc.lit && haloI < 0.15 ? sc.intensity : 0;
+            const effectiveI = Math.max(haloI, scatterI);
+
+            const opacity = 0.08 + effectiveI * 0.92;
             const fill = cell.isAccent ? "#e84d4d" : "#fbfbf7";
-            // Slightly grow the dot under heavy intensity for extra punch.
-            const r2 = DOT_R * (0.85 + cell.intensity * 0.25);
+            // Halo cells grow under intensity; scatter dots stay base size.
+            const r2 = DOT_R * (haloI > 0 ? 0.85 + haloI * 0.25 : 1);
             return (
               <circle
                 key={`${r}-${c}`}
