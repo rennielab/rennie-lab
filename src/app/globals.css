@@ -615,45 +615,74 @@ em, i, .italic { font-style: normal; color: inherit !important; }
   align-self: start;
 }
 
-/* ── Carbon tracker ── */
+/* ── Carbon tracker ──
+   Red glass pill at bottom-right. Translucent accent red with cream
+   text + leaf so it pops against any page colour without screaming
+   like a solid-red alert badge. Sits in the chrome design system
+   alongside the LeftMenu and RightMenu glass treatments.                */
 .carbon-tracker {
   position: fixed;
   bottom: 18px;
   right: 18px;
   z-index: 50;
-  background: var(--bg-card);
-  border: 1px solid var(--line);
-  border-radius: 3px;
-  padding: 8px 12px;
+  background: rgba(232, 77, 77, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 4px;
+  padding: 10px 14px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.06em;
-  color: var(--ink-3);
-  backdrop-filter: blur(20px);
-  opacity: 0.72;
-  transition: opacity 300ms var(--easing), color 300ms var(--easing);
+  color: var(--cream);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  box-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.25),
+    0 8px 24px -8px rgba(0, 0, 0, 0.35);
+  opacity: 1;
+  transition:
+    background 300ms var(--easing),
+    transform 300ms var(--easing),
+    box-shadow 300ms var(--easing);
 }
-.carbon-tracker:hover { color: var(--ink); opacity: 1; }
+.carbon-tracker:hover {
+  background: rgba(232, 77, 77, 0.95);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.30),
+    0 12px 28px -8px rgba(0, 0, 0, 0.45);
+}
 .carbon-leaf {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: #d4ff37;
-  box-shadow: 0 0 0 3px rgba(212, 255, 55, 0.22);
+  background: var(--cream);
+  box-shadow: 0 0 0 3px rgba(251, 251, 247, 0.22);
+  animation: carbon-leaf-pulse 3.6s ease-in-out infinite;
+}
+@keyframes carbon-leaf-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 3px rgba(251, 251, 247, 0.20);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(251, 251, 247, 0.08);
+    transform: scale(1.15);
+  }
 }
 .carbon-num {
   font-family: var(--mono);
   font-variant-numeric: tabular-nums;
-  color: var(--ink);
+  color: var(--cream);
   letter-spacing: 0;
+  font-weight: 600;
 }
 .carbon-bar {
-  width: 48px;
+  width: 52px;
   height: 2px;
-  background: var(--line);
+  background: rgba(251, 251, 247, 0.20);
   border-radius: 2px;
   overflow: hidden;
   position: relative;
@@ -661,14 +690,13 @@ em, i, .italic { font-style: normal; color: inherit !important; }
 .carbon-bar > div {
   position: absolute;
   inset: 0;
-  background: #d4ff37;
+  background: var(--cream);
   width: 0%;
   transition: width 300ms var(--easing);
 }
 .carbon-tracker[data-open="true"] {
-  opacity: 1;
-  color: var(--ink);
-  background: var(--bg-card);
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* Backdrop dims the page when the panel is open */
@@ -2952,8 +2980,8 @@ footer.site-foot {
   }
   .mode-badge { padding: 8px 12px !important; font-size: 10px !important; }
 
-  /* Carbon counter — nudge up the page so it doesn't crowd content */
-  .carbon-tracker { padding: 8px 12px !important; gap: 8px !important; }
+  /* Carbon counter — keep the red glass prominent on mobile */
+  .carbon-tracker { padding: 10px 13px !important; gap: 10px !important; }
 
   /* Service rows on accordion — tighten */
   .svc-row-num { font-size: 10px !important; }
