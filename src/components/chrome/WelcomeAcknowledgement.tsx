@@ -14,11 +14,9 @@ function todayKey(): string {
 export function WelcomeAcknowledgement() {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [videoOk, setVideoOk] = useState(true);
   const panelRef = useRef<HTMLDivElement>(null);
 
   // Mount-only effect: gate the modal on a localStorage flag (per-day).
-  // setMounted is the standard mounted-flag pattern; setOpen runs in setTimeout.
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
@@ -31,30 +29,24 @@ export function WelcomeAcknowledgement() {
     } catch {}
   }, []);
 
+  // External trigger — footer "Acknowledgement of Country ↑" link reopens it.
   useEffect(() => {
     const handler = () => setOpen(true);
     window.addEventListener("open-acknowledgement", handler);
     return () => window.removeEventListener("open-acknowledgement", handler);
   }, []);
 
+  // Escape to close. Body scroll lock while open.
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") close();
     };
-    const onDocClick = (e: MouseEvent) => {
-      const target = e.target as Node | null;
-      if (target && panelRef.current && !panelRef.current.contains(target)) {
-        close();
-      }
-    };
     window.addEventListener("keydown", onKey);
-    // delay 1 tick so the click that opened the panel doesn't immediately close it
-    const t = setTimeout(() => document.addEventListener("click", onDocClick), 0);
+    document.body.style.overflow = "hidden";
     return () => {
       window.removeEventListener("keydown", onKey);
-      clearTimeout(t);
-      document.removeEventListener("click", onDocClick);
+      document.body.style.overflow = "";
     };
   }, [open]);
 
@@ -68,52 +60,42 @@ export function WelcomeAcknowledgement() {
   if (!mounted) return null;
 
   return (
-    <>
-      <div
-        className="aoc-backdrop"
-        data-open={open}
-        aria-hidden="true"
-      />
-      <div className="aoc-overlay" data-open={open} aria-hidden={!open}>
+    <div className="aoc-overlay" data-open={open} aria-hidden={!open}>
+      <button
+        type="button"
+        className="aoc-close"
+        onClick={close}
+        aria-label="Close"
+      >
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path
+            d="M6 6l12 12M18 6L6 18"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+        </svg>
+      </button>
+
       <div
         ref={panelRef}
-        className="aoc-panel"
+        className="aoc-content"
         role="dialog"
-        aria-modal="false"
+        aria-modal="true"
         aria-labelledby="aoc-title"
       >
-        <div className="aoc-grid">
-          <div className="aoc-video">
-            {/* Lazy-load: only mount the video when the panel actually opens.
-                Saves ~16 MB on first paint for every visitor. */}
-            {open && videoOk ? (
-              <video
-                src="/video/welcome-to-country.mp4"
-                autoPlay
-                muted
-                playsInline
-                loop
-                preload="metadata"
-                onError={() => setVideoOk(false)}
-              />
-            ) : (
-              <div className="aoc-video-fallback" aria-hidden="true" />
-            )}
-          </div>
-          <div className="aoc-text">
-            <div className="mono" id="aoc-title">
-              Acknowledgement of Country
-            </div>
-            <p className="aoc-body">{COPY}</p>
-            <div>
-              <button type="button" className="btn btn-primary" onClick={close}>
-                Continue <span className="arrow">→</span>
-              </button>
-            </div>
-          </div>
+        <div className="mono aoc-eyebrow" id="aoc-title">
+          Acknowledgement of Country
         </div>
+        <p className="aoc-body">{COPY}</p>
+        <button
+          type="button"
+          className="aoc-continue"
+          onClick={close}
+        >
+          Continue <span className="arrow">→</span>
+        </button>
       </div>
     </div>
-    </>
   );
 }

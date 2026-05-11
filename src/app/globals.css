@@ -1869,16 +1869,11 @@ footer.site-foot {
 [data-low-carbon="true"] .logo-strip,
 [data-low-carbon="true"] .orb-diagram-wrap,
 [data-low-carbon="true"] .stack-cards,
-[data-low-carbon="true"] .aoc-video,
-[data-low-carbon="true"] .aoc-video-fallback,
 [data-low-carbon="true"] .dots-news-thumb {
   display: none !important;
 }
 [data-low-carbon="true"] .stack-section {
   background: var(--bg) !important;
-}
-[data-low-carbon="true"] .aoc-grid {
-  grid-template-columns: 1fr !important;
 }
 
 /* Mode badge — loud + clear, sits to the left of the chrome cluster */
@@ -1932,81 +1927,101 @@ footer.site-foot {
 }
 
 /* Welcome / Acknowledgement of Country slide-up */
-.aoc-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 85;
-  background: rgba(0, 0, 0, 0.4);
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 600ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-.aoc-backdrop[data-open="true"] {
-  opacity: 1;
-}
-.aoc-video-fallback {
-  width: 100%;
-  height: 100%;
-  background:
-    radial-gradient(circle at 30% 70%, rgba(140, 60, 30, 0.45), transparent 60%),
-    radial-gradient(circle at 70% 30%, rgba(60, 90, 50, 0.35), transparent 60%),
-    linear-gradient(135deg, #1a1410, #0c0c0e);
-}
+/* Acknowledgement of Country — full-screen black hover.
+   No video, no image. Pure type-led moment: eyebrow, body paragraph,
+   red Continue button. X close in the top-right corner. Fade in/out
+   on open/close. Shown once per day per visitor via localStorage gate. */
 .aoc-overlay {
   position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 70vh;
-  z-index: 90;
+  inset: 0;
+  z-index: 200;
+  background: #0a0a0c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(40px, 6vw, 80px);
+  opacity: 0;
   pointer-events: none;
-  transform: translateY(100%);
-  transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 600ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 .aoc-overlay[data-open="true"] {
-  transform: translateY(0);
+  opacity: 1;
   pointer-events: auto;
 }
-.aoc-panel {
-  height: 100%;
-  background: var(--bg);
-  border-top: 1px solid var(--line);
-  box-shadow: 0 -32px 80px rgba(0, 0, 0, 0.45);
-  overflow: hidden;
+.aoc-close {
+  position: absolute;
+  top: clamp(24px, 3vw, 36px);
+  right: clamp(24px, 3vw, 36px);
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--cream);
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 200ms, transform 200ms;
 }
-.aoc-grid {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  height: 100%;
+.aoc-close:hover {
+  background: rgba(255, 255, 255, 0.14);
+  transform: scale(1.05);
 }
-.aoc-video {
-  background: var(--ink);
-  height: 100%;
-  overflow: hidden;
-  position: relative;
-}
-.aoc-video video {
+.aoc-close svg { display: block; }
+.aoc-content {
+  max-width: 720px;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-.aoc-text {
-  padding: clamp(28px, 4.5vw, 64px);
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 24px;
-  max-width: 640px;
+  gap: clamp(24px, 3vw, 40px);
+  color: var(--cream);
+  text-align: center;
+  align-items: center;
+}
+.aoc-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: rgba(251, 251, 247, 0.55);
 }
 .aoc-body {
   font-family: var(--sans);
-  font-size: clamp(15px, 1.2vw, 18px);
+  font-size: clamp(17px, 1.6vw, 22px);
   line-height: 1.55;
-  letter-spacing: -0.005em;
-  color: var(--ink-2);
+  letter-spacing: -0.01em;
+  color: var(--cream);
   margin: 0;
-  max-width: 50ch;
+  max-width: 56ch;
+}
+.aoc-continue {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--accent);
+  color: var(--cream);
+  border: 0;
+  border-radius: 4px;
+  padding: 14px 24px;
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 200ms, transform 200ms, box-shadow 200ms;
+  box-shadow: 0 8px 24px -8px rgba(232, 77, 77, 0.55);
+  margin-top: 8px;
+}
+.aoc-continue:hover {
+  background: #f15c5c;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px -8px rgba(232, 77, 77, 0.70);
+}
+.aoc-continue .arrow {
+  display: inline-block;
+  transition: transform 200ms;
+}
+.aoc-continue:hover .arrow {
+  transform: translateX(3px);
 }
 .foot-ack-title-button {
   background: none;
@@ -2021,8 +2036,8 @@ footer.site-foot {
 }
 .foot-ack-title-button:hover { color: var(--accent); }
 @media (max-width: 900px) {
-  .aoc-overlay { height: 80vh; }
-  .aoc-grid { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
+  .aoc-content { gap: 24px; }
+  .aoc-body { font-size: 16px; }
 }
 
 /* ── Impact: Featured case study (magazine treatment) ── */
@@ -2966,10 +2981,8 @@ footer.site-foot {
   .jp-foot { flex-direction: column !important; align-items: stretch !important; gap: 12px !important; }
   .jp-foot .btn { justify-content: center !important; }
 
-  /* Welcome to Country slide-up — taller for mobile readability */
-  .aoc-overlay { height: 88vh !important; }
-  .aoc-text { padding: 24px !important; gap: 16px !important; }
-  .aoc-body { font-size: 14px !important; }
+  /* Acknowledgement of Country — tighten body on mobile */
+  .aoc-body { font-size: 16px !important; }
 
   /* Mode badge — drop below the chrome on mobile */
   .mode-badge-wrap {
