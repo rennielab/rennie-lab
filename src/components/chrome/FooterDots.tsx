@@ -1,274 +1,100 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 
-/* Dot-matrix display — Fourmula style.
-   Hard-edged shape (no halo), uniform dot size, with a deterministic
-   mid-tone scatter across the dead field giving the matrix that quiet
-   printed-page density. ASCII art:
-     '#'  shape pixel (cream, fully lit)
-     '*'  shape pixel (accent red, fully lit)
-     '.'  off (will pick up the static scatter or stay at base)         */
+/* Footer dot matrix — pixel-for-pixel copy of fourmula.ai's bottom field.
+   Grid is 52 cols × 14 rows of small circles, all sitting at a faint base
+   opacity (0.15). On mousemove anywhere on the page we update each dot's
+   opacity based on its distance from the cursor — within RADIUS cells the
+   dot brightens linearly to 1.0 at the cursor centre. The "shape" you see
+   in any given screenshot is just where the cursor happened to be.
 
-const COLS = 96;
-const ROWS = 20;
-const DOT_R = 3.2;
-const STEP = 14;
-const PAD = 12;
-const W = COLS * STEP + PAD * 2;
-const H = ROWS * STEP + PAD * 2;
-const CYCLE_MS = 4500;
+   Implementation note: 728 dots updated on every mousemove would thrash
+   React. We mount the grid once with no opacity state, then mutate each
+   dot's inline opacity imperatively via refs inside a requestAnimationFrame.
+   Zero React renders post-mount.                                         */
 
-type Cell = 0 | 1 | 2;
-type ShapeGrid = Cell[][];
-
-function emptyShape(): ShapeGrid {
-  return Array.from({ length: ROWS }, () => Array<Cell>(COLS).fill(0));
-}
-
-/* Stamp ASCII art into a fresh shape grid at (offsetCol, offsetRow). */
-function stamp(art: string, offsetCol: number, offsetRow: number): ShapeGrid {
-  const g = emptyShape();
-  const lines = art.split("\n").filter((l) => l.length > 0);
-  for (let r = 0; r < lines.length; r++) {
-    const line = lines[r];
-    for (let c = 0; c < line.length; c++) {
-      const ch = line[c];
-      if (ch === "#" || ch === "*") {
-        const tr = r + offsetRow;
-        const tc = c + offsetCol;
-        if (tr >= 0 && tr < ROWS && tc >= 0 && tc < COLS) {
-          g[tr][tc] = ch === "*" ? 2 : 1;
-        }
-      }
-    }
-  }
-  return g;
-}
-
-/* Deterministic mid-tone scatter — the quiet density Fourmula uses to
-   make the dead field feel alive. Two-tier intensity (light + darker)
-   so the scatter has visible variety like Fourmula's halftone field.
-   Generated once at module load with a seeded PRNG so it's stable.     */
-type ScatterCell = { lit: boolean; intensity: number };
-
-function makeScatter(seed: number, density: number): ScatterCell[][] {
-  let s = seed | 0;
-  const rng = () => {
-    s = (s + 0x6d2b79f5) | 0;
-    let t = Math.imul(s ^ (s >>> 15), 1 | s);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-  return Array.from({ length: ROWS }, () =>
-    Array.from({ length: COLS }, () => {
-      const roll = rng();
-      const tierRoll = rng();
-      // 22% of scattered cells are "dark" (heavier weight), the rest "light"
-      const intensity = tierRoll < 0.22
-        ? 0.48 + (rng() * 0.18) // 0.48–0.66 (darker)
-        : 0.18 + (rng() * 0.18); // 0.18–0.36 (lighter)
-      return { lit: roll < density, intensity };
-    }),
-  );
-}
-
-const SCATTER = makeScatter(73, 0.20);
-
-/* ---- Pixel font · 5 wide × 7 tall ---- */
-const FONT: Record<string, string[]> = {
-  "0": [".###.", "#...#", "#..##", "#.#.#", "##..#", "#...#", ".###."],
-  "1": ["..#..", ".##..", "..#..", "..#..", "..#..", "..#..", ".###."],
-  "2": [".###.", "#...#", "....#", "...#.", "..#..", ".#...", "#####"],
-  "3": [".###.", "#...#", "....#", "..##.", "....#", "#...#", ".###."],
-  "4": ["...#.", "..##.", ".#.#.", "#..#.", "#####", "...#.", "...#."],
-  "5": ["#####", "#....", "####.", "....#", "....#", "#...#", ".###."],
-  "6": [".###.", "#....", "#....", "####.", "#...#", "#...#", ".###."],
-  "7": ["#####", "....#", "...#.", "..#..", ".#...", ".#...", ".#..."],
-  "8": [".###.", "#...#", "#...#", ".###.", "#...#", "#...#", ".###."],
-  "9": [".###.", "#...#", "#...#", ".####", "....#", "....#", ".###."],
-  "%": ["##..#", "##.#.", "...#.", "..#..", ".#...", ".#.##", "#..##"],
-  L: ["#....", "#....", "#....", "#....", "#....", "#....", "#####"],
-  O: [".###.", "#...#", "#...#", "#...#", "#...#", "#...#", ".###."],
-  V: ["#...#", "#...#", "#...#", "#...#", ".#.#.", ".#.#.", "..#.."],
-  E: ["#####", "#....", "#....", "####.", "#....", "#....", "#####"],
-  " ": [".....", ".....", ".....", ".....", ".....", ".....", "....."],
-};
-
-function buildText(text: string, charSpacing = 1, accentChars?: Set<string>): { lines: string[]; width: number } {
-  const chars = text.toUpperCase().split("").filter((c) => FONT[c]);
-  if (chars.length === 0) return { lines: [], width: 0 };
-  const lines: string[] = [];
-  for (let r = 0; r < 7; r++) {
-    let line = "";
-    chars.forEach((c, i) => {
-      const isAccent = accentChars?.has(c) ?? false;
-      const sym = isAccent ? "*" : "#";
-      line += FONT[c][r].replace(/#/g, sym);
-      if (i < chars.length - 1) line += ".".repeat(charSpacing);
-    });
-    lines.push(line);
-  }
-  return { lines, width: lines[0].length };
-}
-
-function stampText(text: string, accentChars?: Set<string>, charSpacing = 1, scale = 2): ShapeGrid {
-  const { lines, width } = buildText(text, charSpacing, accentChars);
-  const scaledLines: string[] = [];
-  for (const line of lines) {
-    let scaled = "";
-    for (const ch of line) scaled += ch.repeat(scale);
-    for (let s = 0; s < scale; s++) scaledLines.push(scaled);
-  }
-  const scaledWidth = width * scale;
-  const scaledHeight = 7 * scale;
-  const offsetCol = Math.floor((COLS - scaledWidth) / 2);
-  const offsetRow = Math.floor((ROWS - scaledHeight) / 2);
-  return stamp(scaledLines.join("\n"), offsetCol, offsetRow);
-}
-
-/* ---- shape art ---- 28-30 wide for the 96-col grid */
-
-const HEART = `
-.....######......######.....
-....########....########....
-..############..############
-..##########################
-..##########################
-..##########################
-..##########################
-..##########################
-...########################.
-....######################..
-.....####################...
-......##################....
-.......################.....
-........##############......
-.........############.......
-..........##########........
-...........########.........
-............######..........
-.............####...........
-..............##............
-`;
-
-const LEAF = `
-..............##............
-............######..........
-..........##########........
-.........############.......
-........##############......
-.......################.....
-......##################....
-.....####################...
-....######################..
-...########################.
-..##########################
-..########################..
-..######################....
-.######################.....
-.####################.......
-.##################.........
-.################...........
-.##############.............
-.############...............
-.##########.................
-`;
-
-const TREE = `
-.............####...........
-............######..........
-...........########.........
-..........##########........
-.........############.......
-........##############......
-.......################.....
-......##################....
-.....####################...
-....######################..
-...########################.
-..##########################
-.############################
-########********########.
-######************######....
-.....****************.......
-.....****************.......
-.....****************.......
-.....****************.......
-.....****************.......
-`;
-
-const FRAMES: ShapeGrid[] = [
-  stamp(HEART.replace(/#/g, "*"), Math.floor((COLS - 28) / 2), 0), // heart in red
-  stamp(LEAF, Math.floor((COLS - 28) / 2), 0),
-  stamp(TREE, Math.floor((COLS - 30) / 2), 0),
-  stampText("91%", new Set(["%"]), 1, 2),
-  stampText("40%", new Set(["%"]), 1, 2),
-  stampText("LOVE", undefined, 1, 2),
-  stampText("2026", undefined, 1, 2),
-];
-
-const FRAME_NAMES = ["love", "leaf", "tree", "lighter than", "impact, by capacity", "love", "year"];
+const COLS = 52;
+const ROWS = 14;
+const CELL = 18.6875; // dot diameter (also the grid cell size)
+const GAP = 18.7013;
+const STEP = CELL + GAP; // ~37.39px between dot centres
+const RADIUS_CELLS = 6; // mouse spotlight reach, in cell units
+const BASE_OPACITY = 0.15;
 
 export function FooterDots() {
-  const [frameIdx, setFrameIdx] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const t = setInterval(() => {
-      setFrameIdx((i) => (i + 1) % FRAMES.length);
-    }, CYCLE_MS);
-    return () => clearInterval(t);
+    const container = containerRef.current;
+    if (!container) return;
+    const dots = Array.from(container.querySelectorAll<HTMLDivElement>(".footer-dot"));
+    if (dots.length === 0) return;
+
+    let raf = 0;
+    let mouseX = -99999;
+    let mouseY = -99999;
+    let active = false;
+
+    const update = () => {
+      const rect = container.getBoundingClientRect();
+      // Cursor position in cell units, relative to the grid origin.
+      const cx = (mouseX - rect.left) / STEP;
+      const cy = (mouseY - rect.top) / STEP;
+
+      for (let i = 0; i < dots.length; i++) {
+        const col = i % COLS;
+        const row = Math.floor(i / COLS);
+        const dx = col - cx;
+        const dy = row - cy;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        let opacity = BASE_OPACITY;
+        if (active && dist < RADIUS_CELLS) {
+          // Linear falloff. Slight ease via squaring smooths the falloff edge.
+          const t = 1 - dist / RADIUS_CELLS;
+          opacity = Math.max(BASE_OPACITY, t * t * (1 - BASE_OPACITY) + BASE_OPACITY);
+        }
+        dots[i].style.opacity = opacity.toFixed(3);
+      }
+    };
+
+    const onMove = (e: MouseEvent) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      active = true;
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(update);
+    };
+
+    const onLeave = () => {
+      active = false;
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(update);
+    };
+
+    window.addEventListener("mousemove", onMove, { passive: true });
+    window.addEventListener("mouseleave", onLeave);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseleave", onLeave);
+      cancelAnimationFrame(raf);
+    };
   }, []);
 
-  const shape = FRAMES[frameIdx];
-
   return (
-    <div className="footer-dots-wrap" aria-hidden="true">
-      <svg
-        className="footer-dots-svg"
-        viewBox={`0 0 ${W} ${H}`}
-        xmlns="http://www.w3.org/2000/svg"
-        preserveAspectRatio="xMidYMid meet"
-      >
-        {shape.flatMap((row, r) =>
-          row.map((cell, c) => {
-            const cx = PAD + c * STEP + STEP / 2;
-            const cy = PAD + r * STEP + STEP / 2;
-
-            // Hard-edged shape: cell is either fully lit or off.
-            // Off cells either pick up the scatter (mid-tone) or sit at base.
-            let opacity: number;
-            let fill: string;
-            if (cell === 1) {
-              opacity = 0.95;
-              fill = "#fbfbf7";
-            } else if (cell === 2) {
-              opacity = 0.95;
-              fill = "#e84d4d";
-            } else {
-              const sc = SCATTER[r][c];
-              opacity = sc.lit ? sc.intensity : 0.08;
-              fill = "#fbfbf7";
-            }
-
-            return (
-              <circle
-                key={`${r}-${c}`}
-                cx={cx}
-                cy={cy}
-                r={DOT_R}
-                fill={fill}
-                style={{
-                  transition:
-                    "opacity 700ms cubic-bezier(0.22,1,0.36,1), fill 700ms cubic-bezier(0.22,1,0.36,1)",
-                  opacity,
-                }}
-              />
-            );
-          }),
-        )}
-      </svg>
-      <div className="footer-dots-caption mono">{FRAME_NAMES[frameIdx]}</div>
+    <div
+      ref={containerRef}
+      className="footer-dots-grid"
+      aria-hidden="true"
+      style={{
+        gridTemplateColumns: `repeat(${COLS}, ${CELL}px)`,
+        gridTemplateRows: `repeat(${ROWS}, ${CELL}px)`,
+        gap: `${GAP}px`,
+      }}
+    >
+      {Array.from({ length: ROWS * COLS }).map((_, i) => (
+        <div key={i} className="footer-dot" />
+      ))}
     </div>
   );
 }

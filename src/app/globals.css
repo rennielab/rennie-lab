@@ -1225,31 +1225,32 @@ footer.site-foot {
   padding: 56px 0;
   align-items: start;
 }
-/* Dot-matrix display block — centerpiece full-width */
+/* Dot-matrix display block — centerpiece full-width.
+   Grid is centered horizontally at fourmula's exact dimensions:
+   52 cols × 14 rows of 18.6875px circles, 18.7013px gap. Mouse spotlight
+   reactivity is handled imperatively in FooterDots.tsx.                  */
 .foot-dots {
   padding: 56px 0 56px;
   border-top: 1px solid rgba(244, 241, 222, 0.10);
   border-bottom: 1px solid rgba(244, 241, 222, 0.10);
   margin-top: 48px;
-}
-.footer-dots-wrap {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  gap: 24px;
+  overflow: hidden;
 }
-.footer-dots-svg {
-  width: 100%;
-  max-width: none;
-  height: auto;
-  display: block;
+.footer-dots-grid {
+  display: grid;
+  margin: 0 auto;
 }
-.footer-dots-caption {
-  font-size: 10px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: rgba(244, 241, 222, 0.45);
-  transition: color 700ms;
+.footer-dot {
+  width: 18.6875px;
+  height: 18.6875px;
+  border-radius: 50%;
+  background: #fbfbf7; /* cream on dark footer (Fourmula uses near-black on cream) */
+  opacity: 0.15;
+  transition: opacity 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity;
 }
 
 /* Full-width Acknowledgement of Country band at the very bottom */
