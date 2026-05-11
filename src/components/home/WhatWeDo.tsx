@@ -168,6 +168,8 @@ function ProjectStackCard({ project, fallbackTone, eyebrow }: ProjectStackCardPr
           alt=""
           loading="lazy"
           decoding="async"
+          width={1200}
+          height={880}
           className="stack-card-img"
         />
       )}

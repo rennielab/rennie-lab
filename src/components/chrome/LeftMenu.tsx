@@ -28,7 +28,13 @@ export function LeftMenu() {
       <div className="left-menu-head">
         <Link href="/" className="brand" onClick={close} style={{ cursor: "pointer" }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className="brand-logo logo-asset" src={logoSrc} alt="Rennie Lab" />
+          <img
+            className="brand-logo logo-asset"
+            src={logoSrc}
+            alt="Rennie Lab"
+            width={1378}
+            height={157}
+          />
           <div className="brand-label">{route === "home" ? "Home" : route}</div>
         </Link>
         <button

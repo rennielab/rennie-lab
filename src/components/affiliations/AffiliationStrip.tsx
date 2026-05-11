@@ -8,6 +8,10 @@ type Affiliation = {
   label: string;
   href: string;
   src: string;
+  /** Natural source dimensions — used for the <img> width/height attrs so the
+   *  browser can reserve aspect ratio before the image loads (kills CLS). */
+  naturalW: number;
+  naturalH: number;
   /** When true, force the source through `brightness(0)` so single-colour logos
    *  render pure black on light theme and pure white on dark theme. */
   monoFilter: boolean;
@@ -21,6 +25,8 @@ const AFFILIATIONS: Affiliation[] = [
     label: "Certified B Corporation",
     href: "https://www.bcorporation.net/",
     src: "/affiliations/bcorp.webp",
+    naturalW: 246,
+    naturalH: 500,
     monoFilter: true,
     maxHeight: 90,
   },
@@ -29,6 +35,8 @@ const AFFILIATIONS: Affiliation[] = [
     label: "1% for the Planet — Environmental Partner",
     href: "https://onepercentfortheplanet.org/",
     src: "/affiliations/onepercent.webp",
+    naturalW: 512,
+    naturalH: 512,
     monoFilter: true,
     maxHeight: 84,
   },
@@ -37,6 +45,8 @@ const AFFILIATIONS: Affiliation[] = [
     label: "Design Declares",
     href: "https://designdeclares.com/",
     src: "/affiliations/d-declares.webp",
+    naturalW: 600,
+    naturalH: 400,
     monoFilter: true,
     maxHeight: 68,
   },
@@ -45,6 +55,8 @@ const AFFILIATIONS: Affiliation[] = [
     label: "Clean Creatives — Approved",
     href: "https://cleancreatives.org/",
     src: "/affiliations/clean-creatives.webp",
+    naturalW: 150,
+    naturalH: 150,
     monoFilter: true,
     maxHeight: 84,
   },
@@ -53,6 +65,8 @@ const AFFILIATIONS: Affiliation[] = [
     label: "Leaders for Climate Action",
     href: "https://lfca.earth/",
     src: "/affiliations/lfca.webp",
+    naturalW: 600,
+    naturalH: 400,
     monoFilter: true,
     maxHeight: 84,
   },
@@ -61,6 +75,8 @@ const AFFILIATIONS: Affiliation[] = [
     label: "CitySwitch — Green Office Signatory",
     href: "https://www.cityswitch.net.au/",
     src: "/affiliations/cityswitch.webp",
+    naturalW: 600,
+    naturalH: 400,
     monoFilter: true,
     maxHeight: 62,
   },
@@ -69,6 +85,8 @@ const AFFILIATIONS: Affiliation[] = [
     label: "Green Hosting · verified by The Green Web Foundation",
     href: "https://www.thegreenwebfoundation.org/",
     src: "https://app.greenweb.org/api/v3/greencheckimage/rennielab.com?nocache=true",
+    naturalW: 200,
+    naturalH: 75,
     monoFilter: true,
     external: true,
     maxHeight: 78,
@@ -138,6 +156,8 @@ export function AffiliationStrip({ variant = "page", forceTheme }: Props) {
               className="logo-asset"
               src={a.src}
               alt={a.label}
+              width={a.naturalW}
+              height={a.naturalH}
               style={{
                 maxWidth: "70%",
                 maxHeight: "56%",
@@ -192,6 +212,8 @@ export function AffiliationStrip({ variant = "page", forceTheme }: Props) {
           <img
             src={a.src}
             alt={a.label}
+            width={a.naturalW}
+            height={a.naturalH}
             style={{
               maxHeight: a.maxHeight ?? 48,
               maxWidth: "100%",

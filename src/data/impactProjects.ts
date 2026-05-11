@@ -29,7 +29,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Rennie Lab led a comprehensive brand, strategy, and digital engagement for HalfCut across halfcut.org. This included repositioning the brand narrative, rebuilding the digital platform, developing campaign assets, and providing ongoing strategic advisory to support scaling and partnership development. The work gave HalfCut the visual and strategic language to operate at a global level.",
     impact:
       "HalfCut now operates as a credible and compelling global reforestation movement with a brand and platform capable of attracting corporate ESG partners, philanthropic investment, and community participation at scale.",
-    hero: "/impact/halfcut.jpg",
+    hero: "/impact/halfcut.webp",
     tone: "moss",
   },
   {
@@ -183,7 +183,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Rennie Lab delivered strategy, brand design, UX design, and website design for inpieces.com. The work balanced aesthetic excellence with accessibility, ensuring the project's powerful conservation message reached the widest possible audience.",
     impact:
       "In Pieces gained a brand and digital presence that matched the quality and ambition of the project itself, helping it reach a global audience and raise awareness for endangered species through the power of design.",
-    hero: "/projects/in-pieces.jpg",
+    hero: "/projects/in-pieces.webp",
     tone: "moss",
   },
   {
@@ -253,7 +253,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Rennie Lab delivered a comprehensive engagement spanning digital museum design and development, brand strategy, platform design and development, and event activations. The work required a careful balance of institutional gravitas and human warmth, honouring the Foundation's history while making it accessible and relevant.",
     impact:
       "The Packer Family Foundation gained a digital and brand presence that properly documents and celebrates one of Australia's most significant philanthropic legacies, ensuring the work of the Foundation is understood and remembered.",
-    hero: "/projects/packer.jpg",
+    hero: "/projects/packer.webp",
     tone: "cream",
   },
   {

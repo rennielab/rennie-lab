@@ -67,6 +67,8 @@ function LogoStripInner({ theme }: { theme: "light" | "dark" }) {
             key={s.idx}
             src={s.src}
             alt=""
+            width={600}
+            height={400}
             className="logo-mark logo-mark-img"
             decoding="async"
             style={{ opacity: s.phase * 0.85 }}
