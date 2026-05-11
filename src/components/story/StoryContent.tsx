@@ -12,10 +12,10 @@ type Partner = {
 };
 
 const PARTNERS: Partner[] = [
-  { name: "Ben Rennie",    role: "Co-Founder · Creative Director",        loc: "Sydney", image: "/team/ben.jpg",    tone: "ink" },
-  { name: "Nicola Rennie", role: "Co-Founder · Strategy & Operations",    loc: "Sydney", image: "/team/nicola.jpg", tone: "moss" },
-  { name: "El Moore",      role: "Studio Director",                       loc: "Sydney", image: "/team/el.jpg",     tone: "red" },
-  { name: "Orkan Silmaz",  role: "Head of Digital",                       loc: "Sydney", image: "/team/orkan.jpg",  tone: "rust" },
+  { name: "Ben Rennie",    role: "Co-Founder · Creative Director",        loc: "Sydney", image: "/team/ben.webp",    tone: "ink" },
+  { name: "Nicola Rennie", role: "Co-Founder · Strategy & Operations",    loc: "Sydney", image: "/team/nicola.webp", tone: "moss" },
+  { name: "El Moore",      role: "Studio Director",                       loc: "Sydney", image: "/team/el.webp",     tone: "red" },
+  { name: "Orkan Silmaz",  role: "Head of Digital",                       loc: "Sydney", image: "/team/orkan.webp",  tone: "rust" },
 ];
 
 const CREDITS: { role: string; names: string[] }[] = [
@@ -89,7 +89,7 @@ const STUDIOS = [
     body: "Opened in 2021. A WeWork in Santa Monica, then bigger. Home base for design, production and our US partners.",
     tone: "cream",
     hours: "Mon–Fri · 9am–6pm PST",
-    image: "/studios/los-angeles.jpg",
+    image: "/studios/los-angeles.webp",
   },
 ];
 
@@ -183,7 +183,7 @@ export function StoryContent() {
       </section>
 
       {/* IN THE STUDIO — parallax atmosphere band */}
-      <section className="story-parallax" style={{ backgroundImage: "url(/journal/rl-studio-1.jpg)" }}>
+      <section className="story-parallax" style={{ backgroundImage: "url(/journal/rl-studio-1.webp)" }}>
         <div className="story-parallax-overlay" />
         <div className="story-parallax-inner">
           <div className="mono" style={{ color: "rgba(244,241,222,0.7)", marginBottom: 16 }}>
@@ -487,7 +487,7 @@ export function StoryContent() {
         </h2>
         <div
           className="press-hero"
-          style={{ backgroundImage: "url(/journal/ben-tim-ross.jpg)" }}
+          style={{ backgroundImage: "url(/journal/ben-tim-ross.webp)" }}
         >
           <div className="press-hero-cap">
             <span className="mono" style={{ color: "rgba(244,241,222,0.75)" }}>

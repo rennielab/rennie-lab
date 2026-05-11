@@ -71,7 +71,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Rennie Lab developed the ad concept, designed the campaign assets, and managed digital deployment across web channels. The work balanced emotional resonance with clear calls to action, ensuring the campaign worked at every level of the funnel.",
     impact:
       "The campaign delivered meaningful reach and engagement for one of Australia's most important health organisations, connecting Australians with Cancer Council's resources and support services.",
-    hero: "/impact/cancer-council.jpg",
+    hero: "/impact/cancer-council.webp",
     tone: "red",
   },
   {
@@ -99,7 +99,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Rennie Lab designed and developed the hospital's brand identity and digital platforms, creating a visual and digital language that felt approachable for children and families while conveying the professionalism and trust that healthcare demands.",
     impact:
       "The hospital now operates with a brand and digital platform that better serves its community, from the families walking through the doors to the staff working within them.",
-    hero: "/impact/canberra-childrens-hospital.jpeg",
+    hero: "/impact/canberra-childrens-hospital.webp",
     tone: "cream",
   },
   {
@@ -141,7 +141,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Rennie Lab delivered a comprehensive brand, design, and digital platform engagement for GRO, creating the visual identity and digital infrastructure needed to grow a community-driven environmental organisation.",
     impact:
       "GRO launched with a clear brand and digital presence capable of supporting community engagement and organisational growth in the US environmental sector.",
-    hero: "/impact/gro-usa.jpg",
+    hero: "/impact/gro-usa.webp",
     tone: "sand",
   },
   {
@@ -155,7 +155,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Rennie Lab provided early stage brand strategy, visual identity development, and digital platform design and development. The work helped Beard Season find its voice and build the foundations for a movement that would eventually reach a global audience.",
     impact:
       "Beard Season grew into one of Australia's most recognised skin cancer awareness movements, credited with saving lives by encouraging regular skin checks. The early brand and digital work helped establish the credibility and community that made that growth possible.",
-    hero: "/impact/beard-season.jpg",
+    hero: "/impact/beard-season.webp",
     tone: "rust",
   },
   {
@@ -211,7 +211,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Rennie Lab delivered brand design, advisory, strategy, and digital development for the Winner Foundation, creating the identity and infrastructure needed to launch and grow the organisation's programs.",
     impact:
       "The Winner Foundation launched with a clear brand and digital presence capable of supporting its community health mission and attracting the partners and funding needed to scale its impact.",
-    hero: "/impact/winner-foundation.jpg",
+    hero: "/impact/winner-foundation.webp",
     tone: "red",
   },
   {
@@ -225,7 +225,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Rennie Lab designed the Pulse CPR app for the Winner Foundation, building a UX experience specifically engineered for high-stress, real-time use. Clear, calm, and instantly navigable, the app was designed to give bystanders the confidence to act when every second counts.",
     impact:
       "The Pulse CPR app was built with a single stated mission: to save one million Australians. The design work gave that mission a tool worthy of its ambition.",
-    hero: "/impact/pulse-cpr.jpg",
+    hero: "/impact/pulse-cpr.webp",
     tone: "red",
   },
   {
@@ -267,7 +267,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Rennie Lab co-founded, designed, and developed the Design Declares Australia platform and led the strategic and advisory work that has grown the movement to over 1,200 members. The work was done in close partnership with D! UK and has helped establish Australia as one of the leading national chapters of the global movement.",
     impact:
       "Design Declares Australia is now one of the country's most significant climate and design organisations, with over 1,200 members, a national events program, government engagement, and a growing influence on how the Australian design industry thinks about its responsibility to the planet.",
-    hero: "/impact/design-declares-australia.jpg",
+    hero: "/impact/design-declares-australia.webp",
     tone: "ink",
   },
   {
@@ -281,7 +281,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Rennie Lab delivered UX design, development, and strategy for Farmers Footprint, building digital tools that communicated the regenerative agriculture message with clarity and emotional resonance. The work supported both the organisation's storytelling mission and its operational needs.",
     impact:
       "Farmers Footprint gained digital platforms and UX that helped bring the regenerative agriculture story to a wider global audience, supporting the movement's mission to transition farming away from chemical dependency.",
-    hero: "/impact/farmers-footprint.jpg",
+    hero: "/impact/farmers-footprint.webp",
     tone: "sand",
   },
   {
@@ -295,7 +295,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Rennie Lab delivered design and development for the Invisible Ingredient platform, alongside podcast design, strategy, and advisory. The work was built to make a complex and contested scientific and agricultural topic accessible, engaging, and shareable for a broad audience.",
     impact:
       "The Invisible Ingredient launched as a compelling and well-designed platform for one of the most important conversations in food and agriculture, helping Farmers Footprint bring the glyphosate story to audiences beyond the farming community.",
-    hero: "/impact/invisible-ingredient.jpg",
+    hero: "/impact/invisible-ingredient.webp",
     tone: "rust",
   },
   {
@@ -323,7 +323,7 @@ export const IMPACT_CASE_STUDIES: ImpactCaseStudy[] = [
       "Reny Studio held B Corp certification from 2008 to 2009, among the earliest design agencies in Australia to do so, and again from 2023 to 2025. In 2025 the decision was made to step back from certification and redirect that investment of time, energy, and resources into building Design Declares Australia and developing our own direct impact programs. We chose to put the B Corp spend into D! and into our own work rather than into a certification process.",
     impact:
       "Two chapters of B Corp certification helped establish Reny Studio and Rennie Lab as purpose-led organisations at a time when that was genuinely rare in Australian design. The decision to exit certification in favour of deeper investment in Design Declares Australia reflects a belief that direct action now outweighs the value of the badge.",
-    hero: "/impact/b-corp-certification.jpg",
+    hero: "/impact/b-corp-certification.webp",
     tone: "moss",
   },
 ];
