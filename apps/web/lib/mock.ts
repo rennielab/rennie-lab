@@ -63,7 +63,12 @@ export const lawyers: Lawyer[] = [
   { id: 'lwy_jord', firmId: firm.id, name: 'Jordan Bennett', initials: 'JB', role: 'Partner' },
   { id: 'lwy_sara', firmId: firm.id, name: 'Sarah Chen', initials: 'SC', role: 'Senior Associate' },
   { id: 'lwy_marc', firmId: firm.id, name: 'Marcus Hayes', initials: 'MH', role: 'Managing Partner' },
+  { id: 'lwy_soph', firmId: firm.id, name: 'Sophia Williams', initials: 'SW', role: 'Lawyer' },
 ];
+
+// The "current firm user" in the /firm/* demo — a regular staff lawyer, NOT
+// the admin. Logs into the same firm as Marcus but sees a scoped view.
+export const currentFirmUser: Lawyer = lawyers[3];
 
 export const clients: Client[] = [
   { id: 'cli_acme', firmId: firm.id, name: 'Acme Industries Inc.' },
@@ -102,6 +107,8 @@ export const seedEntries: TimeEntry[] = [
   { id: 'te_6', matterId: 'mat_reyes_1', lawyerId: 'lwy_jord', durationSec: 3600, description: 'Trust funding strategy memo for Miguel Reyes.', createdAt: now - 3 * dayMs - 7200000, status: 'pending', nonBillable: false, source: 'manual' },
   { id: 'te_7', matterId: 'mat_acme_1', lawyerId: 'lwy_sara', durationSec: 1200, description: 'Internal call with Marcus re: motion strategy.', createdAt: now - 4 * dayMs, status: 'approved', nonBillable: true, source: 'call' },
   { id: 'te_8', matterId: 'mat_north_1', lawyerId: 'lwy_jord', durationSec: 4200, description: 'Underwriter call — risk factor language for S-1.', createdAt: now - 5 * dayMs, status: 'approved', nonBillable: false, source: 'call', contactId: 'ct_dchen' },
+  { id: 'te_9', matterId: 'mat_acme_1', lawyerId: 'lwy_soph', durationSec: 2280, description: 'Drafted opposition to motion to dismiss — Section II argument.', createdAt: now - 4 * 3600000, status: 'pending', nonBillable: false, source: 'manual' },
+  { id: 'te_10', matterId: 'mat_north_1', lawyerId: 'lwy_soph', durationSec: 1620, description: 'Call with David Chen re: comfort letter coordination.', createdAt: now - 8 * 3600000, status: 'pending', nonBillable: false, source: 'call', contactId: 'ct_dchen' },
 ];
 
 // The "hero" entry submitted from mobile during the demo. Appears on admin after a delay.
@@ -147,8 +154,32 @@ export const formatDuration = (seconds: number) => {
 
 export const formatHours = (seconds: number) => `${(seconds / 3600).toFixed(2)}h`;
 
+// Human-friendly hours: "1h 47m" / "47m" / "30s"
+export const formatHoursH = (seconds: number) => {
+  if (seconds < 60) return `${seconds}s`;
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  if (h === 0) return `${m}m`;
+  if (m === 0) return `${h}h`;
+  return `${h}h ${m}m`;
+};
+
 export const formatMoney = (amount: number) =>
   `$${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+// Whole-dollar money for compact dashboards. Cents only shown if non-zero.
+export const formatMoneyCompact = (amount: number) => {
+  if (Number.isInteger(amount) || amount % 1 < 0.005) return `$${Math.round(amount).toLocaleString()}`;
+  return `$${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+};
+
+// Compute the billable $ value of a time entry at the matter's rate.
+export const entryValue = (entry: TimeEntry) => {
+  if (entry.nonBillable) return 0;
+  const m = matterById(entry.matterId);
+  if (!m) return 0;
+  return (m.rate * entry.durationSec) / 3600;
+};
 
 export const formatDate = (ts: number) => {
   const d = new Date(ts);

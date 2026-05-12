@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 import {
   clientById,
   contactById,
@@ -40,11 +42,15 @@ export function EntryDetailPanel({
   entry,
   onClose,
   onApprove,
+  onReject,
+  onSaveEdits,
   onGenerateInvoice,
 }: {
   entry: TimeEntry;
   onClose: () => void;
   onApprove: () => void;
+  onReject?: (reason: string) => void;
+  onSaveEdits?: (description: string, nonBillable: boolean) => void;
   onGenerateInvoice: () => void;
 }) {
   const matter = matterById(entry.matterId)!;
@@ -53,6 +59,13 @@ export function EntryDetailPanel({
   const contact = entry.contactId ? contactById(entry.contactId) : undefined;
   const billable = (matter.rate * entry.durationSec) / 3600;
   const isConfirmed = entry.status === 'approved';
+  const isRejected = (entry.status as string) === 'rejected';
+
+  const [editing, setEditing] = useState(false);
+  const [draftDesc, setDraftDesc] = useState(entry.description);
+  const [draftNonBillable, setDraftNonBillable] = useState(entry.nonBillable);
+  const [rejecting, setRejecting] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
 
   const startTime = new Date(entry.createdAt);
   const endTime = new Date(entry.createdAt + entry.durationSec * 1000);
@@ -155,11 +168,89 @@ export function EntryDetailPanel({
 
         {/* Description */}
         <div className="mt-6">
-          <div className="text-sm font-semibold text-fg-muted mb-2">
-            {entry.source === 'call' ? 'AI-summarized notes' : 'Notes'}
+          <div className="flex items-center justify-between mb-2">
+            <div className="text-sm font-semibold text-fg-muted">
+              {entry.source === 'call' ? 'AI-summarized notes' : 'Notes'}
+            </div>
+            {!editing && onSaveEdits && !isRejected && (
+              <button onClick={() => setEditing(true)} className="text-xs font-medium text-accent hover:underline">
+                Edit
+              </button>
+            )}
           </div>
-          <p className="text-sm leading-relaxed">{entry.description}</p>
+          {editing ? (
+            <div className="space-y-3">
+              <textarea
+                value={draftDesc}
+                onChange={(e) => setDraftDesc(e.target.value)}
+                rows={4}
+                className="w-full px-3 py-2 rounded-lg border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent resize-none"
+              />
+              <label className="flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={draftNonBillable}
+                  onChange={(e) => setDraftNonBillable(e.target.checked)}
+                  className="w-4 h-4 accent-[#22C55E]"
+                />
+                <span className="text-sm">Mark as non-billable</span>
+              </label>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    onSaveEdits?.(draftDesc, draftNonBillable);
+                    setEditing(false);
+                  }}
+                  className="px-4 py-2 rounded-lg bg-accent text-white text-sm font-semibold">
+                  Save &amp; approve
+                </button>
+                <button
+                  onClick={() => {
+                    setEditing(false);
+                    setDraftDesc(entry.description);
+                    setDraftNonBillable(entry.nonBillable);
+                  }}
+                  className="px-4 py-2 rounded-lg border border-border text-sm font-medium">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm leading-relaxed">{entry.description}</p>
+          )}
         </div>
+
+        {/* Reject form */}
+        {rejecting && (
+          <div className="mt-6 bg-danger-soft border border-danger/30 rounded-xl p-4">
+            <div className="text-sm font-semibold text-danger mb-2">Reject this entry</div>
+            <textarea
+              value={rejectReason}
+              onChange={(e) => setRejectReason(e.target.value)}
+              placeholder="Reason — sent to the lawyer so they can fix and resubmit."
+              rows={3}
+              className="w-full px-3 py-2 rounded-lg border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-danger/30 focus:border-danger resize-none"
+            />
+            <div className="flex gap-2 mt-3">
+              <button
+                onClick={() => {
+                  if (!rejectReason.trim()) return;
+                  onReject?.(rejectReason);
+                  setRejecting(false);
+                  setRejectReason('');
+                }}
+                disabled={!rejectReason.trim()}
+                className="px-4 py-2 rounded-lg bg-danger text-white text-sm font-semibold disabled:opacity-50">
+                Send back to lawyer
+              </button>
+              <button
+                onClick={() => { setRejecting(false); setRejectReason(''); }}
+                className="px-4 py-2 rounded-lg border border-border text-sm font-medium">
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Call recording */}
         {entry.source === 'call' && contact && (
@@ -195,16 +286,27 @@ export function EntryDetailPanel({
       </div>
 
       {/* Footer */}
-      <div className="border-t border-border px-6 py-4 flex items-center gap-3">
-        {!isConfirmed ? (
-          <button
-            onClick={onApprove}
-            className="flex-1 bg-accent hover:bg-accent-dim text-white font-semibold text-sm py-3 rounded-lg flex items-center justify-center gap-2">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-              <path d="M5 12l5 5L20 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            Approve &amp; Confirm
-          </button>
+      <div className="border-t border-border px-6 py-4 flex items-center gap-2">
+        {!isConfirmed && !isRejected ? (
+          <>
+            <button
+              onClick={onApprove}
+              className="flex-1 bg-accent hover:bg-accent-dim text-white font-semibold text-sm py-3 rounded-lg flex items-center justify-center gap-2">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <path d="M5 12l5 5L20 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              Approve &amp; Confirm
+            </button>
+            {onReject && (
+              <button
+                onClick={() => setRejecting(true)}
+                className="px-4 py-3 rounded-lg border border-danger/30 bg-card hover:bg-danger-soft text-danger text-sm font-semibold">
+                Reject
+              </button>
+            )}
+          </>
+        ) : isRejected ? (
+          <div className="flex-1 text-sm text-danger font-semibold text-center py-3">Sent back to lawyer for revision</div>
         ) : (
           <button
             onClick={onGenerateInvoice}
@@ -212,17 +314,6 @@ export function EntryDetailPanel({
             Generate Invoice →
           </button>
         )}
-        <button className="px-4 py-3 rounded-lg border border-border bg-card hover:bg-bg text-sm font-semibold flex items-center gap-2">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          Edit
-        </button>
-        <button className="w-11 h-11 rounded-lg border border-danger/30 bg-card hover:bg-danger-soft text-danger flex items-center justify-center">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-            <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
       </div>
     </div>
   );

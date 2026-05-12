@@ -1,307 +1,355 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { AdminShell } from '@/components/AdminShell';
 import {
   clients,
   contactById,
-  formatHours,
-  formatMoney,
+  entryValue,
+  formatHoursH,
+  formatMoneyCompact,
   lawyerById,
   lawyers,
   matterById,
   matters,
   seedEntries,
 } from '@/lib/mock';
+import { useBilledEntryIds, useEntryOverrides, useInvoiceOverrides } from '@/lib/adminState';
 
-// ---------- KPI math (driven by mock so the demo looks lived-in) ----------
+// ---------- Compute everything off mock + overrides ----------
 
-function computeKpis() {
+function useDashboardData() {
+  const overrides = useEntryOverrides();
+  const billed = useBilledEntryIds();
+  const invoiceOverrides = useInvoiceOverrides();
+
+  const enriched = seedEntries.map((e) => ({
+    ...e,
+    status: (overrides[e.id]?.status as typeof e.status) ?? e.status,
+    description: overrides[e.id]?.description ?? e.description,
+    nonBillable: overrides[e.id]?.nonBillable ?? e.nonBillable,
+  }));
+
   const dayMs = 24 * 60 * 60 * 1000;
   const startOfToday = new Date();
   startOfToday.setHours(0, 0, 0, 0);
 
-  const totalSec = seedEntries.reduce((a, e) => a + e.durationSec, 0);
-  const todaySec = seedEntries
-    .filter((e) => e.createdAt >= startOfToday.getTime())
-    .reduce((a, e) => a + e.durationSec, 0);
-  const billableSec = seedEntries.filter((e) => !e.nonBillable).reduce((a, e) => a + e.durationSec, 0);
+  const totalSec = enriched.reduce((a, e) => a + e.durationSec, 0);
+  const todaySec = enriched.filter((e) => e.createdAt >= startOfToday.getTime()).reduce((a, e) => a + e.durationSec, 0);
+  const billableSec = enriched.filter((e) => !e.nonBillable).reduce((a, e) => a + e.durationSec, 0);
   const nonBillableSec = totalSec - billableSec;
-  const unconfirmed = seedEntries.filter((e) => e.status === 'pending' || e.status === 'draft').length;
-  const revenue = seedEntries
-    .filter((e) => !e.nonBillable && e.status === 'approved')
-    .reduce((a, e) => {
-      const m = matterById(e.matterId);
-      return a + (m ? (m.rate * e.durationSec) / 3600 : 0);
-    }, 0);
 
-  // Avg per member uses lawyers excluding admin? Just use all to keep it simple.
-  const avgPerMember = totalSec / Math.max(lawyers.length, 1);
+  // Triage numbers — Marcus's actual queue
+  const pendingEntries = enriched.filter((e) => e.status === 'pending');
+  const pendingValue = pendingEntries.reduce((a, e) => a + entryValue(e), 0);
+  const approvedUnbilledEntries = enriched.filter((e) => e.status === 'approved' && !billed.has(e.id));
+  const approvedUnbilledValue = approvedUnbilledEntries.reduce((a, e) => a + entryValue(e), 0);
 
-  // Time logged per week, last 7 buckets
-  const weeks: { label: string; sec: number }[] = [];
+  // Mock invoice list (in sync with /admin/invoices)
+  const invoiceList: { id: string; number: string; client: string; amount: number; defaultStatus: 'sent' | 'overdue' | 'paid' | 'partial' }[] = [
+    { id: 'inv_8', number: 'INV-008', client: 'Acme Industries', amount: 700, defaultStatus: 'sent' },
+    { id: 'inv_7', number: 'INV-007', client: 'Acme Industries', amount: 1200, defaultStatus: 'overdue' },
+    { id: 'inv_6', number: 'INV-006', client: 'Reyes Family Trust', amount: 1300, defaultStatus: 'paid' },
+    { id: 'inv_5', number: 'INV-005', client: 'Northgate Capital', amount: 1500, defaultStatus: 'partial' },
+  ];
+  const invStatus = (id: string, def: string) => invoiceOverrides[id]?.status ?? def;
+  const overdueInvoices = invoiceList.filter((i) => invStatus(i.id, i.defaultStatus) === 'overdue');
+  const overdueAmount = overdueInvoices.reduce((a, i) => a + i.amount, 0);
+
+  // Stalled matters: no entries in 14+ days
+  const stalledMatters = matters.filter((m) => {
+    const latest = enriched.filter((e) => e.matterId === m.id).map((e) => e.createdAt).sort((a, b) => b - a)[0];
+    if (!latest) return false; // brand-new matter, not "stalled"
+    return Date.now() - latest > 14 * dayMs;
+  });
+
+  // Cash collected (paid invoices)
+  const cashCollected = invoiceList
+    .filter((i) => invStatus(i.id, i.defaultStatus) === 'paid')
+    .reduce((a, i) => a + i.amount, 0);
+
+  // Hours per day, last 7
+  const days: { label: string; sec: number }[] = [];
   for (let i = 6; i >= 0; i--) {
-    const end = Date.now() - i * dayMs;
+    const end = Date.now() - i * dayMs + dayMs;
     const start = end - dayMs;
-    const sec = seedEntries
-      .filter((e) => e.createdAt >= start && e.createdAt < end)
-      .reduce((a, e) => a + e.durationSec, 0);
-    const d = new Date(end);
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const dd = String(d.getDate()).padStart(2, '0');
-    weeks.push({ label: `${mm}-${dd}`, sec });
+    const sec = enriched.filter((e) => e.createdAt >= start && e.createdAt < end).reduce((a, e) => a + e.durationSec, 0);
+    const d = new Date(start);
+    days.push({ label: `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`, sec });
   }
 
+  const avgPerMember = totalSec / Math.max(lawyers.length, 1);
+
   return {
-    totalSec,
-    todaySec,
-    billableSec,
-    nonBillableSec,
-    unconfirmed,
-    revenue,
+    enriched,
+    totalSec, todaySec, billableSec, nonBillableSec,
+    pendingEntries, pendingValue,
+    approvedUnbilledEntries, approvedUnbilledValue,
+    overdueInvoices, overdueAmount,
+    stalledMatters,
+    cashCollected,
+    days,
     avgPerMember,
-    weeks,
-    captured: 0.68,
+    capturedPct: 0.68,
   };
 }
 
-export default function Dashboard() {
-  const k = computeKpis();
-  const [period, setPeriod] = useState<'week' | 'month'>('month');
+// ---------- Dashboard ----------
 
-  const recent = [...seedEntries].sort((a, b) => b.createdAt - a.createdAt).slice(0, 6);
+export default function Dashboard() {
+  const d = useDashboardData();
 
   return (
     <AdminShell
       title="Dashboard"
-      subtitle="Insert page description here."
-      action={
-        <div className="flex items-center gap-2">
-          <PeriodPicker value={period} onChange={setPeriod} />
-          <button className="h-10 px-4 rounded-full bg-accent hover:bg-accent-dim text-white font-semibold text-sm transition inline-flex items-center gap-1.5">
-            <span className="text-base leading-none">+</span> Quick Action
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-              <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-        </div>
-      }>
-      {/* Onboarding */}
-      <OnboardingCard />
+      subtitle={`Welcome back, ${'Marcus'}. Here's where your firm needs you.`}
+      action={<QuickActionMenu />}>
+      {/* Triage queue — the real first thing Marcus needs */}
+      <TriageQueue
+        pendingCount={d.pendingEntries.length}
+        pendingValue={d.pendingValue}
+        unbilledCount={d.approvedUnbilledEntries.length}
+        unbilledValue={d.approvedUnbilledValue}
+        overdueCount={d.overdueInvoices.length}
+        overdueAmount={d.overdueAmount}
+        stalledCount={d.stalledMatters.length}
+      />
 
-      {/* Two rows of 6 KPIs */}
-      <div className="grid grid-cols-6 gap-3 mt-4">
-        <Kpi icon={<IconClock />} value={formatHours(k.totalSec)} label="Total Hours" delta="+12%" />
-        <Kpi icon={<IconClock />} value={formatHours(k.todaySec)} label="Hours Today" />
-        <Kpi icon={<IconTimer />} value={formatHours(k.billableSec)} label="Billable Hours" delta="+12%" />
-        <Kpi icon={<IconPause />} value={formatHours(k.nonBillableSec)} label="Non-Billable" />
-        <Kpi icon={<IconHelp />} value={String(k.unconfirmed)} label="Unconfirmed" />
-        <Kpi icon={<IconDollar />} value={formatMoney(k.revenue)} label="Revenue" delta="+18.2%" />
-
-        <Kpi icon={<IconTrend />} value="+24.3%" label="Revenue Growth %" delta="+12%" />
-        <Kpi icon={<IconActivity />} value="$3,304" label="Monthly Recurring" />
-        <Kpi icon={<IconUsers />} value={String(clients.length)} label="Active Clients" />
-        <Kpi icon={<IconBriefcase />} value={String(matters.length)} label="Active Matters" />
-        <Kpi icon={<IconUsers />} value={String(lawyers.length)} label="Active Members" />
-        <Kpi icon={<IconTarget />} value={formatHours(k.avgPerMember)} label="Avg hrs/Member" />
+      {/* This-month KPIs (timeframe explicit) */}
+      <div className="mt-5 mb-2 flex items-baseline justify-between">
+        <h2 className="text-sm font-semibold text-fg-muted uppercase tracking-wide">This month</h2>
+        <span className="text-xs text-fg-muted">7-day rolling chart below</span>
+      </div>
+      <div className="grid grid-cols-4 gap-3">
+        <Kpi label="Billable" value={formatHoursH(d.billableSec)} icon={<IClock />} delta="+12%" />
+        <Kpi label="Revenue (billed)" value={formatMoneyCompact(d.approvedUnbilledValue + d.cashCollected)} icon={<IDollar />} delta="+18.2%" />
+        <Kpi label="Cash collected" value={formatMoneyCompact(d.cashCollected)} icon={<IBank />} accent />
+        <Kpi label="Avg per member" value={formatHoursH(d.avgPerMember)} icon={<ITarget />} sub={`across ${lawyers.length} members`} />
       </div>
 
-      {/* Hours Over Time */}
+      {/* Hours chart */}
       <div className="mt-4 bg-card border border-border rounded-2xl p-6">
         <div className="flex items-start justify-between mb-6">
           <div>
-            <div className="text-sm font-semibold text-fg">Hours Over Time</div>
+            <div className="text-sm font-semibold text-fg">Hours over time</div>
             <div className="text-xs text-fg-muted mt-0.5">
-              Total hours <span className="text-fg font-semibold">{formatHours(k.totalSec)}</span>
+              Last 7 days · total <span className="text-fg font-semibold">{formatHoursH(d.days.reduce((a, x) => a + x.sec, 0))}</span>
             </div>
           </div>
           <button className="text-sm text-fg-muted inline-flex items-center gap-1.5 border border-border rounded-lg px-3 h-9 hover:bg-bg">
-            Weekly
+            Daily
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
               <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
         </div>
-        <HoursBarChart weeks={k.weeks} />
+        <AutoScaleBarChart series={d.days} />
       </div>
 
-      {/* Events + Manual vs Captured */}
+      {/* Recent activity + Capture mix */}
       <div className="grid grid-cols-3 gap-3 mt-4">
-        <div className="col-span-2 bg-card border border-border rounded-2xl p-6 min-h-[260px]">
+        <div className="col-span-2 bg-card border border-border rounded-2xl p-6">
           <div className="flex items-center justify-between mb-4">
-            <div className="text-sm font-semibold text-fg">Events</div>
-            <Link href="#" className="text-xs font-medium text-accent inline-flex items-center gap-1">
-              View All
+            <div className="text-sm font-semibold">Recent entries</div>
+            <Link href="/admin/entries" className="text-xs font-medium text-accent inline-flex items-center gap-1">
+              View all
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
                 <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </Link>
           </div>
-          <EventsList />
+          <div className="divide-y divide-border">
+            {[...d.enriched].sort((a, b) => b.createdAt - a.createdAt).slice(0, 6).map((e) => {
+              const m = matterById(e.matterId);
+              const law = lawyerById(e.lawyerId);
+              const c = e.contactId ? contactById(e.contactId) : undefined;
+              return (
+                <Link key={e.id} href="/admin/entries" className="flex items-center gap-3 py-2.5 hover:bg-bg/40 rounded -mx-2 px-2">
+                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${e.source === 'call' ? 'bg-accent-soft text-accent' : 'bg-bg text-fg-muted'}`}>
+                    {e.source === 'call' ? <IPhone /> : <IClock />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-semibold text-fg truncate">{c ? `${c.firstName} ${c.lastName}` : m?.shortName}</div>
+                    <div className="text-xs text-fg-muted truncate">{m?.shortName} · {law?.name}</div>
+                  </div>
+                  <div className="text-sm font-semibold text-fg tabular-nums">{formatHoursH(e.durationSec)}</div>
+                  <StatusBadge status={e.status} />
+                </Link>
+              );
+            })}
+          </div>
         </div>
         <div className="bg-card border border-border rounded-2xl p-6">
-          <div className="text-sm font-semibold text-fg mb-1">Manual vs Captured</div>
-          <div className="text-xs text-fg-muted mb-2">How time made it in</div>
-          <CapturedDonut value={k.captured} />
-        </div>
-      </div>
-
-      {/* Top Performing Members + Time by Activity */}
-      <div className="grid grid-cols-2 gap-3 mt-4">
-        <div className="bg-card border border-border rounded-2xl p-6 min-h-[260px]">
-          <div className="text-sm font-semibold text-fg mb-4">Top Performing Members</div>
-          <TopMembers />
-        </div>
-        <div className="bg-card border border-border rounded-2xl p-6 min-h-[260px]">
-          <div className="flex items-center justify-between mb-4">
-            <div className="text-sm font-semibold text-fg">Time by Activity</div>
-            <Link href="#" className="text-xs font-medium text-accent inline-flex items-center gap-1">
-              Full Report
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </Link>
+          <div className="text-sm font-semibold mb-1">Captured vs Manual</div>
+          <div className="text-xs text-fg-muted mb-2">How time made it in this month</div>
+          <CapturedDonut value={d.capturedPct} />
+          <div className="flex items-center justify-center gap-4 mt-2 text-xs">
+            <span className="inline-flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-accent" />Auto-captured</span>
+            <span className="inline-flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-border-strong" />Manual</span>
           </div>
-          <ActivityBreakdown />
         </div>
       </div>
 
-      {/* Recent Entries */}
-      <div className="mt-4 bg-card border border-border rounded-2xl p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="text-sm font-semibold text-fg">Recent Entries</div>
-          <Link href="/admin/entries" className="text-xs font-medium text-accent inline-flex items-center gap-1">
-            View All
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-              <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </Link>
-        </div>
-        <div className="divide-y divide-border">
-          {recent.map((e) => {
-            const m = matterById(e.matterId);
-            const law = lawyerById(e.lawyerId);
-            const c = e.contactId ? contactById(e.contactId) : undefined;
-            return (
-              <div key={e.id} className="flex items-center gap-3 py-3">
-                <div
-                  className={`w-9 h-9 rounded-full flex items-center justify-center ${
-                    e.source === 'call' ? 'bg-accent-soft text-accent' : 'bg-bg text-fg-muted'
-                  }`}>
-                  {e.source === 'call' ? <IconPhone /> : <IconClock />}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-fg truncate">
-                    {c ? `${c.firstName} ${c.lastName}` : m?.shortName}
-                  </div>
-                  <div className="text-xs text-fg-muted truncate">
-                    {m?.shortName} · {law?.name}
-                  </div>
-                </div>
-                <div className="text-sm font-semibold text-fg tabular-nums">{formatHours(e.durationSec)}</div>
-                <StatusBadge status={e.status} />
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Time Logged per Project + Top Clients */}
+      {/* Top clients */}
       <div className="grid grid-cols-2 gap-3 mt-4 mb-4">
-        <div className="bg-card border border-border rounded-2xl p-6 min-h-[260px]">
-          <div className="text-sm font-semibold text-fg mb-4">Time Logged per Project</div>
-          <TimePerProject />
-        </div>
-        <div className="bg-card border border-border rounded-2xl p-6 min-h-[260px]">
-          <div className="text-sm font-semibold text-fg mb-4">Top Clients by Revenue</div>
-          <TopClients />
-        </div>
+        <TopClientsCard />
+        <TopMembersCard data={d.enriched} />
       </div>
     </AdminShell>
   );
 }
 
-// ---------- Header bits ----------
+// ---------- Triage queue ----------
 
-function PeriodPicker({ value, onChange }: { value: 'week' | 'month'; onChange: (v: 'week' | 'month') => void }) {
+function TriageQueue({
+  pendingCount, pendingValue,
+  unbilledCount, unbilledValue,
+  overdueCount, overdueAmount,
+  stalledCount,
+}: {
+  pendingCount: number; pendingValue: number;
+  unbilledCount: number; unbilledValue: number;
+  overdueCount: number; overdueAmount: number;
+  stalledCount: number;
+}) {
   return (
-    <button
-      onClick={() => onChange(value === 'month' ? 'week' : 'month')}
-      className="h-10 px-3.5 rounded-full border border-border bg-card text-sm text-fg inline-flex items-center gap-2 hover:bg-bg">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-        <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.8" />
-        <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      </svg>
-      <span className="font-medium">{value === 'month' ? 'This month' : 'This week'}</span>
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-        <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    </button>
+    <div>
+      <div className="flex items-baseline justify-between mb-3">
+        <h2 className="text-sm font-semibold text-fg-muted uppercase tracking-wide">Your queue</h2>
+        <span className="text-xs text-fg-muted">What needs you right now</span>
+      </div>
+      <div className="grid grid-cols-4 gap-3">
+        <TriageCard
+          tone={pendingCount > 0 ? 'warn' : 'ok'}
+          icon={<IInbox />}
+          label="Time to approve"
+          count={pendingCount}
+          sub={pendingCount > 0 ? `${formatMoneyCompact(pendingValue)} pending` : 'All caught up'}
+          href="/admin/entries?status=pending"
+          cta={pendingCount > 0 ? 'Review →' : undefined}
+        />
+        <TriageCard
+          tone={unbilledCount > 0 ? 'accent' : 'ok'}
+          icon={<IBolt />}
+          label="Ready to invoice"
+          count={unbilledCount}
+          sub={unbilledCount > 0 ? `${formatMoneyCompact(unbilledValue)} approved` : 'Nothing ready'}
+          href="/admin/invoices?new=1"
+          cta={unbilledCount > 0 ? 'Generate →' : undefined}
+        />
+        <TriageCard
+          tone={overdueCount > 0 ? 'danger' : 'ok'}
+          icon={<IAlert />}
+          label="Overdue invoices"
+          count={overdueCount}
+          sub={overdueCount > 0 ? `${formatMoneyCompact(overdueAmount)} past due` : 'Nothing overdue'}
+          href="/admin/invoices?tab=overdue"
+          cta={overdueCount > 0 ? 'Chase →' : undefined}
+        />
+        <TriageCard
+          tone={stalledCount > 0 ? 'neutral' : 'ok'}
+          icon={<IPause />}
+          label="Stalled matters"
+          count={stalledCount}
+          sub={stalledCount > 0 ? 'No activity in 14+ days' : 'All matters active'}
+          href="/admin/matters?filter=stalled"
+          cta={stalledCount > 0 ? 'Review →' : undefined}
+        />
+      </div>
+    </div>
   );
 }
 
-// ---------- Onboarding ----------
+function TriageCard({
+  tone, icon, label, count, sub, href, cta,
+}: {
+  tone: 'ok' | 'warn' | 'danger' | 'accent' | 'neutral';
+  icon: React.ReactNode;
+  label: string;
+  count: number;
+  sub: string;
+  href: string;
+  cta?: string;
+}) {
+  const accentMap = {
+    ok: { ring: 'border-border', tile: 'bg-bg text-fg-muted', label: 'text-fg-muted', count: 'text-fg' },
+    warn: { ring: 'border-warning/40', tile: 'bg-warning-soft text-warning', label: 'text-fg-muted', count: 'text-fg' },
+    danger: { ring: 'border-danger/40', tile: 'bg-danger-soft text-danger', label: 'text-fg-muted', count: 'text-fg' },
+    accent: { ring: 'border-accent/40', tile: 'bg-accent-soft text-accent-dark', label: 'text-fg-muted', count: 'text-fg' },
+    neutral: { ring: 'border-border', tile: 'bg-bg text-fg-muted', label: 'text-fg-muted', count: 'text-fg' },
+  }[tone];
 
-function OnboardingCard() {
-  const [open, setOpen] = useState(true);
   return (
-    <div className="bg-card border border-border rounded-2xl px-6 py-5">
+    <Link href={href} className={`block bg-card border ${accentMap.ring} rounded-2xl p-4 hover:shadow-sm transition`}>
+      <div className="flex items-center justify-between mb-3">
+        <span className={`w-9 h-9 rounded-lg flex items-center justify-center ${accentMap.tile}`}>{icon}</span>
+        {cta && <span className="text-xs font-semibold text-accent">{cta}</span>}
+      </div>
+      <div className={`text-3xl font-semibold tabular-nums tracking-tight ${accentMap.count}`}>{count}</div>
+      <div className={`text-xs ${accentMap.label} mt-0.5`}>{label}</div>
+      <div className="text-xs text-fg-muted mt-2 truncate">{sub}</div>
+    </Link>
+  );
+}
+
+// ---------- Quick Action menu ----------
+
+function QuickActionMenu() {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function onClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener('mousedown', onClickOutside);
+    return () => document.removeEventListener('mousedown', onClickOutside);
+  }, [open]);
+
+  return (
+    <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-start justify-between text-left">
-        <div>
-          <div className="text-sm font-semibold text-fg">Unlock your admin overview</div>
-          <div className="text-xs text-fg-muted mt-0.5">Finish the steps below to see project and team activity.</div>
-        </div>
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          className={`text-fg-muted transition-transform ${open ? '' : 'rotate-180'}`}>
-          <path d="M6 15l6-6 6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        className="bg-accent hover:bg-accent-dim text-white font-semibold text-sm px-4 h-10 rounded-lg transition inline-flex items-center gap-1.5">
+        <span className="text-base leading-none">+</span> Quick Action
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+          <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
       {open && (
-        <ol className="mt-4 space-y-2">
+        <div className="absolute right-0 mt-2 w-[220px] bg-card border border-border rounded-xl shadow-[0_20px_60px_-20px_rgba(15,20,25,0.25)] z-30 overflow-hidden">
           {[
-            'Create a client',
-            'Add a matter',
-            'Assign teammates to matter',
-          ].map((label, i) => (
-            <li key={i} className="flex items-center gap-3 text-sm text-fg">
-              <span className="w-5 h-5 rounded-full bg-bg text-fg-muted text-xs font-semibold flex items-center justify-center">
-                {i + 1}
-              </span>
-              <span>{label}</span>
-            </li>
+            { href: '/admin/entries', label: 'Add time entry', icon: <IClock /> },
+            { href: '/admin/invoices?new=1', label: 'New invoice', icon: <IDollar /> },
+            { href: '/admin/matters?new=1', label: 'New matter', icon: <IBriefcase /> },
+            { href: '/admin/clients?new=1', label: 'New client', icon: <IUsers /> },
+            { href: '/admin/team?invite=1', label: 'Invite team member', icon: <IUserPlus /> },
+          ].map((a) => (
+            <Link
+              key={a.href}
+              href={a.href}
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-fg hover:bg-bg">
+              <span className="w-7 h-7 rounded-md bg-bg text-fg-muted flex items-center justify-center">{a.icon}</span>
+              {a.label}
+            </Link>
           ))}
-        </ol>
+        </div>
       )}
     </div>
   );
 }
 
-// ---------- KPIs ----------
+// ---------- KPI + chart helpers ----------
 
-function Kpi({
-  icon,
-  value,
-  label,
-  delta,
-}: {
-  icon: React.ReactNode;
-  value: string;
-  label: string;
-  delta?: string;
-}) {
+function Kpi({ label, value, icon, delta, accent, sub }: { label: string; value: string; icon: React.ReactNode; delta?: string; accent?: boolean; sub?: string }) {
   return (
-    <div className="bg-card border border-border rounded-2xl p-4">
-      <div className="w-9 h-9 rounded-lg bg-bg flex items-center justify-center text-fg-muted">{icon}</div>
-      <div className="flex items-baseline gap-1.5 mt-3">
-        <div className="text-2xl font-semibold text-fg tabular-nums tracking-tight">{value}</div>
+    <div className={`bg-card border ${accent ? 'border-accent/40' : 'border-border'} rounded-2xl p-4`}>
+      <div className="flex items-center justify-between">
+        <span className={`w-9 h-9 rounded-lg flex items-center justify-center ${accent ? 'bg-accent-soft text-accent-dark' : 'bg-bg text-fg-muted'}`}>{icon}</span>
         {delta && (
           <span className="text-xs font-medium text-accent inline-flex items-center">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" className="mr-0.5">
@@ -311,366 +359,139 @@ function Kpi({
           </span>
         )}
       </div>
+      <div className="text-2xl font-semibold text-fg tabular-nums tracking-tight mt-3">{value}</div>
       <div className="text-xs text-fg-muted mt-1">{label}</div>
+      {sub && <div className="text-[11px] text-fg-subtle mt-0.5">{sub}</div>}
     </div>
   );
 }
 
-// ---------- Chart ----------
-
-function HoursBarChart({ weeks }: { weeks: { label: string; sec: number }[] }) {
-  const hours = weeks.map((w) => w.sec / 3600);
-  const maxH = Math.max(16, Math.ceil(Math.max(...hours, 1) / 4) * 4);
-  const ticks = [maxH, maxH * 0.75, maxH * 0.5, maxH * 0.25, 0];
+function AutoScaleBarChart({ series }: { series: { label: string; sec: number }[] }) {
+  const hours = series.map((s) => s.sec / 3600);
+  const peak = Math.max(...hours, 1);
+  // Round max up to next nice number (1, 2, 5, 10, 20, 50, 100)
+  const niceSteps = [1, 2, 3, 4, 5, 8, 10, 12, 16, 20, 30, 50, 80, 100];
+  const max = niceSteps.find((s) => s >= peak * 1.1) ?? Math.ceil(peak * 1.2);
 
   return (
-    <div className="relative">
-      {/* Y axis lines */}
-      <div className="relative h-[200px] pl-9">
-        {ticks.map((t, i) => (
-          <div
-            key={i}
-            className="absolute left-9 right-0 border-t border-dashed border-border"
-            style={{ top: `${(i / (ticks.length - 1)) * 100}%` }}
-          />
+    <div>
+      <div className="relative h-[200px] pl-10">
+        {[0, 1, 2, 3, 4].map((i) => (
+          <div key={i} className="absolute left-10 right-0 border-t border-dashed border-border" style={{ top: `${(i / 4) * 100}%` }} />
         ))}
-        {ticks.map((t, i) => (
-          <div
-            key={`l-${i}`}
-            className="absolute left-0 w-8 text-right text-xs text-fg-subtle tabular-nums"
-            style={{ top: `calc(${(i / (ticks.length - 1)) * 100}% - 7px)` }}>
-            {Math.round(t)}h
+        {[max, (max * 3) / 4, max / 2, max / 4, 0].map((t, i) => (
+          <div key={i} className="absolute left-0 w-9 text-right text-xs text-fg-subtle tabular-nums" style={{ top: `calc(${(i / 4) * 100}% - 7px)` }}>
+            {Number.isInteger(t) ? `${t}h` : `${t.toFixed(1)}h`}
           </div>
         ))}
-        <div className="absolute left-9 right-0 top-0 bottom-0 flex items-end gap-2 px-2">
+        <div className="absolute left-10 right-0 top-0 bottom-0 flex items-end gap-2 px-2">
           {hours.map((h, i) => (
             <div key={i} className="flex-1 flex justify-center">
-              <div
-                className="w-7 bg-accent rounded-md"
-                style={{ height: `${(h / maxH) * 100}%`, minHeight: h > 0 ? 4 : 0 }}
-                title={`${h.toFixed(2)}h`}
-              />
+              <div className="w-7 bg-accent rounded-md" style={{ height: `${(h / max) * 100}%`, minHeight: h > 0 ? 4 : 0 }} title={`${h.toFixed(2)}h`} />
             </div>
           ))}
         </div>
       </div>
-      <div className="flex pl-9 mt-2">
-        {weeks.map((w, i) => (
-          <div key={i} className="flex-1 text-center text-xs text-fg-subtle tabular-nums">
-            {w.label}
-          </div>
+      <div className="flex pl-10 mt-2">
+        {series.map((s, i) => (
+          <div key={i} className="flex-1 text-center text-xs text-fg-subtle tabular-nums">{s.label}</div>
         ))}
       </div>
     </div>
   );
 }
-
-// ---------- Donut ----------
 
 function CapturedDonut({ value }: { value: number }) {
   const C = 2 * Math.PI * 50;
   return (
     <div className="flex items-center justify-center py-2">
-      <svg viewBox="0 0 120 120" className="w-44 h-44">
+      <svg viewBox="0 0 120 120" className="w-40 h-40">
         <circle cx="60" cy="60" r="50" stroke="#E5E7EB" strokeWidth="14" fill="none" />
-        <circle
-          cx="60"
-          cy="60"
-          r="50"
-          stroke="#22C55E"
-          strokeWidth="14"
-          fill="none"
-          strokeDasharray={C}
-          strokeDashoffset={C * (1 - value)}
-          strokeLinecap="round"
-          transform="rotate(-90 60 60)"
-        />
-        <text x="60" y="58" textAnchor="middle" fontSize="22" fontWeight="700" fill="#0F1419">
-          {Math.round(value * 100)}%
-        </text>
-        <text x="60" y="76" textAnchor="middle" fontSize="10" fill="#6B7280">
-          Captured
-        </text>
+        <circle cx="60" cy="60" r="50" stroke="#22C55E" strokeWidth="14" fill="none"
+          strokeDasharray={C} strokeDashoffset={C * (1 - value)} strokeLinecap="round" transform="rotate(-90 60 60)" />
+        <text x="60" y="58" textAnchor="middle" fontSize="22" fontWeight="700" fill="#0F1419">{Math.round(value * 100)}%</text>
+        <text x="60" y="76" textAnchor="middle" fontSize="10" fill="#6B7280">captured</text>
       </svg>
     </div>
   );
 }
 
-// ---------- Events list ----------
-
-function EventsList() {
-  const events = [
-    {
-      title: 'Deposition prep w/ Anderson counsel',
-      time: '9:00 AM · 01:00:00',
-      who: 'Sarah',
-      flag: 'accent' as const,
-    },
-    {
-      title: 'Northgate IPO diligence sync',
-      time: '11:30 AM · 00:45:00',
-      who: 'Jordan',
-      flag: 'warning' as const,
-    },
-    {
-      title: 'Reyes estate planning review',
-      time: '2:00 PM · 00:30:00',
-      who: 'Marcus',
-      flag: 'accent' as const,
-    },
-  ];
+function TopClientsCard() {
+  const amounts = [4287, 3120, 2480, 1640];
+  const max = amounts[0];
   return (
-    <div className="space-y-3">
-      {events.map((e, i) => (
-        <div key={i} className="flex items-start gap-3 pl-3 relative">
-          <span
-            className={`absolute left-0 top-0 bottom-0 w-1 rounded-full ${
-              e.flag === 'accent' ? 'bg-accent' : 'bg-warning'
-            }`}
-          />
-          <div className="flex-1 min-w-0">
-            <div className="text-sm font-medium text-fg truncate">{e.title}</div>
-            <div className="text-xs text-fg-muted mt-0.5">
-              {e.time} · {e.who}
+    <div className="bg-card border border-border rounded-2xl p-6">
+      <div className="text-sm font-semibold mb-1">Top clients by revenue</div>
+      <div className="text-xs text-fg-muted mb-4">Month to date</div>
+      <div className="space-y-3">
+        {clients.slice(0, 4).map((c, i) => (
+          <div key={c.id}>
+            <div className="flex justify-between text-sm mb-1.5">
+              <span className="font-medium truncate mr-2">{c.name}</span>
+              <span className="tabular-nums text-fg-muted">${amounts[i].toLocaleString()}</span>
+            </div>
+            <div className="h-1.5 bg-bg rounded-full overflow-hidden">
+              <div className="h-full bg-accent rounded-full" style={{ width: `${(amounts[i] / max) * 100}%` }} />
             </div>
           </div>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-fg-subtle mt-1">
-            <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
 
-// ---------- Top Performing Members ----------
-
-function TopMembers() {
-  const data = lawyers
+function TopMembersCard({ data }: { data: typeof seedEntries }) {
+  const byLawyer = lawyers
     .map((l) => {
-      const sec = seedEntries
-        .filter((e) => e.lawyerId === l.id && !e.nonBillable)
-        .reduce((a, e) => a + e.durationSec, 0);
+      const sec = data.filter((e) => e.lawyerId === l.id && !e.nonBillable).reduce((a, e) => a + e.durationSec, 0);
       return { l, sec };
     })
     .sort((a, b) => b.sec - a.sec);
-  const max = Math.max(...data.map((d) => d.sec), 1);
+  const max = Math.max(...byLawyer.map((x) => x.sec), 1);
   return (
-    <div className="space-y-4">
-      {data.map(({ l, sec }) => (
-        <div key={l.id} className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-accent-soft text-accent-dark flex items-center justify-center text-xs font-semibold">
-            {l.initials}
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between mb-1.5">
-              <div className="text-sm font-medium text-fg truncate">{l.name}</div>
-              <div className="text-sm font-semibold text-fg tabular-nums">{formatHours(sec)}</div>
+    <div className="bg-card border border-border rounded-2xl p-6">
+      <div className="text-sm font-semibold mb-1">Top performing members</div>
+      <div className="text-xs text-fg-muted mb-4">Billable hours, month to date</div>
+      <div className="space-y-3">
+        {byLawyer.map(({ l, sec }) => (
+          <div key={l.id} className="flex items-center gap-3">
+            <span className="w-8 h-8 rounded-full bg-accent-soft text-accent-dark flex items-center justify-center text-xs font-semibold">{l.initials}</span>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between mb-1.5">
+                <div className="text-sm font-medium truncate">{l.name}</div>
+                <div className="text-sm font-semibold tabular-nums">{formatHoursH(sec)}</div>
+              </div>
+              <div className="h-1.5 bg-bg rounded-full overflow-hidden">
+                <div className="h-full bg-accent rounded-full" style={{ width: `${(sec / max) * 100}%` }} />
+              </div>
             </div>
-            <div className="h-1.5 bg-bg rounded-full overflow-hidden">
-              <div className="h-full bg-accent rounded-full" style={{ width: `${(sec / max) * 100}%` }} />
-            </div>
           </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// ---------- Activity breakdown ----------
-
-function ActivityBreakdown() {
-  const groups = [
-    { label: 'Calls', secKey: 'call', color: 'bg-accent' },
-    { label: 'Manual entries', secKey: 'manual', color: 'bg-accent-soft-2' },
-  ];
-  const totals = {
-    call: seedEntries.filter((e) => e.source === 'call').reduce((a, e) => a + e.durationSec, 0),
-    manual: seedEntries.filter((e) => e.source === 'manual').reduce((a, e) => a + e.durationSec, 0),
-  };
-  const sum = totals.call + totals.manual || 1;
-  return (
-    <div className="space-y-4">
-      <div className="flex h-3 rounded-full overflow-hidden bg-bg">
-        <div className="bg-accent" style={{ width: `${(totals.call / sum) * 100}%` }} />
-        <div className="bg-accent-soft-2" style={{ width: `${(totals.manual / sum) * 100}%` }} />
+        ))}
       </div>
-      {groups.map((g) => {
-        const sec = totals[g.secKey as 'call' | 'manual'];
-        return (
-          <div key={g.label} className="flex items-center gap-3">
-            <span className={`w-2.5 h-2.5 rounded-full ${g.color}`} />
-            <div className="flex-1 text-sm text-fg">{g.label}</div>
-            <div className="text-sm font-semibold text-fg tabular-nums">{formatHours(sec)}</div>
-            <div className="text-xs text-fg-muted tabular-nums w-12 text-right">
-              {Math.round((sec / sum) * 100)}%
-            </div>
-          </div>
-        );
-      })}
     </div>
   );
 }
 
-// ---------- Time per project ----------
-
-function TimePerProject() {
-  const data = matters
-    .map((m) => {
-      const sec = seedEntries.filter((e) => e.matterId === m.id).reduce((a, e) => a + e.durationSec, 0);
-      return { m, sec };
-    })
-    .filter((x) => x.sec > 0)
-    .sort((a, b) => b.sec - a.sec)
-    .slice(0, 5);
-  const max = Math.max(...data.map((d) => d.sec), 1);
-  return (
-    <div className="space-y-3">
-      {data.map(({ m, sec }) => (
-        <div key={m.id}>
-          <div className="flex items-center justify-between mb-1.5">
-            <div className="text-sm font-medium text-fg truncate mr-3">{m.shortName}</div>
-            <div className="text-sm font-semibold text-fg tabular-nums">{formatHours(sec)}</div>
-          </div>
-          <div className="h-1.5 bg-bg rounded-full overflow-hidden">
-            <div className="h-full bg-accent rounded-full" style={{ width: `${(sec / max) * 100}%` }} />
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// ---------- Top clients ----------
-
-function TopClients() {
-  const amounts = [4287, 3120, 2480, 1640];
-  return (
-    <div className="space-y-3">
-      {clients.slice(0, 4).map((c, i) => {
-        const max = amounts[0];
-        const a = amounts[i];
-        return (
-          <div key={c.id}>
-            <div className="flex items-center justify-between mb-1.5">
-              <div className="text-sm font-medium text-fg truncate mr-3">{c.name}</div>
-              <div className="text-sm font-semibold text-fg tabular-nums">${a.toLocaleString()}</div>
-            </div>
-            <div className="h-1.5 bg-bg rounded-full overflow-hidden">
-              <div className="h-full bg-accent rounded-full" style={{ width: `${(a / max) * 100}%` }} />
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-// ---------- Status badge ----------
-
-function StatusBadge({ status }: { status: 'approved' | 'pending' | 'draft' }) {
-  const map = {
+function StatusBadge({ status }: { status: 'approved' | 'pending' | 'draft' | 'rejected' }) {
+  const map: Record<string, string> = {
     approved: 'bg-accent-soft text-accent-dark',
     pending: 'bg-warning-soft text-warning',
     draft: 'bg-bg text-fg-muted',
-  } as const;
-  return <span className={`px-2.5 py-1 text-[11px] rounded-full font-semibold capitalize ${map[status]}`}>{status}</span>;
+    rejected: 'bg-danger-soft text-danger',
+  };
+  return <span className={`px-2 py-0.5 text-xs rounded-full font-semibold capitalize ${map[status]}`}>{status}</span>;
 }
 
 // ---------- Icons ----------
-
-function IconClock() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M12 7v5l3 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  );
-}
-function IconTimer() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <path d="M10 2h4M12 14V8M20 14a8 8 0 11-16 0 8 8 0 0116 0z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  );
-}
-function IconPause() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <rect x="6" y="5" width="4" height="14" rx="1" stroke="currentColor" strokeWidth="1.8" />
-      <rect x="14" y="5" width="4" height="14" rx="1" stroke="currentColor" strokeWidth="1.8" />
-    </svg>
-  );
-}
-function IconHelp() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M9.5 9.5a2.5 2.5 0 015 0c0 1.5-2.5 2-2.5 4M12 17h.01" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  );
-}
-function IconDollar() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <path d="M12 2v20M17 5H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 110 7H6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  );
-}
-function IconTrend() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <path d="M3 17l6-6 4 4 8-8M14 7h7v7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-function IconActivity() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <path d="M3 12h4l3-9 4 18 3-9h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-function IconUsers() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-function IconBriefcase() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <rect x="3" y="7" width="18" height="13" rx="2" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2" stroke="currentColor" strokeWidth="1.8" />
-    </svg>
-  );
-}
-function IconTarget() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" />
-      <circle cx="12" cy="12" r="5" stroke="currentColor" strokeWidth="1.8" />
-      <circle cx="12" cy="12" r="1.5" fill="currentColor" />
-    </svg>
-  );
-}
-function IconPhone() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.37 1.9.72 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.35 1.85.59 2.81.72A2 2 0 0122 16.92z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
+function IClock() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" /><path d="M12 7v5l3 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>; }
+function IDollar() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 110 7H6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>; }
+function IBank() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 21h18M3 10h18M5 21V10M9 21V10M15 21V10M19 21V10M12 2L2 8h20L12 2z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>; }
+function ITarget() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" /><circle cx="12" cy="12" r="5" stroke="currentColor" strokeWidth="1.8" /><circle cx="12" cy="12" r="1.5" fill="currentColor" /></svg>; }
+function IInbox() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M22 12h-6l-2 3h-4l-2-3H2M5 4h14l3 8v6a2 2 0 01-2 2H4a2 2 0 01-2-2v-6l3-8z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>; }
+function IBolt() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>; }
+function IAlert() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" /><path d="M12 8v4M12 16h.01" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>; }
+function IPause() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="6" y="5" width="4" height="14" rx="1" stroke="currentColor" strokeWidth="1.8" /><rect x="14" y="5" width="4" height="14" rx="1" stroke="currentColor" strokeWidth="1.8" /></svg>; }
+function IBriefcase() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="7" width="18" height="13" rx="2" stroke="currentColor" strokeWidth="1.8" /><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2" stroke="currentColor" strokeWidth="1.8" /></svg>; }
+function IUsers() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>; }
+function IUserPlus() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM20 8v6M23 11h-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>; }
+function IPhone() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.37 1.9.72 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.35 1.85.59 2.81.72A2 2 0 0122 16.92z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>; }
