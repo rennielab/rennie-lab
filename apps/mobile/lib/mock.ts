@@ -2,7 +2,7 @@
 // Same shape as the future Convex schema so this swaps cleanly later.
 
 export type Firm = { id: string; name: string; location: string };
-export type Lawyer = { id: string; firmId: string; name: string; initials: string; role: string };
+export type Lawyer = { id: string; firmId: string; name: string; initials: string; role: string; avatarKey?: string };
 export type Client = { id: string; firmId: string; name: string };
 export type Contact = {
   id: string;
@@ -52,17 +52,19 @@ export const firm: Firm = {
 };
 
 export const currentLawyer: Lawyer = {
-  id: 'lwy_jord',
+  id: 'lwy_soph',
   firmId: firm.id,
-  name: 'Jordan Bennett',
-  initials: 'JB',
-  role: 'Partner',
+  name: 'Sophia Williams',
+  initials: 'SW',
+  role: 'Lawyer',
+  avatarKey: 'sophia',
 };
 
 export const lawyers: Lawyer[] = [
   currentLawyer,
+  { id: 'lwy_jord', firmId: firm.id, name: 'Jordan Bennett', initials: 'JB', role: 'Partner' },
   { id: 'lwy_sara', firmId: firm.id, name: 'Sarah Chen', initials: 'SC', role: 'Senior Associate' },
-  { id: 'lwy_marc', firmId: firm.id, name: 'Marcus Hayes', initials: 'MH', role: 'Partner' },
+  { id: 'lwy_marc', firmId: firm.id, name: 'Marcus Hayes', initials: 'MH', role: 'Partner', avatarKey: 'marcus' },
 ];
 
 export const clients: Client[] = [
@@ -91,18 +93,25 @@ export const contacts: Contact[] = [
 ];
 
 const dayMs = 24 * 60 * 60 * 1000;
+const hrMs = 60 * 60 * 1000;
 const now = Date.now();
 
-// 8 historical entries — some approved, some pending. Realistic billable mix.
+// Sophia's day so far — two entries logged this morning. Mix of approved
+// (yesterday) and pending so the "needs review" counters tell a story.
 export const seedEntries: TimeEntry[] = [
-  { id: 'te_1', matterId: 'mat_acme_1', lawyerId: 'lwy_jord', durationSec: 5400, description: 'Reviewed deposition transcripts for Smith deposition prep. Flagged inconsistencies in opposing counsel\'s timeline.', createdAt: now - 1 * dayMs, status: 'approved', nonBillable: false, source: 'manual' },
-  { id: 'te_2', matterId: 'mat_reyes_2', lawyerId: 'lwy_jord', durationSec: 2880, description: 'Call with Sarah Mitchell re: discovery responses and Horizon Corp settlement posture.', createdAt: now - 1 * dayMs + 3600000, status: 'approved', nonBillable: false, source: 'call', contactId: 'ct_smitchell' },
-  { id: 'te_3', matterId: 'mat_north_1', lawyerId: 'lwy_sara', durationSec: 7200, description: 'Drafted Section 4 of IPO diligence memo. Cross-referenced 2024 financials.', createdAt: now - 2 * dayMs, status: 'approved', nonBillable: false, source: 'manual' },
-  { id: 'te_4', matterId: 'mat_acme_2', lawyerId: 'lwy_jord', durationSec: 1860, description: 'Quick call with Ana Rodriguez on vendor contract renewal terms.', createdAt: now - 2 * dayMs - 1800000, status: 'pending', nonBillable: false, source: 'call', contactId: 'ct_arodriguez' },
-  { id: 'te_5', matterId: 'mat_vert_1', lawyerId: 'lwy_marc', durationSec: 9000, description: 'Patent claim chart construction — Vertex \'847 patent.', createdAt: now - 3 * dayMs, status: 'approved', nonBillable: false, source: 'manual' },
-  { id: 'te_6', matterId: 'mat_reyes_1', lawyerId: 'lwy_jord', durationSec: 3600, description: 'Trust funding strategy memo for Miguel Reyes.', createdAt: now - 3 * dayMs - 7200000, status: 'pending', nonBillable: false, source: 'manual' },
-  { id: 'te_7', matterId: 'mat_acme_1', lawyerId: 'lwy_sara', durationSec: 1200, description: 'Internal call with Marcus re: motion strategy.', createdAt: now - 4 * dayMs, status: 'approved', nonBillable: true, source: 'call' },
-  { id: 'te_8', matterId: 'mat_north_1', lawyerId: 'lwy_jord', durationSec: 4200, description: 'Underwriter call — risk factor language for S-1.', createdAt: now - 5 * dayMs, status: 'approved', nonBillable: false, source: 'call', contactId: 'ct_dchen' },
+  // Today (Sophia)
+  { id: 'te_1', matterId: 'mat_vert_1', lawyerId: 'lwy_soph', durationSec: 3120, description: 'Reviewed Vertex \'847 office action response. Drafted notes on claim 12 amendments.', createdAt: now - 3 * hrMs, status: 'approved', nonBillable: false, source: 'manual' },
+  { id: 'te_2', matterId: 'mat_reyes_2', lawyerId: 'lwy_soph', durationSec: 1740, description: 'Call with Sarah Mitchell re: discovery responses and Horizon Corp settlement posture.', createdAt: now - 1.5 * hrMs, status: 'approved', nonBillable: false, source: 'call', contactId: 'ct_smitchell' },
+
+  // Yesterday
+  { id: 'te_3', matterId: 'mat_vert_1', lawyerId: 'lwy_soph', durationSec: 7200, description: 'Drafted claim chart for Vertex \'847 — cross-referenced prior art.', createdAt: now - 1 * dayMs, status: 'approved', nonBillable: false, source: 'manual' },
+  { id: 'te_4', matterId: 'mat_acme_1', lawyerId: 'lwy_soph', durationSec: 2880, description: 'Reviewed deposition transcripts for Smith deposition prep. Flagged inconsistencies in opposing counsel\'s timeline.', createdAt: now - 1 * dayMs - 2 * hrMs, status: 'pending', nonBillable: false, source: 'manual' },
+
+  // Earlier this week
+  { id: 'te_5', matterId: 'mat_acme_2', lawyerId: 'lwy_soph', durationSec: 1860, description: 'Quick call with Ana Rodriguez on vendor contract renewal terms.', createdAt: now - 2 * dayMs, status: 'pending', nonBillable: false, source: 'call', contactId: 'ct_arodriguez' },
+  { id: 'te_6', matterId: 'mat_reyes_1', lawyerId: 'lwy_soph', durationSec: 3600, description: 'Trust funding strategy memo for Miguel Reyes.', createdAt: now - 3 * dayMs, status: 'approved', nonBillable: false, source: 'manual' },
+  { id: 'te_7', matterId: 'mat_vert_1', lawyerId: 'lwy_soph', durationSec: 1200, description: 'Internal call with Marcus re: claim strategy.', createdAt: now - 3 * dayMs - 2 * hrMs, status: 'approved', nonBillable: true, source: 'call' },
+  { id: 'te_8', matterId: 'mat_north_1', lawyerId: 'lwy_soph', durationSec: 4200, description: 'Underwriter call — risk factor language for S-1.', createdAt: now - 4 * dayMs, status: 'approved', nonBillable: false, source: 'call', contactId: 'ct_dchen' },
 ];
 
 // The "hero" entry that will appear on the admin during the demo, after the lawyer
@@ -119,6 +128,42 @@ export const heroEntry: TimeEntry = {
   source: 'call',
   contactId: 'ct_smitchell',
 };
+
+// Upcoming on Sophia's calendar — drives the "Up next" card on home.
+export type Upcoming =
+  | { kind: 'call'; id: string; contactId: string; matterId: string; at: number; durationMin: number }
+  | { kind: 'deadline'; id: string; matterId: string; at: number; title: string; severity: 'soon' | 'today' | 'overdue' }
+  | { kind: 'meeting'; id: string; matterId: string; at: number; title: string; with: string };
+
+export const upcoming: Upcoming[] = [
+  // In ~45 minutes — the call card on home
+  { kind: 'call', id: 'up_1', contactId: 'ct_dchen', matterId: 'mat_north_1', at: now + 45 * 60 * 1000, durationMin: 30 },
+  // Later today
+  { kind: 'deadline', id: 'up_2', matterId: 'mat_reyes_2', at: now + 6 * hrMs, title: 'Motion in limine due', severity: 'today' },
+  { kind: 'meeting', id: 'up_3', matterId: 'mat_acme_1', at: now + 8 * hrMs, title: 'Smith depo prep', with: 'James Park' },
+  // This week
+  { kind: 'deadline', id: 'up_4', matterId: 'mat_vert_1', at: now + 2 * dayMs, title: 'Office action response filing', severity: 'soon' },
+  { kind: 'call', id: 'up_5', contactId: 'ct_lkim', matterId: 'mat_vert_1', at: now + 1.5 * dayMs, durationMin: 45 },
+];
+
+// Recent calls — used by the Calls screen, also feeds "this week's calls" stat.
+export type RecentCall = {
+  id: string;
+  contactId: string;
+  matterId?: string;
+  direction: 'in' | 'out' | 'missed';
+  at: number;
+  durationSec: number;
+  logged: boolean; // did Sophia accept the auto-log?
+};
+
+export const recentCalls: RecentCall[] = [
+  { id: 'cl_1', contactId: 'ct_smitchell', matterId: 'mat_reyes_2', direction: 'out', at: now - 1.5 * hrMs, durationSec: 1740, logged: true },
+  { id: 'cl_2', contactId: 'ct_arodriguez', matterId: 'mat_acme_2', direction: 'in', at: now - 2 * dayMs, durationSec: 1860, logged: true },
+  { id: 'cl_3', contactId: 'ct_dchen', matterId: 'mat_north_1', direction: 'out', at: now - 4 * dayMs, durationSec: 4200, logged: true },
+  { id: 'cl_4', contactId: 'ct_jpark', direction: 'missed', at: now - 5 * hrMs, durationSec: 0, logged: false },
+  { id: 'cl_5', contactId: 'ct_lkim', matterId: 'mat_vert_1', direction: 'in', at: now - 6 * dayMs, durationSec: 920, logged: true },
+];
 
 export const invoices: Invoice[] = [
   {
@@ -162,3 +207,49 @@ export const formatHours = (seconds: number) => {
 
 export const formatMoney = (cents: number) =>
   `$${(cents).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+export const formatMoneyShort = (n: number) => {
+  if (n >= 1000) {
+    const k = n / 1000;
+    return `$${k % 1 === 0 ? k.toFixed(0) : k.toFixed(1)}k`;
+  }
+  return `$${Math.round(n).toLocaleString()}`;
+};
+
+// Today's $ billable so far for the current lawyer — drives the home hero number.
+export const entryValue = (e: TimeEntry) => {
+  if (e.nonBillable) return 0;
+  const m = matterById(e.matterId);
+  return ((e.durationSec / 3600) * (m?.rate ?? 0));
+};
+
+// Friendly "in X" / "today" / "now" formatter for upcoming items.
+export const formatRelative = (atMs: number) => {
+  const diff = atMs - Date.now();
+  const min = Math.round(diff / 60000);
+  if (min < -60) return `${Math.round(-diff / (60 * 60 * 1000))}h ago`;
+  if (min < 0) return `${-min}m ago`;
+  if (min < 1) return 'now';
+  if (min < 60) return `in ${min}m`;
+  const hr = Math.round(min / 60);
+  if (hr < 24) return `in ${hr}h`;
+  const d = Math.round(hr / 24);
+  return d === 1 ? 'tomorrow' : `in ${d}d`;
+};
+
+// Avatar URI for a lawyer (or initials fallback). Bundled images for known
+// lawyers; everyone else gets a colored disc with initials in the UI layer.
+export const avatarSource: Record<string, any> = {
+  sophia: require('@/assets/avatars/sophia.jpg'),
+  marcus: require('@/assets/avatars/marcus.jpg'),
+  sarah: require('@/assets/avatars/sarah.jpg'),
+};
+
+export const greetingFor = (date = new Date()) => {
+  const h = date.getHours();
+  if (h < 5) return 'Working late';
+  if (h < 12) return 'Good morning';
+  if (h < 17) return 'Good afternoon';
+  if (h < 22) return 'Good evening';
+  return 'Working late';
+};

@@ -1,26 +1,30 @@
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { Tabs, useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useActiveTimer } from '@/lib/timer';
 import { colors, radii, space } from '@/lib/tokens';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
 const TABS: { name: string; label: string; icon: IconName }[] = [
-  { name: 'index', label: 'Activities', icon: 'time-outline' },
-  { name: 'directory', label: 'Directory', icon: 'folder-outline' },
-  { name: 'profile', label: 'Profile', icon: 'person-outline' },
+  { name: 'index', label: 'Home', icon: 'home-outline' },
+  { name: 'calls', label: 'Calls', icon: 'call-outline' },
+  { name: 'activities', label: 'Time', icon: 'time-outline' },
+  { name: 'profile', label: 'You', icon: 'person-outline' },
 ];
 
 export default function TabsLayout() {
   return (
-    <Tabs
-      screenOptions={{ headerShown: false }}
-      tabBar={(props) => <ClockdTabBar {...props} />}>
+    <Tabs screenOptions={{ headerShown: false }} tabBar={(props) => <ClockdTabBar {...props} />}>
       <Tabs.Screen name="index" />
-      <Tabs.Screen name="directory" />
+      <Tabs.Screen name="calls" />
+      <Tabs.Screen name="activities" />
       <Tabs.Screen name="profile" />
+      {/* directory kept as a route but hidden from tab bar — used by other screens */}
+      <Tabs.Screen name="directory" options={{ href: null }} />
     </Tabs>
   );
 }
@@ -28,31 +32,51 @@ export default function TabsLayout() {
 function ClockdTabBar({ state, navigation }: any) {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const active = useActiveTimer();
   const currentRoute = state.routes[state.index].name;
 
   return (
     <View style={[styles.wrap, { paddingBottom: insets.bottom + space.sm }]} pointerEvents="box-none">
       <View style={styles.pill}>
         {TABS.map((tab) => {
-          const active = currentRoute === tab.name;
+          const isActive = currentRoute === tab.name;
           return (
             <Pressable
               key={tab.name}
-              onPress={() => navigation.navigate(tab.name)}
-              style={[styles.tab, active && styles.tabActive]}
+              onPress={() => {
+                Haptics.selectionAsync();
+                navigation.navigate(tab.name);
+              }}
+              style={[styles.tab, isActive && styles.tabActive]}
               hitSlop={8}>
-              <Ionicons name={active ? (tab.icon.replace('-outline', '') as IconName) : tab.icon} size={18} color={active ? colors.textOnAccent : colors.textSecondary} />
-              {active && <Text style={styles.tabLabel}>{tab.label}</Text>}
-              {!active && <Text style={styles.tabLabelInactive}>{tab.label}</Text>}
+              <Ionicons
+                name={isActive ? (tab.icon.replace('-outline', '') as IconName) : tab.icon}
+                size={18}
+                color={isActive ? colors.textOnAccent : colors.textSecondary}
+              />
+              {isActive ? (
+                <Text style={styles.tabLabel}>{tab.label}</Text>
+              ) : (
+                <Text style={styles.tabLabelInactive}>{tab.label}</Text>
+              )}
             </Pressable>
           );
         })}
       </View>
 
       <Pressable
-        onPress={() => router.push('/logged?mode=start')}
+        onPress={async () => {
+          await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+          router.push('/logged?mode=start');
+        }}
         style={({ pressed }) => [styles.fab, pressed && { transform: [{ scale: 0.95 }] }]}>
-        <Ionicons name="add" size={28} color={colors.textOnAccent} />
+        {active ? (
+          <View style={styles.fabActive}>
+            <View style={styles.fabActiveDot} />
+          </View>
+        ) : (
+          <Ionicons name="add" size={28} color={colors.textOnAccent} />
+        )}
       </Pressable>
     </View>
   );
@@ -108,4 +132,14 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     elevation: 8,
   },
+  fabActive: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 2,
+    borderColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  fabActiveDot: { width: 8, height: 8, borderRadius: 1, backgroundColor: '#fff' },
 });
