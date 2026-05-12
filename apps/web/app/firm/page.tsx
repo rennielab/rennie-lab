@@ -317,7 +317,7 @@ function AutoScaleBarChart({ series }: { series: { label: string; sec: number }[
 
 function StatusInline({ status }: { status: string }) {
   const map: Record<string, { cls: string; label: string }> = {
-    approved: { cls: 'text-accent-dark', label: 'Confirmed' },
+    approved: { cls: 'text-accent-dark', label: 'Approved' },
     pending: { cls: 'text-warning', label: 'Pending' },
     draft: { cls: 'text-fg-muted', label: 'Draft' },
     rejected: { cls: 'text-danger', label: 'Sent back' },

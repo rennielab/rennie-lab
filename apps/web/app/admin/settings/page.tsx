@@ -3,23 +3,25 @@
 import { useState } from 'react';
 
 import { AdminShell } from '@/components/AdminShell';
-import { currentAdmin, firm } from '@/lib/mock';
+import { firm } from '@/lib/mock';
 
-type Section = 'personal' | 'firm' | 'billing' | 'notifications' | 'security';
+type Section = 'firm' | 'billing' | 'notifications' | 'security';
 
+// Personal details + notifications-for-me live on /admin/profile.
+// Settings is firm-wide only: firm details, billing/subscription,
+// security (2FA, sessions, password policy for the firm).
 const SECTIONS: { key: Section; label: string; icon: React.ReactNode }[] = [
-  { key: 'personal', label: 'Personal details', icon: <IUser /> },
   { key: 'firm', label: 'Firm details', icon: <IBuilding /> },
   { key: 'billing', label: 'Billing & subscription', icon: <ICard /> },
-  { key: 'notifications', label: 'Notifications', icon: <IBell /> },
+  { key: 'notifications', label: 'Firm-wide notifications', icon: <IBell /> },
   { key: 'security', label: 'Privacy & security', icon: <ILock /> },
 ];
 
 export default function Settings() {
-  const [active, setActive] = useState<Section>('personal');
+  const [active, setActive] = useState<Section>('firm');
 
   return (
-    <AdminShell title="Settings" subtitle="Firm and personal preferences.">
+    <AdminShell title="Settings" subtitle="Firm-wide settings. Manage your personal profile under your avatar.">
       <div className="grid grid-cols-4 gap-4 max-w-5xl">
         <div className="col-span-1 space-y-1">
           {SECTIONS.map((s) => (
@@ -33,10 +35,16 @@ export default function Settings() {
               {s.label}
             </button>
           ))}
+          <a href="/admin/profile" className="block w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium flex items-center gap-2.5 text-fg-muted hover:text-fg hover:bg-card/60 mt-3 pt-3 border-t border-border">
+            <IUser />
+            <span className="flex-1">My profile</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </a>
         </div>
 
         <div className="col-span-3">
-          {active === 'personal' && <PersonalSection />}
           {active === 'firm' && <FirmSection />}
           {active === 'billing' && <BillingSection />}
           {active === 'notifications' && <NotificationsSection />}
@@ -44,22 +52,6 @@ export default function Settings() {
         </div>
       </div>
     </AdminShell>
-  );
-}
-
-function PersonalSection() {
-  return (
-    <Card title="Personal details" subtitle="Update how you appear inside Clockd.">
-      <div className="grid grid-cols-2 gap-4">
-        <Field label="Full name" value={currentAdmin.name} />
-        <Field label="Role" value={currentAdmin.role} />
-        <Field label="Email" value="marcus@bennetthayes.law" />
-        <Field label="Phone" value="+1 (415) 555-0190" />
-        <Field label="Hourly rate" value="$800/hr" />
-        <Field label="Time zone" value="America/Los_Angeles" />
-      </div>
-      <SaveBar />
-    </Card>
   );
 }
 

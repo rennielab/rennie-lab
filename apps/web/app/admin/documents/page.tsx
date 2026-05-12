@@ -112,7 +112,7 @@ export default function AdminDocuments() {
                 <div>
                   {d.needsSignature && !signed && <Pill label="Awaiting signature" tone="warn" />}
                   {d.needsSignature && signed && <Pill label="Signed" tone="ok" />}
-                  {!d.needsSignature && <Pill label="Shared" tone="neutral" />}
+                  {!d.needsSignature && <Pill label="Visible to client" tone="neutral" />}
                 </div>
               </div>
             );

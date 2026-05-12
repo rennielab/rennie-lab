@@ -10,6 +10,7 @@ import {
   entryValue,
   formatHoursH,
   formatMoneyCompact,
+  heroEntry,
   lawyerById,
   lawyers,
   matterById,
@@ -25,7 +26,10 @@ function useDashboardData() {
   const billed = useBilledEntryIds();
   const invoiceOverrides = useInvoiceOverrides();
 
-  const enriched = seedEntries.map((e) => ({
+  // Include the hero entry so the dashboard count matches the entries page
+  // after the hero "arrives" (otherwise dashboard shows 4 and entries shows 5).
+  const allRawEntries = [heroEntry, ...seedEntries];
+  const enriched = allRawEntries.map((e) => ({
     ...e,
     status: (overrides[e.id]?.status as typeof e.status) ?? e.status,
     description: overrides[e.id]?.description ?? e.description,

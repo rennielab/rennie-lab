@@ -97,7 +97,7 @@ export default function AdminInvoicesList() {
       }>
       {/* KPIs — only show buckets that have value */}
       <div className={`grid gap-3 mb-4 ${overdueAmount > 0 ? 'grid-cols-4' : 'grid-cols-3'}`}>
-        <Kpi label="Total billed" value={formatMoneyCompact(totalBilled)} sub="This month" />
+        <Kpi label="Invoiced this month" value={formatMoneyCompact(totalBilled)} sub={`${rows.length} invoices · all matters`} />
         <Kpi label="Total outstanding" value={formatMoneyCompact(totalOutstanding)} sub={`${counts.open + counts.overdue} unpaid`} tone={totalOutstanding > 0 ? 'warn' : 'ok'} />
         {overdueAmount > 0 && (
           <Kpi label="Overdue" value={formatMoneyCompact(overdueAmount)} sub={`${counts.overdue} ${counts.overdue === 1 ? 'invoice' : 'invoices'}`} tone="danger" />

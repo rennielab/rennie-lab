@@ -66,7 +66,12 @@ const initial: State = {
     { id: 'an4', kind: 'submission', title: 'Jordan submitted 1 entry', body: '31m call with Ana Rodriguez', at: now - 2 * day, read: true, href: '/admin/entries' },
   ],
   entryOverrides: {},
-  invoiceOverrides: {},
+  // Northgate is archived + portal disabled. The seed has INV-005 as "Partially
+  // Paid" via the portal which is contradictory. Override to fully Paid via wire
+  // so the cross-page story is consistent.
+  invoiceOverrides: {
+    inv_5: { status: 'paid', paidAt: now - 5 * day, paidMethod: 'wire', paidNote: 'Wire ref 8842219' },
+  },
   drafts: [],
   billedEntryIds: new Set(),
 };

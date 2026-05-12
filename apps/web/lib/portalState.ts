@@ -44,11 +44,11 @@ export type Mention = {
 // Mention candidates — everyone in the campfire room. Avatars are stable
 // DiceBear images keyed by seed so refresh-after-deploy stays consistent.
 export const MENTIONS: Mention[] = [
-  { id: 'marcus', name: 'Marcus Hayes', initials: 'MH', role: 'Managing Partner', side: 'firm', avatarUrl: 'https://api.dicebear.com/7.x/personas/svg?seed=Marcus&backgroundColor=fed7aa&hair=shortHair&hairColor=362c47' },
-  { id: 'sophia', name: 'Sophia Williams', initials: 'SW', role: 'Lawyer', side: 'firm', avatarUrl: 'https://api.dicebear.com/7.x/personas/svg?seed=Sophia&backgroundColor=fef3c7' },
+  { id: 'marcus', name: 'Marcus Hayes', initials: 'MH', role: 'Managing Partner', side: 'firm', avatarUrl: '/avatars/marcus.jpg' },
+  { id: 'sophia', name: 'Sophia Williams', initials: 'SW', role: 'Lawyer', side: 'firm', avatarUrl: '/avatars/sophia.jpg' },
   { id: 'jordan', name: 'Jordan Bennett', initials: 'JB', role: 'Partner', side: 'firm', avatarUrl: 'https://api.dicebear.com/7.x/personas/svg?seed=Jordan&backgroundColor=fee2e2' },
   { id: 'sarah-chen', name: 'Sarah Chen', initials: 'SC', role: 'Senior Associate', side: 'firm', avatarUrl: 'https://api.dicebear.com/7.x/personas/svg?seed=SarahChen&backgroundColor=dbeafe' },
-  { id: 'sarah-mitchell', name: 'Sarah Mitchell', initials: 'SM', role: 'Reyes Family Trust', side: 'client', avatarUrl: 'https://api.dicebear.com/7.x/personas/svg?seed=SarahMitchell&backgroundColor=ffe4e6' },
+  { id: 'sarah-mitchell', name: 'Sarah Mitchell', initials: 'SM', role: 'Reyes Family Trust', side: 'client', avatarUrl: '/avatars/sarah.jpg' },
 ];
 
 export function findMention(name: string): Mention | undefined {

@@ -208,7 +208,7 @@ export default function FirmTime() {
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, { cls: string; label: string }> = {
-    approved: { cls: 'bg-accent-soft text-accent-dark', label: 'Confirmed' },
+    approved: { cls: 'bg-accent-soft text-accent-dark', label: 'Approved' },
     pending: { cls: 'bg-warning-soft text-warning', label: 'Pending' },
     draft: { cls: 'bg-bg text-fg-muted', label: 'Draft' },
     rejected: { cls: 'bg-danger-soft text-danger', label: 'Needs fix' },

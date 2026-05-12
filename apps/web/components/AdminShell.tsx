@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 
+import { Avatar } from '@/components/Avatar';
 import { ChatButton } from '@/components/ChatSlideOut';
 import { Logo } from '@/components/Logo';
 import { currentAdmin, firm } from '@/lib/mock';
@@ -100,13 +101,7 @@ export function AdminShell({
           <Link
             href="/admin/profile"
             className="w-full flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-white/5 text-left">
-            {currentAdmin.avatarUrl ? (
-              <img src={currentAdmin.avatarUrl} alt={currentAdmin.name} className="w-9 h-9 rounded-full bg-accent-soft-2/20" />
-            ) : (
-              <div className="w-9 h-9 rounded-full bg-accent-soft-2/20 text-accent flex items-center justify-center font-semibold text-sm">
-                {currentAdmin.initials}
-              </div>
-            )}
+            <Avatar src={currentAdmin.avatarUrl} name={currentAdmin.name} initials={currentAdmin.initials} size={36} bg="#FED7AA" fg="#9A3412" />
             <div className="min-w-0 flex-1">
               <div className="text-sm font-medium truncate">{currentAdmin.name}</div>
               <div className="text-xs text-sidebar-muted truncate">{currentAdmin.role}</div>

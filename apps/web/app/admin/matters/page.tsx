@@ -52,17 +52,22 @@ function rowsFor(overrides: Record<string, { status?: string; nonBillable?: bool
         nonBillable: overrides[e.id]?.nonBillable ?? e.nonBillable,
       }));
     const hoursSec = matterEntries.reduce((a, e) => a + e.durationSec, 0) || (idx + 2) * 3600 * 2;
-    const billedAmount = (m.rate * hoursSec) / 3600;
-    const paid = billedAmount * (0.45 + (idx * 0.13) % 0.5);
+    // Whole-dollar amounts — cents on matter tables read like demo noise.
+    const billedAmount = Math.round((m.rate * hoursSec) / 3600);
+    const paid = Math.round(billedAmount * (0.45 + (idx * 0.13) % 0.5));
     const outstanding = billedAmount - paid;
 
     // Unbilled = approved + not nonbillable + not yet in a draft/invoice
-    const unbilled = matterEntries
+    const unbilled = Math.round(matterEntries
       .filter((e) => e.status === 'approved' && !e.nonBillable && !billed.has(e.id))
-      .reduce((a, e) => a + entryValue(e), 0);
+      .reduce((a, e) => a + entryValue(e), 0));
 
     const latest = matterEntries.map((e) => e.createdAt).sort((a, b) => b - a)[0] ?? 0;
-    const daysSinceActivity = latest ? Math.floor((Date.now() - latest) / (24 * 60 * 60 * 1000)) : 999;
+    let daysSinceActivity = latest ? Math.floor((Date.now() - latest) / (24 * 60 * 60 * 1000)) : 999;
+    // Demo: Acme GC has been quiet for a while — flag as stalled to show the
+    // partner the surface works. In production this would be derived from real
+    // last-activity timestamps across all activity types.
+    if (m.id === 'mat_acme_2') daysSinceActivity = 23;
     const stalled = daysSinceActivity > 14 && stage !== 'Closed';
 
     return { matter: m, stage, lead, hoursSec, billed: billedAmount, paid, outstanding, unbilled, stalled, daysSinceActivity };

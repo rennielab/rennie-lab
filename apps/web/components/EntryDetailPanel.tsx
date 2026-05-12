@@ -155,7 +155,7 @@ export function EntryDetailPanel({
           />
           {isConfirmed && (
             <Row
-              label="Confirmed by"
+              label="Approved by"
               value={
                 <div className="flex items-center gap-2">
                   <Avatar initials="MH" />
@@ -279,7 +279,7 @@ export function EntryDetailPanel({
               <path d="M12 8v4M12 16h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
             <p className="text-xs text-fg">
-              This entry has been confirmed. Partners and admins may still edit or override confirmed entries.
+              This entry has been approved. Partners and admins may still edit or override approved entries.
             </p>
           </div>
         )}
@@ -295,7 +295,7 @@ export function EntryDetailPanel({
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                 <path d="M5 12l5 5L20 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              Approve &amp; Confirm
+              Approve entry
             </button>
             {onReject && (
               <button
@@ -342,7 +342,7 @@ function TabButton({ children, active }: { children: React.ReactNode; active?: b
 
 function StatusPill({ status }: { status: 'approved' | 'pending' | 'draft' }) {
   if (status === 'approved')
-    return <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-accent-soft text-accent-dark">Confirmed</span>;
+    return <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-accent-soft text-accent-dark">Approved</span>;
   if (status === 'pending')
     return <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-warning-soft text-warning">Pending</span>;
   return <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-bg text-fg-muted">Draft</span>;

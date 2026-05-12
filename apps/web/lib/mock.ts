@@ -53,13 +53,20 @@ export const firm: Firm = {
 
 const AVATAR_BASE = 'https://api.dicebear.com/7.x/personas/svg?seed=';
 
+// Real-people photos for the 3 hero personas. Drop your photos in
+// /apps/web/public/avatars/ as marcus.jpg, sophia.jpg, sarah.jpg.
+// Falls back to a small inline placeholder if the file is missing.
+const MARCUS_PHOTO = '/avatars/marcus.jpg';
+const SOPHIA_PHOTO = '/avatars/sophia.jpg';
+const SARAH_PHOTO = '/avatars/sarah.jpg';
+
 export const currentAdmin: Lawyer = {
   id: 'lwy_marc',
   firmId: firm.id,
   name: 'Marcus Hayes',
   initials: 'MH',
   role: 'Managing Partner',
-  avatarUrl: `${AVATAR_BASE}Marcus&backgroundColor=fed7aa&hair=shortHair&hairColor=362c47`,
+  avatarUrl: MARCUS_PHOTO,
   email: 'marcus@bennetthayes.law',
   phone: '+1 (415) 555-0190',
   bio: 'Managing Partner at Bennett & Hayes LLP. 18 years in commercial litigation. Bar admitted in CA and NY. Caltech BS, Stanford JD.',
@@ -68,8 +75,8 @@ export const currentAdmin: Lawyer = {
 export const lawyers: Lawyer[] = [
   { id: 'lwy_jord', firmId: firm.id, name: 'Jordan Bennett', initials: 'JB', role: 'Partner', avatarUrl: `${AVATAR_BASE}Jordan&backgroundColor=fee2e2`, email: 'jordan@bennetthayes.law', phone: '+1 (415) 555-0191', bio: 'Partner focused on IP litigation and patent prosecution. Bar admitted in CA. UC Berkeley JD.' },
   { id: 'lwy_sara', firmId: firm.id, name: 'Sarah Chen', initials: 'SC', role: 'Senior Associate', avatarUrl: `${AVATAR_BASE}SarahChen&backgroundColor=dbeafe`, email: 'sarah.chen@bennetthayes.law', phone: '+1 (415) 555-0192', bio: 'Senior Associate in corporate transactions. UCLA JD.' },
-  { id: 'lwy_marc', firmId: firm.id, name: 'Marcus Hayes', initials: 'MH', role: 'Managing Partner', avatarUrl: `${AVATAR_BASE}Marcus&backgroundColor=fed7aa&hair=shortHair&hairColor=362c47`, email: 'marcus@bennetthayes.law', phone: '+1 (415) 555-0190', bio: 'Managing Partner at Bennett & Hayes LLP. 18 years in commercial litigation. Bar admitted in CA and NY. Caltech BS, Stanford JD.' },
-  { id: 'lwy_soph', firmId: firm.id, name: 'Sophia Williams', initials: 'SW', role: 'Lawyer', avatarUrl: `${AVATAR_BASE}Sophia&backgroundColor=fef3c7`, email: 'sophia.williams@bennetthayes.law', phone: '+1 (415) 555-0199', bio: 'Lawyer focused on patent prosecution and commercial litigation. Bar admitted in CA. NYU JD.' },
+  { id: 'lwy_marc', firmId: firm.id, name: 'Marcus Hayes', initials: 'MH', role: 'Managing Partner', avatarUrl: MARCUS_PHOTO, email: 'marcus@bennetthayes.law', phone: '+1 (415) 555-0190', bio: 'Managing Partner at Bennett & Hayes LLP. 18 years in commercial litigation. Bar admitted in CA and NY. Caltech BS, Stanford JD.' },
+  { id: 'lwy_soph', firmId: firm.id, name: 'Sophia Williams', initials: 'SW', role: 'Lawyer', avatarUrl: SOPHIA_PHOTO, email: 'sophia.williams@bennetthayes.law', phone: '+1 (415) 555-0199', bio: 'Lawyer focused on patent prosecution and commercial litigation. Bar admitted in CA. NYU JD.' },
 ];
 
 // The "current firm user" in the /firm/* demo — a regular staff lawyer, NOT
@@ -87,7 +94,7 @@ export const currentClient: ClientUser = {
   email: 'sarah.mitchell@example.com',
   phone: '+1 (415) 555-0142',
   bio: 'Trustee for Reyes Family Trust. Authorized portal user for the trust\'s matters at Bennett & Hayes LLP.',
-  avatarUrl: `${AVATAR_BASE}SarahMitchell&backgroundColor=ffe4e6`,
+  avatarUrl: SARAH_PHOTO,
 };
 
 // Universal matter stages — work across every practice area.

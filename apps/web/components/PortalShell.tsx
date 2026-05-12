@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 
+import { Avatar } from '@/components/Avatar';
 import { ChatButton } from '@/components/ChatSlideOut';
 import { Logo } from '@/components/Logo';
 import { currentClient } from '@/lib/mock';
@@ -64,7 +65,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
             <Link
               href="/portal/profile"
               className="flex items-center gap-2 pl-1 pr-3 h-10 rounded-full border border-border hover:bg-bg">
-              <img src={currentClient.avatarUrl} alt={currentClient.name} className="w-8 h-8 rounded-full bg-[#FFE4E6]" />
+              <Avatar src={currentClient.avatarUrl} name={currentClient.name} initials={currentClient.initials} size={32} bg="#FFE4E6" fg="#9F1239" />
               <span className="text-sm font-medium">{currentClient.name.split(' ')[0]}</span>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
                 <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
