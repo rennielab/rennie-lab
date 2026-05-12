@@ -9,7 +9,10 @@ export default function Splash() {
   const router = useRouter();
 
   useEffect(() => {
-    const t = setTimeout(() => router.replace('/onboarding/1'), 1500);
+    // Onboarding lives in /onboarding/[step] and is reachable from the
+    // post-signup welcome flow. For day-to-day launches we go straight to
+    // login so returning users don't re-permission every time.
+    const t = setTimeout(() => router.replace('/login'), 1500);
     return () => clearTimeout(t);
   }, [router]);
 

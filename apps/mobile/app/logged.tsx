@@ -2,15 +2,17 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
+import { Animated, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { contactById, heroEntry, matterById, matters } from '@/lib/mock';
+import { MatterSheet } from '@/components/MatterSheet';
+import { contactById, heroEntry, matterById, type TimeEntry } from '@/lib/mock';
+import { submitEntry } from '@/lib/store';
 import { colors, font, radii, space } from '@/lib/tokens';
 
 // Modes:
-//   start  -> idle, big checkmark, "Sarah Mitchell" not shown, timer at 00:00:00 and counting up
-//   review -> coming from call, duration locked, suggested matter, AI summary etc.
+//   start  -> idle: timer counts up from 0, lawyer manually picks a matter
+//   review -> coming from /processing: duration locked, AI summary pre-filled
 export default function Logged() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -24,11 +26,9 @@ export default function Logged() {
   const lockedDuration = mode === 'review' ? Number(params.durationSec ?? heroEntry.durationSec) : null;
   const [seconds, setSeconds] = useState(lockedDuration ?? 0);
   const [nonBill, setNonBill] = useState(false);
-  const [selectedMatter, setSelectedMatter] = useState(
-    contact?.matterId ?? heroEntry.matterId
-  );
+  const [selectedMatter, setSelectedMatter] = useState(contact?.matterId ?? heroEntry.matterId);
+  const [matterSheetOpen, setMatterSheetOpen] = useState(false);
 
-  // Idle mode: timer counts up from 00:00:00 once user enters the screen
   useEffect(() => {
     if (mode === 'start') {
       const t = setInterval(() => setSeconds((s) => s + 1), 1000);
@@ -44,10 +44,25 @@ export default function Logged() {
 
   const onDone = async () => {
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    const entry: TimeEntry = {
+      id: `te_live_${Date.now()}`,
+      matterId: selectedMatter,
+      lawyerId: heroEntry.lawyerId,
+      durationSec: seconds,
+      description:
+        mode === 'review'
+          ? heroEntry.description
+          : `Manual time entry for ${matter?.shortName ?? 'matter'}.`,
+      createdAt: Date.now(),
+      status: 'pending',
+      nonBillable: nonBill,
+      source: mode === 'review' ? 'call' : 'manual',
+      contactId: contact?.id,
+    };
+    submitEntry(entry);
     router.replace('/(tabs)');
   };
 
-  // Reveal-animate the icon on mount
   const scale = useRef(new Animated.Value(0.6)).current;
   useEffect(() => {
     Animated.spring(scale, { toValue: 1, useNativeDriver: true, friction: 5 }).start();
@@ -55,7 +70,6 @@ export default function Logged() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + space.md }]}>
-      {/* Top close button */}
       <View style={styles.topBar}>
         <Pressable onPress={() => router.back()} hitSlop={12}>
           <Ionicons name="chevron-down" size={26} color={colors.textPrimary} />
@@ -70,11 +84,18 @@ export default function Logged() {
         </Animated.View>
 
         {contact && mode === 'review' && (
-          <Text style={styles.contactName}>{contact.firstName} {contact.lastName}</Text>
+          <Text style={styles.contactName}>
+            {contact.firstName} {contact.lastName}
+          </Text>
         )}
         {mode === 'start' && <Text style={styles.contactName}>Tracking time</Text>}
 
-        <MatterPill matter={matter?.shortName ?? 'Select Matter'} />
+        <Pressable onPress={() => setMatterSheetOpen(true)} style={styles.matterPill}>
+          <Text style={styles.matterPillText} numberOfLines={1}>
+            {matter?.shortName ?? 'Select Matter'}
+          </Text>
+          <Ionicons name="chevron-down" size={14} color={colors.textSecondary} />
+        </Pressable>
 
         <Text style={styles.timer}>
           {hh} : {mm} : {ss}
@@ -108,16 +129,14 @@ export default function Logged() {
           <Text style={styles.ctaLabel}>Done</Text>
         </Pressable>
       </View>
-    </View>
-  );
-}
 
-function MatterPill({ matter }: { matter: string }) {
-  return (
-    <Pressable style={styles.matterPill}>
-      <Text style={styles.matterPillText} numberOfLines={1}>{matter}</Text>
-      <Ionicons name="chevron-down" size={14} color={colors.textSecondary} />
-    </Pressable>
+      <MatterSheet
+        visible={matterSheetOpen}
+        selectedId={selectedMatter}
+        onPick={setSelectedMatter}
+        onClose={() => setMatterSheetOpen(false)}
+      />
+    </View>
   );
 }
 

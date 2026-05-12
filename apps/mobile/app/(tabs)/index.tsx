@@ -1,23 +1,41 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { contactById, formatDuration, formatHours, matterById, matterDisplay, seedEntries } from '@/lib/mock';
+import { recentlySubmittedIds, useSubmittedEntries } from '@/lib/store';
 import { colors, font, radii, space } from '@/lib/tokens';
 
 export default function Activities() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [tab, setTab] = useState<'all' | 'pending' | 'approved'>('all');
-  const entries = seedEntries
-    .filter((e) => (tab === 'all' ? true : e.status === tab))
-    .sort((a, b) => b.createdAt - a.createdAt);
+  const submitted = useSubmittedEntries();
+  const [newIds, setNewIds] = useState<Set<string>>(() => recentlySubmittedIds());
 
-  const todayHours = formatHours(seedEntries.filter((e) => Date.now() - e.createdAt < 86400000).reduce((a, e) => a + e.durationSec, 0));
-  const weekHours = formatHours(seedEntries.reduce((a, e) => a + e.durationSec, 0));
-  const pendingCount = seedEntries.filter((e) => e.status === 'pending').length;
+  // Drop the "NEW" badge after 6 seconds
+  useEffect(() => {
+    const fresh = recentlySubmittedIds(6000);
+    setNewIds(fresh);
+    if (fresh.size === 0) return;
+    const t = setTimeout(() => setNewIds(new Set()), 6500);
+    return () => clearTimeout(t);
+  }, [submitted]);
+
+  const all = useMemo(() => {
+    return [...submitted, ...seedEntries].sort((a, b) => b.createdAt - a.createdAt);
+  }, [submitted]);
+
+  const entries = useMemo(
+    () => (tab === 'all' ? all : all.filter((e) => e.status === tab)),
+    [tab, all]
+  );
+
+  const todayHours = formatHours(all.filter((e) => Date.now() - e.createdAt < 86400000).reduce((a, e) => a + e.durationSec, 0));
+  const weekHours = formatHours(all.reduce((a, e) => a + e.durationSec, 0));
+  const pendingCount = all.filter((e) => e.status === 'pending').length;
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + space.md }]}>
@@ -51,8 +69,12 @@ export default function Activities() {
         {entries.map((e) => {
           const c = e.contactId ? contactById(e.contactId) : undefined;
           const m = matterById(e.matterId);
+          const isNew = newIds.has(e.id);
           return (
-            <Pressable key={e.id} style={styles.entry}>
+            <Pressable
+              key={e.id}
+              onPress={() => router.push({ pathname: '/entry/[id]', params: { id: e.id } })}
+              style={[styles.entry, isNew && styles.entryNew]}>
               <View style={[styles.entryIcon, e.source === 'call' && { backgroundColor: colors.accentSoft }]}>
                 <Ionicons
                   name={e.source === 'call' ? 'call' : 'time-outline'}
@@ -62,9 +84,16 @@ export default function Activities() {
               </View>
               <View style={{ flex: 1 }}>
                 <View style={styles.entryTopRow}>
-                  <Text style={styles.entryTitle} numberOfLines={1}>
-                    {c ? `${c.firstName} ${c.lastName}` : m?.shortName ?? 'Entry'}
-                  </Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flex: 1, marginRight: space.sm }}>
+                    <Text style={styles.entryTitle} numberOfLines={1}>
+                      {c ? `${c.firstName} ${c.lastName}` : m?.shortName ?? 'Entry'}
+                    </Text>
+                    {isNew && (
+                      <View style={styles.newBadge}>
+                        <Text style={styles.newBadgeText}>NEW</Text>
+                      </View>
+                    )}
+                  </View>
                   <Text style={styles.entryDuration}>{formatDuration(e.durationSec)}</Text>
                 </View>
                 <Text style={styles.entryMatter} numberOfLines={1}>{matterDisplay(e.matterId)}</Text>
@@ -124,14 +153,17 @@ const styles = StyleSheet.create({
   segmentLabel: { color: colors.textSecondary, fontSize: font.size.sm, fontWeight: '500' },
   segmentLabelActive: { color: colors.textPrimary, fontWeight: '600' },
   entry: { flexDirection: 'row', alignItems: 'flex-start', gap: space.md, paddingVertical: space.md, borderBottomWidth: 1, borderBottomColor: colors.border },
+  entryNew: { backgroundColor: colors.accentSoft, paddingHorizontal: space.md, marginHorizontal: -space.sm, borderRadius: radii.md, borderBottomColor: 'transparent' },
   entryIcon: { width: 38, height: 38, borderRadius: radii.pill, backgroundColor: colors.bgSurface, alignItems: 'center', justifyContent: 'center' },
   entryTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  entryTitle: { color: colors.textPrimary, fontSize: font.size.base, fontWeight: '600', flex: 1, marginRight: space.sm },
+  entryTitle: { color: colors.textPrimary, fontSize: font.size.base, fontWeight: '600', flexShrink: 1 },
   entryDuration: { color: colors.textPrimary, fontSize: font.size.sm, fontWeight: '600', fontVariant: ['tabular-nums'] },
   entryMatter: { color: colors.accent, fontSize: font.size.xs, fontWeight: '500', marginTop: 2 },
   entryMetaRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 6 },
   entryMetaText: { color: colors.textSecondary, fontSize: font.size.xs },
   metaDot: { width: 3, height: 3, borderRadius: 1.5, backgroundColor: colors.textTertiary },
+  newBadge: { backgroundColor: colors.accent, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
+  newBadgeText: { color: colors.textOnAccent, fontSize: 9, fontWeight: '800', letterSpacing: 0.5 },
   empty: { alignItems: 'center', paddingTop: space.huge, gap: space.md },
   emptyText: { color: colors.textTertiary, fontSize: font.size.sm },
 });
