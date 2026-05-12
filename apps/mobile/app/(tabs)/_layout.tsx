@@ -1,10 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { Tabs, useRouter } from 'expo-router';
+import { Tabs } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { useActiveTimer } from '@/lib/timer';
+import { HoldStartFab } from '@/components/HoldStartFab';
 import { colors, radii, space } from '@/lib/tokens';
 
 type IconName = keyof typeof Ionicons.glyphMap;
@@ -31,8 +31,6 @@ export default function TabsLayout() {
 
 function ClockdTabBar({ state, navigation }: any) {
   const insets = useSafeAreaInsets();
-  const router = useRouter();
-  const active = useActiveTimer();
   const currentRoute = state.routes[state.index].name;
 
   return (
@@ -64,20 +62,7 @@ function ClockdTabBar({ state, navigation }: any) {
         })}
       </View>
 
-      <Pressable
-        onPress={async () => {
-          await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-          router.push('/logged?mode=start');
-        }}
-        style={({ pressed }) => [styles.fab, pressed && { transform: [{ scale: 0.95 }] }]}>
-        {active ? (
-          <View style={styles.fabActive}>
-            <View style={styles.fabActiveDot} />
-          </View>
-        ) : (
-          <Ionicons name="add" size={28} color={colors.textOnAccent} />
-        )}
-      </Pressable>
+      <HoldStartFab />
     </View>
   );
 }
@@ -119,27 +104,4 @@ const styles = StyleSheet.create({
   tabActive: { backgroundColor: colors.accent, flex: 1.4 },
   tabLabel: { color: colors.textOnAccent, fontSize: 13, fontWeight: '600' },
   tabLabelInactive: { color: colors.textSecondary, fontSize: 12, fontWeight: '500' },
-  fab: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: colors.accent,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: colors.accent,
-    shadowOpacity: 0.4,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 8,
-  },
-  fabActive: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    borderWidth: 2,
-    borderColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  fabActiveDot: { width: 8, height: 8, borderRadius: 1, backgroundColor: '#fff' },
 });

@@ -19,6 +19,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Avatar } from '@/components/Avatar';
+import { BHLogo } from '@/components/BHLogo';
 import {
   contactById,
   currentLawyer,
@@ -34,6 +35,7 @@ import {
   seedEntries,
   upcoming,
   type Upcoming,
+  type TimeEntry,
 } from '@/lib/mock';
 import { useSubmittedEntries } from '@/lib/store';
 import { elapsedSec, startTimer, useActiveTimer } from '@/lib/timer';
@@ -70,6 +72,13 @@ export default function Home() {
   const todayHoursSec = todayMine.reduce((a, e) => a + e.durationSec, 0);
   const weekDollars = weekMine.reduce((a, e) => a + entryValue(e), 0);
   const weekCallsCount = recentCalls.filter((c) => c.at >= weekCutoff).length;
+
+  // Real daily $ totals for the last 7 days — feeds the sparkline behind the
+  // hero number so the bars are an honest representation of Sophia's week.
+  const dailyTotals = useMemo(
+    () => buildDailyTotals(allEntries, 7, currentLawyer.id),
+    [allEntries],
+  );
 
   // ---- animated counters ---------------------------------------------------
   const dollarAnim = useRef(new Animated.Value(0)).current;
@@ -113,10 +122,19 @@ export default function Home() {
   // ---- the "Next" item -----------------------------------------------------
   const next = useMemo(() => pickNext(upcoming), []);
 
-  const onStartTimer = async () => {
+  // "Start" (quick action) — general time tracking, no matter yet. Sophia
+  // can pick the matter when she stops the timer. The deliberate path (FAB
+  // long-press) requires the matter up front.
+  const onStartGeneral = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     startTimer({ source: 'manual' });
     router.push('/logged?mode=start');
+  };
+
+  // "Log" (quick action) — manual entry for time you've already worked.
+  const onLogManual = async () => {
+    await Haptics.selectionAsync();
+    router.push('/log-entry');
   };
 
   const onTapCall = async (contactId: string) => {
@@ -133,24 +151,31 @@ export default function Home() {
           paddingHorizontal: space.xxl,
         }}
         showsVerticalScrollIndicator={false}>
-        {/* ── Greeting header ───────────────────────────────────────────── */}
+        {/* ── Firm bar — Bennett & Hayes presence at the top ────────────── */}
+        <View style={styles.firmBar}>
+          <BHLogo size={28} />
+          <View style={{ flex: 1 }}>
+            <Text style={styles.firmName}>{firm.name}</Text>
+            <Text style={styles.firmLoc}>{firm.location}</Text>
+          </View>
+          <Pressable
+            hitSlop={6}
+            onPress={() => router.push('/(tabs)/profile')}
+            style={styles.firmAvatar}>
+            <Avatar
+              size={32}
+              avatarKey={currentLawyer.avatarKey}
+              initials={currentLawyer.initials}
+            />
+          </Pressable>
+        </View>
+
+        {/* ── Greeting ─────────────────────────────────────────────────── */}
         <View style={styles.headerRow}>
           <View style={{ flex: 1 }}>
             <Text style={styles.greeting}>{greetingFor()}</Text>
             <Text style={styles.name}>{currentLawyer.name.split(' ')[0]}</Text>
-            <Text style={styles.firm}>{firm.name}</Text>
           </View>
-          <Pressable
-            hitSlop={10}
-            style={styles.headerBtn}
-            onPress={() => router.push('/(tabs)/profile')}>
-            <Avatar
-              size={44}
-              avatarKey={currentLawyer.avatarKey}
-              initials={currentLawyer.initials}
-              ring
-            />
-          </Pressable>
         </View>
 
         {/* ── Active timer pill (only when running) ─────────────────────── */}
@@ -169,7 +194,7 @@ export default function Home() {
 
         {/* ── HERO: today's billable ────────────────────────────────────── */}
         <Animated.View style={[styles.hero, cardStyle(0)]}>
-          <Sparkline weekTotal={weekDollars} todayTotal={todayDollars} />
+          <Sparkline daily={dailyTotals} />
           <View style={styles.heroInner}>
             <Text style={styles.heroLabel}>Logged today</Text>
             <Text style={styles.heroNumber}>
@@ -202,15 +227,17 @@ export default function Home() {
             onPress={() => router.push('/(tabs)/calls')}
           />
           <QuickAction
-            icon="play"
+            icon={active ? 'play' : 'play'}
             label={active ? 'Open' : 'Start'}
-            onPress={onStartTimer}
+            sub={active ? undefined : 'General'}
+            onPress={onStartGeneral}
             primary={!active}
           />
           <QuickAction
-            icon="add"
+            icon="create-outline"
             label="Log"
-            onPress={() => router.push('/logged?mode=start')}
+            sub="Manual"
+            onPress={onLogManual}
           />
           <QuickAction
             icon="time-outline"
@@ -433,11 +460,13 @@ function UpNextRow({ item }: { item: Upcoming }) {
 function QuickAction({
   icon,
   label,
+  sub,
   onPress,
   primary,
 }: {
   icon: keyof typeof Ionicons.glyphMap;
   label: string;
+  sub?: string;
   onPress: () => void;
   primary?: boolean;
 }) {
@@ -449,12 +478,17 @@ function QuickAction({
         primary && styles.qaPrimary,
         pressed && { transform: [{ scale: 0.96 }] },
       ]}>
-      <Ionicons
-        name={icon}
-        size={20}
-        color={primary ? colors.bg : colors.textPrimary}
-      />
+      <Ionicons name={icon} size={20} color={primary ? colors.bg : colors.textPrimary} />
       <Text style={[styles.qaLabel, primary && { color: colors.bg }]}>{label}</Text>
+      {sub && (
+        <Text
+          style={[
+            styles.qaSub,
+            primary && { color: 'rgba(14, 42, 30, 0.7)' },
+          ]}>
+          {sub}
+        </Text>
+      )}
     </Pressable>
   );
 }
@@ -488,27 +522,41 @@ function WeekStat({
   );
 }
 
-// Subtle decorative sparkline behind the hero number. Generated from a
-// gentle sin wave for the demo — the shape sells "growing throughout the
-// week" without distracting from the headline number.
-function Sparkline({ weekTotal, todayTotal }: { weekTotal: number; todayTotal: number }) {
-  const pct = weekTotal > 0 ? todayTotal / weekTotal : 0.4;
-  // 7 points, progress matches today's share of the week (rough vibe only)
-  const heights = [0.25, 0.4, 0.32, 0.55, 0.48, 0.7, 0.55 + 0.3 * pct];
+// Real sparkline — each bar is one day of Sophia's billable $ for the last 7
+// days. Today is the rightmost bar (brightest). Heights are normalized so
+// the tallest day fills, others scale proportionally. If all days are zero
+// we render a faint baseline so the card doesn't look broken.
+function Sparkline({ daily }: { daily: { day: Date; total: number; isToday: boolean }[] }) {
+  const max = Math.max(1, ...daily.map((d) => d.total));
   return (
     <View style={styles.sparkWrap} pointerEvents="none">
-      {heights.map((h, i) => (
-        <View
-          key={i}
-          style={[
-            styles.sparkBar,
-            {
-              height: 40 + h * 60,
-              opacity: 0.08 + (i / heights.length) * 0.18,
-            },
-          ]}
-        />
-      ))}
+      {daily.map((d, i) => {
+        const ratio = d.total / max;
+        const minHeight = 8;
+        const maxHeight = 96;
+        const h = minHeight + ratio * (maxHeight - minHeight);
+        return (
+          <View key={i} style={styles.sparkCol}>
+            <View
+              style={[
+                styles.sparkBar,
+                {
+                  height: h,
+                  opacity: d.isToday ? 0.85 : 0.18 + ratio * 0.22,
+                  backgroundColor: d.isToday ? colors.accent : colors.accent,
+                },
+              ]}
+            />
+            <Text
+              style={[
+                styles.sparkLabel,
+                d.isToday && { color: colors.accent, fontWeight: '700' },
+              ]}>
+              {dayLetter(d.day)}
+            </Text>
+          </View>
+        );
+      })}
     </View>
   );
 }
@@ -534,10 +582,58 @@ function pickNext(items: Upcoming[]): Upcoming | undefined {
   return future[0];
 }
 
+// Group entries into per-day $ totals for the last `days` days for a single
+// lawyer. Returns oldest → newest so the array maps left-to-right in the UI.
+function buildDailyTotals(
+  entries: TimeEntry[],
+  days: number,
+  lawyerId: string,
+): { day: Date; total: number; isToday: boolean }[] {
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const out: { day: Date; total: number; isToday: boolean }[] = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(todayStart);
+    d.setDate(d.getDate() - i);
+    const dayStart = d.getTime();
+    const dayEnd = dayStart + 24 * 60 * 60 * 1000;
+    const total = entries
+      .filter((e) => e.lawyerId === lawyerId && e.createdAt >= dayStart && e.createdAt < dayEnd)
+      .reduce((a, e) => a + entryValue(e), 0);
+    out.push({ day: d, total, isToday: i === 0 });
+  }
+  return out;
+}
+
+function dayLetter(d: Date) {
+  return ['S', 'M', 'T', 'W', 'T', 'F', 'S'][d.getDay()];
+}
+
 // ─── Styles ─────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.bg },
+
+  firmBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.md,
+    backgroundColor: colors.bgElevated,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingHorizontal: space.md,
+    paddingVertical: 10,
+    marginBottom: space.lg,
+  },
+  firmName: {
+    color: colors.textPrimary,
+    fontSize: font.size.sm,
+    fontWeight: '700',
+    letterSpacing: 0.2,
+  },
+  firmLoc: { color: colors.textTertiary, fontSize: 11, marginTop: 1 },
+  firmAvatar: { padding: 2 },
 
   headerRow: {
     flexDirection: 'row',
@@ -553,8 +649,6 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
     marginTop: 2,
   },
-  firm: { color: colors.textTertiary, fontSize: font.size.xs, marginTop: 4 },
-  headerBtn: { padding: 2 },
 
   timerPill: {
     flexDirection: 'row',
@@ -624,20 +718,29 @@ const styles = StyleSheet.create({
   heroDot: { width: 3, height: 3, borderRadius: 1.5, backgroundColor: colors.textTertiary },
   sparkWrap: {
     position: 'absolute',
-    right: 0,
-    top: 0,
-    bottom: 0,
+    right: space.lg,
+    top: space.xxl,
+    bottom: space.md,
     flexDirection: 'row',
     alignItems: 'flex-end',
-    gap: 6,
-    paddingRight: space.xl,
-    paddingBottom: space.lg,
+    gap: 5,
     zIndex: 1,
+  },
+  sparkCol: {
+    alignItems: 'center',
+    gap: 4,
+    width: 14,
   },
   sparkBar: {
     width: 6,
     borderRadius: 3,
     backgroundColor: colors.accent,
+  },
+  sparkLabel: {
+    color: colors.textTertiary,
+    fontSize: 9,
+    fontWeight: '600',
+    letterSpacing: 0.5,
   },
 
   // ─── Next card ──
@@ -727,6 +830,14 @@ const styles = StyleSheet.create({
     borderColor: colors.accent,
   },
   qaLabel: { color: colors.textPrimary, fontSize: font.size.xs, fontWeight: '600' },
+  qaSub: {
+    color: colors.textTertiary,
+    fontSize: 9,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+    marginTop: 1,
+  },
 
   // ─── Sections ──
   sectionRow: {

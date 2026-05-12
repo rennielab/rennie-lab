@@ -8,6 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MatterSheet } from '@/components/MatterSheet';
 import { contactById, heroEntry, matterById, type TimeEntry } from '@/lib/mock';
 import { submitEntry } from '@/lib/store';
+import { elapsedSec, startTimer, stopTimer, updateTimer, useActiveTimer } from '@/lib/timer';
 import { colors, font, radii, space } from '@/lib/tokens';
 
 // Modes:
@@ -16,25 +17,55 @@ import { colors, font, radii, space } from '@/lib/tokens';
 export default function Logged() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const params = useLocalSearchParams<{ mode?: string; contactId?: string; durationSec?: string }>();
+  const params = useLocalSearchParams<{
+    mode?: string;
+    contactId?: string;
+    durationSec?: string;
+    matterId?: string;
+  }>();
   const mode = (params.mode as 'start' | 'review') ?? 'review';
+
+  const active = useActiveTimer();
+  const [, setTick] = useState(0);
 
   const contact = params.contactId
     ? contactById(params.contactId)
     : contactById(heroEntry.contactId!);
 
-  const lockedDuration = mode === 'review' ? Number(params.durationSec ?? heroEntry.durationSec) : null;
-  const [seconds, setSeconds] = useState(lockedDuration ?? 0);
-  const [nonBill, setNonBill] = useState(false);
-  const [selectedMatter, setSelectedMatter] = useState(contact?.matterId ?? heroEntry.matterId);
+  const lockedDuration =
+    mode === 'review' ? Number(params.durationSec ?? heroEntry.durationSec) : null;
+
+  // In start mode, prefer the active timer's matter (set by the FAB long-press
+  // flow); fall back to the URL param or the contact's matter.
+  const initialMatter =
+    active?.matterId ?? (params.matterId as string) ?? contact?.matterId ?? heroEntry.matterId;
+  const [nonBill, setNonBill] = useState(active?.nonBillable ?? false);
+  const [selectedMatter, setSelectedMatter] = useState(initialMatter);
   const [matterSheetOpen, setMatterSheetOpen] = useState(false);
 
+  // Ensure a timer is running in start mode (defensive — Home/FAB usually
+  // start it before navigating here).
   useEffect(() => {
-    if (mode === 'start') {
-      const t = setInterval(() => setSeconds((s) => s + 1), 1000);
-      return () => clearInterval(t);
+    if (mode === 'start' && !active) {
+      startTimer({ source: 'manual', matterId: selectedMatter || null });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Keep timer's matter in sync if the user changes it from this screen.
+  useEffect(() => {
+    if (mode === 'start' && active) updateTimer({ matterId: selectedMatter || null });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedMatter]);
+
+  // Tick once per second so the live counter re-renders.
+  useEffect(() => {
+    if (mode !== 'start') return;
+    const t = setInterval(() => setTick((n) => n + 1), 1000);
+    return () => clearInterval(t);
   }, [mode]);
+
+  const seconds = mode === 'review' ? (lockedDuration ?? 0) : elapsedSec(active);
 
   const hh = String(Math.floor(seconds / 3600)).padStart(2, '0');
   const mm = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
@@ -44,15 +75,16 @@ export default function Logged() {
 
   const onDone = async () => {
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    const finalSec = mode === 'review' ? (lockedDuration ?? 0) : elapsedSec(active);
     const entry: TimeEntry = {
       id: `te_live_${Date.now()}`,
       matterId: selectedMatter,
       lawyerId: heroEntry.lawyerId,
-      durationSec: seconds,
+      durationSec: finalSec,
       description:
         mode === 'review'
           ? heroEntry.description
-          : `Manual time entry for ${matter?.shortName ?? 'matter'}.`,
+          : `Time on ${matter?.shortName ?? 'matter'}.`,
       createdAt: Date.now(),
       status: 'pending',
       nonBillable: nonBill,
@@ -60,6 +92,7 @@ export default function Logged() {
       contactId: contact?.id,
     };
     submitEntry(entry);
+    if (mode === 'start') stopTimer();
     router.replace('/(tabs)');
   };
 
