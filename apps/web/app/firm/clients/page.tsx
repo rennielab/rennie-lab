@@ -5,7 +5,6 @@ import { useMemo, useState } from 'react';
 
 import { FirmShell } from '@/components/FirmShell';
 import {
-  clientById,
   clients,
   contacts,
   currentFirmUser,
@@ -28,7 +27,7 @@ export default function FirmClients() {
   const overrides = useEntryOverrides();
   const [q, setQ] = useState('');
 
-  // Sophia's entries
+  // Scope to Sophia's entries
   const myEntries = useMemo(() => seedEntries
     .filter((e) => e.lawyerId === currentFirmUser.id)
     .map((e) => ({
@@ -37,19 +36,28 @@ export default function FirmClients() {
       nonBillable: overrides[e.id]?.nonBillable ?? e.nonBillable,
     })), [overrides]);
 
-  // Clients she touches = clients of matters she has entries on
   const myMatterIds = new Set(myEntries.map((e) => e.matterId));
   const myClientIds = new Set(
     Array.from(myMatterIds).map((mid) => allMatters.find((m) => m.id === mid)?.clientId).filter(Boolean) as string[],
   );
   const myClients = clients.filter((c) => myClientIds.has(c.id));
 
-  const filtered = q ? myClients.filter((c) => c.name.toLowerCase().includes(q.toLowerCase())) : myClients;
+  const rows = myClients.map((c) => {
+    const matters = allMatters.filter((m) => m.clientId === c.id && myMatterIds.has(m.id));
+    const entries = myEntries.filter((e) => matters.some((m) => m.id === e.matterId));
+    const hours = entries.reduce((a, e) => a + e.durationSec, 0);
+    const billed = entries.reduce((a, e) => a + entryValue(e), 0);
+    const primary = contacts.find((ct) => ct.clientId === c.id);
+    const last = entries.map((e) => e.createdAt).sort((a, b) => b - a)[0];
+    return { client: c, matters, hours, billed, primary, last };
+  });
+
+  const filtered = q ? rows.filter((r) => r.client.name.toLowerCase().includes(q.toLowerCase())) : rows;
 
   return (
     <FirmShell
       title="Your clients"
-      subtitle={`${myClients.length} ${myClients.length === 1 ? 'client' : 'clients'} you've worked with.`}>
+      subtitle={`${myClients.length} ${myClients.length === 1 ? 'client' : 'clients'} on your caseload.`}>
       <div className="flex items-center gap-2 mb-4">
         <div className="flex items-center gap-2 flex-1 max-w-md bg-card border border-border rounded-lg px-3 h-10">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
@@ -71,58 +79,51 @@ export default function FirmClients() {
           <div className="text-xs text-fg-muted mt-1">Once Marcus adds you to a matter, the client will appear here.</div>
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-3">
-          {filtered.map((c) => {
-            const ci = c.name[0] ?? 'C';
-            const tint = CLIENT_TINTS[ci] ?? { bg: '#F3F4F6', fg: '#4B5563' };
-            const myMatters = allMatters.filter((m) => m.clientId === c.id && myMatterIds.has(m.id));
-            const myEntriesForClient = myEntries.filter((e) => myMatters.some((m) => m.id === e.matterId));
-            const myHours = myEntriesForClient.reduce((a, e) => a + e.durationSec, 0);
-            const myBilled = myEntriesForClient.reduce((a, e) => a + entryValue(e), 0);
-            const primary = contacts.find((ct) => ct.clientId === c.id);
-            const lastActivity = myEntriesForClient.map((e) => e.createdAt).sort((a, b) => b - a)[0];
-
+        <div className="bg-card border border-border rounded-2xl overflow-hidden">
+          <div className="grid grid-cols-[1.6fr_1.4fr_70px_100px_110px_120px_120px] gap-3 px-6 py-3 border-b border-border text-xs font-semibold text-fg-muted uppercase tracking-wide">
+            <div>Client</div>
+            <div>Primary contact</div>
+            <div className="text-right">Matters</div>
+            <div className="text-right">Your hours</div>
+            <div className="text-right">Your billings</div>
+            <div>Last activity</div>
+            <div>Open matter</div>
+          </div>
+          {filtered.map((r) => {
+            const initial = r.client.name[0];
+            const tint = CLIENT_TINTS[initial] ?? { bg: '#F3F4F6', fg: '#4B5563' };
             return (
-              <div key={c.id} className="bg-card border border-border rounded-2xl p-5">
-                <div className="flex items-center gap-3 mb-4">
-                  <span style={{ background: tint.bg, color: tint.fg }} className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-sm shrink-0">{ci}</span>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-base font-semibold truncate">{c.name}</div>
-                    <div className="text-xs text-fg-muted truncate">
-                      {myMatters.length} {myMatters.length === 1 ? 'matter' : 'matters'}
-                      {primary && ` · ${primary.firstName} ${primary.lastName}`}
-                    </div>
+              <div key={r.client.id} className="grid grid-cols-[1.6fr_1.4fr_70px_100px_110px_120px_120px] gap-3 items-center px-6 py-3.5 border-b border-border last:border-0 hover:bg-bg/40">
+                <div className="flex items-center gap-3 min-w-0">
+                  <span style={{ background: tint.bg, color: tint.fg }} className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs shrink-0">
+                    {initial}
+                  </span>
+                  <div className="min-w-0">
+                    <div className="text-sm font-semibold truncate">{r.client.name}</div>
+                    <div className="text-xs text-fg-muted">{r.matters.length} {r.matters.length === 1 ? 'matter' : 'matters'}</div>
                   </div>
                 </div>
-
-                <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
-                  <div>
-                    <div className="text-xs text-fg-muted">Your hours</div>
-                    <div className="text-base font-semibold tabular-nums mt-0.5">{formatHoursH(myHours)}</div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-fg-muted">Your billings</div>
-                    <div className="text-base font-semibold tabular-nums mt-0.5">{formatMoneyCompact(myBilled)}</div>
-                  </div>
+                <div className="text-sm min-w-0">
+                  {r.primary ? (
+                    <>
+                      <div className="font-medium text-fg truncate">{r.primary.firstName} {r.primary.lastName}</div>
+                      <div className="text-xs text-fg-muted truncate">{r.primary.phone}</div>
+                    </>
+                  ) : <span className="text-fg-subtle">—</span>}
                 </div>
-
-                <div className="space-y-1.5 pt-3 border-t border-border">
-                  {myMatters.map((m) => (
-                    <Link
-                      key={m.id}
-                      href={`/firm/matters/${m.id}`}
-                      className="flex items-center justify-between gap-2 text-sm text-fg-muted hover:text-fg group">
-                      <span className="truncate">{m.shortName}</span>
-                      <span className="text-xs text-fg-subtle group-hover:text-accent">Open →</span>
+                <div className="text-sm tabular-nums text-right">{r.matters.length}</div>
+                <div className="text-sm tabular-nums text-right">{formatHoursH(r.hours)}</div>
+                <div className="text-sm font-semibold tabular-nums text-right">{formatMoneyCompact(r.billed)}</div>
+                <div className="text-sm text-fg-muted">
+                  {r.last ? new Date(r.last).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  {r.matters.map((m) => (
+                    <Link key={m.id} href={`/firm/matters/${m.id}`} className="text-xs text-accent hover:underline truncate">
+                      {m.shortName} →
                     </Link>
                   ))}
                 </div>
-
-                {lastActivity && (
-                  <div className="text-xs text-fg-subtle mt-3 pt-3 border-t border-border">
-                    Last activity {new Date(lastActivity).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                  </div>
-                )}
               </div>
             );
           })}

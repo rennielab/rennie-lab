@@ -11,6 +11,7 @@ import {
   entryValue,
   formatHoursH,
   formatMoneyCompact,
+  MATTER_STAGE,
   matters as allMatters,
   seedEntries,
 } from '@/lib/mock';
@@ -19,9 +20,8 @@ import { toggleMatterPin, usePinnedMatterIds } from '@/lib/firmState';
 
 const STAGE_TINTS: Record<string, { bg: string; fg: string; border: string }> = {
   Intake: { bg: '#DBEAFE', fg: '#1D4ED8', border: '#93C5FD' },
-  'In Progress': { bg: '#DCFCE7', fg: '#166534', border: '#86EFAC' },
-  Discovery: { bg: '#FED7AA', fg: '#9A3412', border: '#FDBA74' },
-  Judgement: { bg: '#E9D5FF', fg: '#6D28D9', border: '#C4B5FD' },
+  Active: { bg: '#DCFCE7', fg: '#166534', border: '#86EFAC' },
+  'On Hold': { bg: '#FED7AA', fg: '#9A3412', border: '#FDBA74' },
   Closed: { bg: '#F3F4F6', fg: '#4B5563', border: '#D1D5DB' },
 };
 
@@ -32,15 +32,6 @@ const CLIENT_TINTS: Record<string, { bg: string; fg: string }> = {
   V: { bg: '#DCFCE7', fg: '#166534' },
 };
 
-// Per-matter stage (matches admin)
-const MATTER_STAGE: Record<string, 'In Progress' | 'Intake' | 'Discovery' | 'Closed'> = {
-  mat_acme_1: 'In Progress',
-  mat_acme_2: 'Discovery',
-  mat_reyes_1: 'Intake',
-  mat_reyes_2: 'In Progress',
-  mat_north_1: 'Discovery',
-  mat_vert_1: 'Closed',
-};
 
 export default function FirmMatters() {
   const overrides = useEntryOverrides();

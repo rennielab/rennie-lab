@@ -70,6 +70,29 @@ export const lawyers: Lawyer[] = [
 // the admin. Logs into the same firm as Marcus but sees a scoped view.
 export const currentFirmUser: Lawyer = lawyers[3];
 
+// Universal matter stages — work across every practice area.
+// Litigation sub-stages (Discovery, Trial etc) can be a sub-status later.
+export type MatterStage = 'Intake' | 'Active' | 'On Hold' | 'Closed';
+
+// Stage + originating attorney (the "matter lead" / account manager) per matter.
+export const MATTER_STAGE: Record<string, MatterStage> = {
+  mat_acme_1: 'Active',
+  mat_acme_2: 'Intake',
+  mat_reyes_1: 'Intake',
+  mat_reyes_2: 'Active',
+  mat_north_1: 'Active',
+  mat_vert_1: 'Closed',
+};
+
+export const MATTER_LEAD: Record<string, string> = {
+  mat_acme_1: 'lwy_jord',
+  mat_acme_2: 'lwy_jord',
+  mat_reyes_1: 'lwy_jord',
+  mat_reyes_2: 'lwy_jord',
+  mat_north_1: 'lwy_sara',
+  mat_vert_1: 'lwy_marc',
+};
+
 export const clients: Client[] = [
   { id: 'cli_acme', firmId: firm.id, name: 'Acme Industries Inc.' },
   { id: 'cli_reyes', firmId: firm.id, name: 'Reyes Family Trust' },

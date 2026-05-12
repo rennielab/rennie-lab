@@ -12,7 +12,7 @@ import { DEADLINES, MATTER_STATUS, formatDueRelative } from '@/lib/portalData';
 const MATTERS: Record<string, {
   id: string;
   name: string;
-  stages: ('Intake' | 'In Progress' | 'Judgement' | 'Closed')[];
+  stages: ('Intake' | 'Active' | 'On Hold' | 'Closed')[];
   practiceArea: string;
   originatingAttorney: string;
   opened: string;
@@ -31,7 +31,7 @@ const MATTERS: Record<string, {
   m1: {
     id: 'm1',
     name: 'IP — Patent Filing',
-    stages: ['Intake', 'In Progress'],
+    stages: ['Active'],
     practiceArea: 'Intellectual Property',
     originatingAttorney: 'John Carter',
     opened: '15 Oct 2025',
@@ -54,7 +54,7 @@ const MATTERS: Record<string, {
   m2: {
     id: 'm2',
     name: 'Corporate — Contract Review',
-    stages: ['Intake', 'In Progress'],
+    stages: ['Active'],
     practiceArea: 'Corporate',
     originatingAttorney: 'John Carter',
     opened: '15 Oct 2025',
@@ -76,7 +76,7 @@ const MATTERS: Record<string, {
   m3: {
     id: 'm3',
     name: 'Reyes v. Horizon — Wrongful Termination',
-    stages: ['Judgement', 'Closed'],
+    stages: ['Closed'],
     practiceArea: 'Employment Litigation',
     originatingAttorney: 'John Carter',
     opened: '15 Oct 2025',
@@ -615,11 +615,11 @@ function MatterStatusAndDeadline({ id }: { id: string }) {
   );
 }
 
-function StagePill({ stage }: { stage: 'Intake' | 'In Progress' | 'Judgement' | 'Closed' }) {
+function StagePill({ stage }: { stage: 'Intake' | 'Active' | 'On Hold' | 'Closed' }) {
   const map = {
     Intake: 'border-blue-500 text-blue-700 bg-blue-50',
-    'In Progress': 'border-accent text-accent-dark bg-accent-soft',
-    Judgement: 'border-purple-500 text-purple-700 bg-purple-50',
+    Active: 'border-accent text-accent-dark bg-accent-soft',
+    'On Hold': 'border-orange-400 text-orange-700 bg-orange-50',
     Closed: 'border-gray-400 text-gray-700 bg-gray-100',
   };
   return <span className={`px-2.5 py-1 rounded-md text-xs font-semibold border ${map[stage]}`}>{stage}</span>;

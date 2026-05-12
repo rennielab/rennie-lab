@@ -16,6 +16,7 @@ import {
   formatMoneyCompact,
   lawyerById,
   lawyers,
+  MATTER_STAGE,
   matterById,
   matters as allMatters,
   seedEntries,
@@ -24,18 +25,9 @@ import { useEntryOverrides } from '@/lib/adminState';
 
 const STAGE_TINTS: Record<string, { bg: string; fg: string; border: string }> = {
   Intake: { bg: '#DBEAFE', fg: '#1D4ED8', border: '#93C5FD' },
-  'In Progress': { bg: '#DCFCE7', fg: '#166534', border: '#86EFAC' },
-  Discovery: { bg: '#FED7AA', fg: '#9A3412', border: '#FDBA74' },
+  Active: { bg: '#DCFCE7', fg: '#166534', border: '#86EFAC' },
+  'On Hold': { bg: '#FED7AA', fg: '#9A3412', border: '#FDBA74' },
   Closed: { bg: '#F3F4F6', fg: '#4B5563', border: '#D1D5DB' },
-};
-
-const MATTER_STAGE: Record<string, 'In Progress' | 'Intake' | 'Discovery' | 'Closed'> = {
-  mat_acme_1: 'In Progress',
-  mat_acme_2: 'Discovery',
-  mat_reyes_1: 'Intake',
-  mat_reyes_2: 'In Progress',
-  mat_north_1: 'Discovery',
-  mat_vert_1: 'Closed',
 };
 
 const MATTER_NOTES: Record<string, { person: string; initials: string; timestamp: string; body: string }[]> = {
@@ -69,7 +61,7 @@ export default function FirmMatterDetail() {
   }
 
   const client = clientById(matter.clientId);
-  const stage = MATTER_STAGE[matter.id] ?? 'In Progress';
+  const stage = MATTER_STAGE[matter.id] ?? 'Active';
 
   // All entries on this matter (across the team) — Sophia sees them, she doesn't approve them.
   const allEntries = useMemo(() => seedEntries

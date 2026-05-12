@@ -79,7 +79,7 @@ export function FirmShell({
                 href={item.href}
                 className={`flex items-center gap-3 px-3 h-10 rounded-lg text-sm transition ${
                   active
-                    ? 'bg-accent text-white font-semibold'
+                    ? 'bg-sidebar-active text-accent font-semibold'
                     : 'text-sidebar-muted hover:text-sidebar-fg hover:bg-white/5'
                 }`}>
                 {item.icon}

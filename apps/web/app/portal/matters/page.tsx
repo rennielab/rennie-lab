@@ -6,12 +6,12 @@ import { PortalShell } from '@/components/PortalShell';
 import { formatHours, formatMoney } from '@/lib/mock';
 import { MATTER_STATUS } from '@/lib/portalData';
 
-type Stage = 'Intake' | 'In Progress' | 'Judgement' | 'Closed';
+type Stage = 'Intake' | 'Active' | 'On Hold' | 'Closed';
 
-const myMatters: { id: string; name: string; stages: Stage[]; hours: number; billed: number; paid: number; outstanding: number; createdAt: string; lastActivity: string }[] = [
-  { id: 'm1', name: 'IP — Patent Filing', stages: ['Intake', 'In Progress'], hours: 20 * 3600 + 43 * 60, billed: 5572, paid: 3000, outstanding: 2572, createdAt: '15 Oct 2025', lastActivity: '21 Feb 2026, 2:34 PM' },
-  { id: 'm2', name: 'Corporate — Contract Review', stages: ['Intake', 'In Progress'], hours: 12 * 3600 + 15 * 60, billed: 3060, paid: 1500, outstanding: 1560, createdAt: '15 Oct 2025', lastActivity: '21 Feb 2026, 2:34 PM' },
-  { id: 'm3', name: 'Reyes v. Horizon — Wrongful Termination', stages: ['Judgement', 'Closed'], hours: 20 * 3600 + 43 * 60, billed: 5572, paid: 5572, outstanding: 0, createdAt: '15 Oct 2025', lastActivity: '21 Feb 2026, 2:34 PM' },
+const myMatters: { id: string; name: string; stage: Stage; hours: number; billed: number; paid: number; outstanding: number; createdAt: string; lastActivity: string }[] = [
+  { id: 'm1', name: 'IP — Patent Filing', stage: 'Active', hours: 20 * 3600 + 43 * 60, billed: 5572, paid: 3000, outstanding: 2572, createdAt: '15 Oct 2025', lastActivity: '21 Feb 2026, 2:34 PM' },
+  { id: 'm2', name: 'Corporate — Contract Review', stage: 'Active', hours: 12 * 3600 + 15 * 60, billed: 3060, paid: 1500, outstanding: 1560, createdAt: '15 Oct 2025', lastActivity: '21 Feb 2026, 2:34 PM' },
+  { id: 'm3', name: 'Reyes v. Horizon — Wrongful Termination', stage: 'Closed', hours: 20 * 3600 + 43 * 60, billed: 5572, paid: 5572, outstanding: 0, createdAt: '15 Oct 2025', lastActivity: '21 Feb 2026, 2:34 PM' },
 ];
 
 const TEAM_AVATARS = [
@@ -21,8 +21,8 @@ const TEAM_AVATARS = [
 ];
 
 export default function PortalMatters() {
-  const active = myMatters.filter((m) => !m.stages.includes('Closed'));
-  const closed = myMatters.filter((m) => m.stages.includes('Closed'));
+  const active = myMatters.filter((m) => m.stage !== 'Closed');
+  const closed = myMatters.filter((m) => m.stage === 'Closed');
 
   return (
     <PortalShell>
@@ -75,7 +75,7 @@ function MatterCard({ m, dimmed = false }: { m: typeof myMatters[number]; dimmed
       </div>
 
       <div className="flex items-center gap-2 mb-3">
-        {m.stages.map((s, i) => <StagePill key={i} stage={s} />)}
+        <StagePill stage={m.stage} />
       </div>
 
       {status && (
@@ -131,8 +131,8 @@ function Row({ label, value, valueClass = '' }: { label: string; value: string; 
 function StagePill({ stage }: { stage: Stage }) {
   const map: Record<Stage, string> = {
     Intake: 'border-blue-500 text-blue-700 bg-blue-50',
-    'In Progress': 'border-accent text-accent-dark bg-accent-soft',
-    Judgement: 'border-purple-500 text-purple-700 bg-purple-50',
+    Active: 'border-accent text-accent-dark bg-accent-soft',
+    'On Hold': 'border-orange-400 text-orange-700 bg-orange-50',
     Closed: 'border-gray-400 text-gray-700 bg-gray-100',
   };
   return (

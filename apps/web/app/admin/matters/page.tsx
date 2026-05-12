@@ -9,8 +9,12 @@ import {
   entryValue,
   formatHoursH,
   formatMoneyCompact,
+  lawyerById,
+  MATTER_LEAD,
+  MATTER_STAGE,
   matters,
   seedEntries,
+  type MatterStage,
 } from '@/lib/mock';
 import { useBilledEntryIds, useEntryOverrides } from '@/lib/adminState';
 
@@ -21,11 +25,10 @@ const CLIENT_TINTS: Record<string, { bg: string; fg: string }> = {
   V: { bg: '#DCFCE7', fg: '#166534' },
 };
 
-const STAGE_TINTS: Record<string, { bg: string; fg: string; border: string }> = {
+const STAGE_TINTS: Record<MatterStage, { bg: string; fg: string; border: string }> = {
   Intake: { bg: '#DBEAFE', fg: '#1D4ED8', border: '#93C5FD' },
-  'In Progress': { bg: '#DCFCE7', fg: '#166534', border: '#86EFAC' },
-  Discovery: { bg: '#FED7AA', fg: '#9A3412', border: '#FDBA74' },
-  Judgement: { bg: '#E9D5FF', fg: '#6D28D9', border: '#C4B5FD' },
+  Active: { bg: '#DCFCE7', fg: '#166534', border: '#86EFAC' },
+  'On Hold': { bg: '#FED7AA', fg: '#9A3412', border: '#FDBA74' },
   Closed: { bg: '#F3F4F6', fg: '#4B5563', border: '#D1D5DB' },
 };
 
@@ -39,7 +42,8 @@ const TEAM_AVATARS = [
 // "Status" column dropped — Stage carries all the information.
 function rowsFor(overrides: Record<string, { status?: string; nonBillable?: boolean }>, billed: Set<string>) {
   return matters.map((m, idx) => {
-    const stage = (['In Progress', 'Discovery', 'Intake', 'In Progress', 'Discovery', 'Closed'] as const)[idx % 6];
+    const stage: MatterStage = MATTER_STAGE[m.id] ?? 'Active';
+    const lead = lawyerById(MATTER_LEAD[m.id] ?? 'lwy_jord');
     const matterEntries = seedEntries
       .filter((e) => e.matterId === m.id)
       .map((e) => ({
@@ -61,7 +65,7 @@ function rowsFor(overrides: Record<string, { status?: string; nonBillable?: bool
     const daysSinceActivity = latest ? Math.floor((Date.now() - latest) / (24 * 60 * 60 * 1000)) : 999;
     const stalled = daysSinceActivity > 14 && stage !== 'Closed';
 
-    return { matter: m, stage, hoursSec, billed: billedAmount, paid, outstanding, unbilled, stalled, daysSinceActivity };
+    return { matter: m, stage, lead, hoursSec, billed: billedAmount, paid, outstanding, unbilled, stalled, daysSinceActivity };
   });
 }
 
@@ -134,9 +138,10 @@ export default function Matters() {
 
       {/* Table */}
       <div className="bg-card border border-border rounded-2xl overflow-hidden">
-        <div className="grid grid-cols-[2fr_1.4fr_80px_110px_120px_120px_100px_130px] gap-4 px-6 py-3 border-b border-border text-xs font-semibold text-fg-muted uppercase tracking-wide">
+        <div className="grid grid-cols-[1.8fr_1.3fr_130px_80px_110px_110px_110px_90px_120px] gap-3 px-6 py-3 border-b border-border text-xs font-semibold text-fg-muted uppercase tracking-wide">
           <div>Matter</div>
           <div>Client</div>
+          <div>Lead</div>
           <div className="text-right">Hours</div>
           <div className="text-right">Billed</div>
           <div className="text-right">Unbilled</div>
@@ -155,7 +160,7 @@ export default function Matters() {
             <Link
               key={row.matter.id}
               href={`/admin/matters/${row.matter.id}`}
-              className={`grid grid-cols-[2fr_1.4fr_80px_110px_120px_120px_100px_130px] gap-4 items-center px-6 py-3.5 border-b border-border last:border-0 hover:bg-bg/50 ${dim ? 'opacity-70' : ''}`}>
+              className={`grid grid-cols-[1.8fr_1.3fr_130px_80px_110px_110px_110px_90px_120px] gap-3 items-center px-6 py-3.5 border-b border-border last:border-0 hover:bg-bg/50 ${dim ? 'opacity-70' : ''}`}>
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-semibold truncate">{row.matter.name}</span>
@@ -172,6 +177,14 @@ export default function Matters() {
                   {clientInitial}
                 </span>
                 <span className="text-sm truncate">{client?.name}</span>
+              </div>
+              <div className="flex items-center gap-2 min-w-0">
+                {row.lead && (
+                  <span title={`${row.lead.name} · ${row.lead.role}`} className="w-7 h-7 rounded-full bg-accent-soft text-accent-dark flex items-center justify-center text-[10px] font-bold shrink-0">
+                    {row.lead.initials}
+                  </span>
+                )}
+                <span className="text-sm truncate">{row.lead?.name.split(' ')[0] ?? '—'}</span>
               </div>
               <div className="text-sm font-medium tabular-nums text-right">{formatHoursH(row.hoursSec)}</div>
               <div className="text-sm font-medium tabular-nums text-right">{formatMoneyCompact(row.billed)}</div>
@@ -219,8 +232,8 @@ export default function Matters() {
   );
 }
 
-function StagePill({ stage }: { stage: string }) {
-  const tint = STAGE_TINTS[stage] ?? { bg: '#F3F4F6', fg: '#4B5563', border: '#D1D5DB' };
+function StagePill({ stage }: { stage: MatterStage }) {
+  const tint = STAGE_TINTS[stage];
   return (
     <span
       style={{ background: tint.bg, color: tint.fg, borderColor: tint.border }}
