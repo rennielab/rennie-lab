@@ -6,14 +6,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { currentLawyer, firm } from '@/lib/mock';
 import { colors, font, radii, space } from '@/lib/tokens';
 
-const items = [
-  { icon: 'person-outline', label: 'Personal Details' },
-  { icon: 'business-outline', label: 'Firm Settings' },
-  { icon: 'notifications-outline', label: 'Notifications' },
-  { icon: 'lock-closed-outline', label: 'Privacy & Security' },
-  { icon: 'card-outline', label: 'Subscription' },
-  { icon: 'help-circle-outline', label: 'Help & Support' },
-] as const;
+type IconName = keyof typeof Ionicons.glyphMap;
+
+const MENU: { icon: IconName; label: string; danger?: boolean }[] = [
+  { icon: 'person-circle-outline', label: 'Profile' },
+  { icon: 'notifications-outline', label: 'Notification Settings' },
+  { icon: 'information-circle-outline', label: 'About / Legal' },
+  { icon: 'book-outline', label: 'Term & conditions' },
+  { icon: 'log-out-outline', label: 'Log out', danger: true },
+];
 
 export default function Profile() {
   const router = useRouter();
@@ -21,90 +22,51 @@ export default function Profile() {
 
   return (
     <ScrollView
-      style={styles.root}
-      contentContainerStyle={{ paddingTop: insets.top + space.lg, paddingBottom: insets.bottom + space.xxxl }}>
-      <Text style={styles.h1}>Profile</Text>
-
-      <View style={styles.card}>
+      style={[styles.root]}
+      contentContainerStyle={{ paddingTop: insets.top + space.md, paddingBottom: 160, paddingHorizontal: space.xxl }}>
+      <View style={styles.identity}>
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>{currentLawyer.initials}</Text>
         </View>
-        <Text style={styles.name}>{currentLawyer.name}</Text>
-        <Text style={styles.role}>
-          {currentLawyer.role} · {firm.name}
-        </Text>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.name}>{currentLawyer.name}</Text>
+          <Text style={styles.role}>{currentLawyer.role}</Text>
+        </View>
       </View>
 
-      <View style={styles.list}>
-        {items.map((it) => (
-          <Pressable key={it.label} style={({ pressed }) => [styles.item, pressed && { opacity: 0.7 }]}>
-            <View style={styles.itemIcon}>
-              <Ionicons name={it.icon as any} size={18} color={colors.accent} />
-            </View>
-            <Text style={styles.itemLabel}>{it.label}</Text>
-            <Ionicons name="chevron-forward" size={18} color={colors.textTertiary} />
+      <View style={styles.card}>
+        {MENU.map((item, i) => (
+          <Pressable
+            key={item.label}
+            onPress={() => {
+              if (item.danger) router.replace('/login');
+            }}
+            style={[styles.menuItem, i < MENU.length - 1 && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border }]}>
+            <Ionicons
+              name={item.icon}
+              size={20}
+              color={item.danger ? colors.danger : colors.textPrimary}
+            />
+            <Text style={[styles.menuLabel, item.danger && { color: colors.danger }]}>{item.label}</Text>
           </Pressable>
         ))}
       </View>
 
-      <Pressable
-        style={({ pressed }) => [styles.logout, pressed && { opacity: 0.85 }]}
-        onPress={() => router.replace('/login')}>
-        <Text style={styles.logoutLabel}>Log out</Text>
-      </Pressable>
+      <Text style={styles.version}>Clockd v1.0.0</Text>
+      <Text style={[styles.version, { marginTop: 2, fontSize: 11 }]}>{firm.name}</Text>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.bg, paddingHorizontal: space.xxl },
-  h1: { color: colors.textPrimary, fontSize: font.size.xxl, fontWeight: '700', marginBottom: space.lg },
-  card: {
-    backgroundColor: colors.bgElevated,
-    borderRadius: radii.xl,
-    padding: space.xxl,
-    alignItems: 'center',
-    gap: space.sm,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  avatar: {
-    width: 76,
-    height: 76,
-    borderRadius: radii.pill,
-    backgroundColor: colors.accentSoft,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: space.sm,
-  },
-  avatarText: { color: colors.accent, fontSize: 24, fontWeight: '700' },
-  name: { color: colors.textPrimary, fontSize: font.size.lg, fontWeight: '700' },
-  role: { color: colors.textSecondary, fontSize: font.size.sm },
-  list: { marginTop: space.lg, backgroundColor: colors.bgElevated, borderRadius: radii.lg, borderWidth: 1, borderColor: colors.border, overflow: 'hidden' },
-  item: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: space.md,
-    paddingHorizontal: space.lg,
-    paddingVertical: space.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  itemIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: radii.pill,
-    backgroundColor: colors.accentSoft,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  itemLabel: { flex: 1, color: colors.textPrimary, fontSize: font.size.base, fontWeight: '500' },
-  logout: {
-    marginTop: space.xxl,
-    backgroundColor: colors.dangerSoft,
-    borderRadius: radii.lg,
-    paddingVertical: space.lg,
-    alignItems: 'center',
-  },
-  logoutLabel: { color: colors.danger, fontWeight: '600', fontSize: font.size.base },
+  root: { flex: 1, backgroundColor: colors.bg },
+  identity: { flexDirection: 'row', alignItems: 'center', gap: space.md, marginBottom: space.lg },
+  avatar: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.accentSoft, alignItems: 'center', justifyContent: 'center' },
+  avatarText: { color: colors.accent, fontWeight: '700', fontSize: font.size.sm },
+  name: { color: colors.textPrimary, fontSize: font.size.xl, fontWeight: '700' },
+  role: { color: colors.textSecondary, fontSize: font.size.sm, marginTop: 2 },
+  card: { backgroundColor: colors.bgElevated, borderRadius: radii.lg, borderWidth: 1, borderColor: colors.border, overflow: 'hidden' },
+  menuItem: { flexDirection: 'row', alignItems: 'center', gap: space.md, paddingHorizontal: space.lg, paddingVertical: space.lg },
+  menuLabel: { color: colors.textPrimary, fontSize: font.size.base, fontWeight: '500' },
+  version: { color: colors.textTertiary, fontSize: font.size.sm, textAlign: 'center', marginTop: space.xl },
 });
