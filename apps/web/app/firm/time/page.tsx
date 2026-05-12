@@ -1,93 +1,218 @@
 'use client';
 
-import { FirmShell } from '@/components/FirmShell';
+import { useEffect, useMemo, useState } from 'react';
 
-const ENTRIES = [
-  { date: '18 Mar 2026', items: [
-    { type: 'Calls', tagColor: 'green', title: 'Corporate — M&A Advisory', sub: '1:12 PM · 00:42:15 · Whitmore Industries', dur: '0h 42m', billable: true },
-    { type: 'Calls', tagColor: 'green', title: 'Real Estate — Lease Negotiation', sub: '10:20 AM · 00:25:10 · +1 (555) 091-4823', dur: '0h 25m', billable: true },
-    { type: 'Meetings', tagColor: 'blue', title: 'Due diligence review — Whitmore acquisition', sub: '11:00 AM · 00:45:00 · Whitmore Industries', dur: '0h 45m', billable: true },
-    { type: 'Calls', tagColor: 'green', title: 'IP — Patent Filing', sub: '11:45 AM · 00:08:30 · Chen Biotech Ltd', dur: '0h 8m', billable: true },
-  ] },
-  { date: '17 Mar 2026', items: [
-    { type: 'Meetings', tagColor: 'blue', title: 'Patent claims review with Chen Biotech IP team', sub: '2:00 PM · 00:30:00 · Chen Biotech · Marcus', dur: '0h 30m', billable: true },
-    { type: 'Calls', tagColor: 'green', title: 'Litigation — Contract Dispute', sub: '2:34 PM · 00:18:42 · Anderson & Cole LLP', dur: '0h 18m', billable: true },
-    { type: 'Manual', tagColor: 'gray', title: 'Drafting brief for Anderson & Cole motion', sub: '4:00 PM · 01:30:00', dur: '1h 30m', billable: true },
-  ] },
-];
+import { AddEntrySlideOut } from '@/components/AddEntrySlideOut';
+import { FirmShell } from '@/components/FirmShell';
+import {
+  clientById,
+  currentFirmUser,
+  entryValue,
+  formatHoursH,
+  formatMoneyCompact,
+  matterById,
+  seedEntries,
+} from '@/lib/mock';
+import { useEntryOverrides } from '@/lib/adminState';
+import { deleteDraft, submitDraft, useFirmDrafts } from '@/lib/firmState';
+
+type Tab = 'all' | 'drafts' | 'pending' | 'approved' | 'rejected';
 
 export default function FirmTime() {
+  const overrides = useEntryOverrides();
+  const drafts = useFirmDrafts();
+  const [tab, setTab] = useState<Tab>('all');
+  const [addOpen, setAddOpen] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const sp = new URLSearchParams(window.location.search);
+    const t = sp.get('tab');
+    if (t === 'drafts' || t === 'pending' || t === 'approved' || t === 'rejected' || t === 'all') setTab(t);
+  }, []);
+
+  // Sophia-only entries enriched with admin overrides
+  const myEntries = useMemo(() => seedEntries
+    .filter((e) => e.lawyerId === currentFirmUser.id)
+    .map((e) => ({
+      ...e,
+      status: (overrides[e.id]?.status as typeof e.status) ?? e.status,
+      nonBillable: overrides[e.id]?.nonBillable ?? e.nonBillable,
+      rejectReason: overrides[e.id]?.rejectReason,
+    })), [overrides]);
+
+  const counts = {
+    all: myEntries.length + drafts.length,
+    drafts: drafts.length,
+    pending: myEntries.filter((e) => e.status === 'pending').length,
+    approved: myEntries.filter((e) => e.status === 'approved').length,
+    rejected: myEntries.filter((e) => (e.status as string) === 'rejected').length,
+  };
+
+  // Group submitted entries by date
+  const submittedFiltered = myEntries.filter((e) => {
+    if (tab === 'all') return true;
+    if (tab === 'pending') return e.status === 'pending';
+    if (tab === 'approved') return e.status === 'approved';
+    if (tab === 'rejected') return (e.status as string) === 'rejected';
+    return false;
+  });
+
+  const showDrafts = tab === 'all' || tab === 'drafts';
+  const showSubmitted = tab !== 'drafts';
+
+  const groups = useMemo(() => {
+    const buckets = new Map<string, typeof submittedFiltered>();
+    for (const e of submittedFiltered) {
+      const d = new Date(e.createdAt);
+      const label = d.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+      if (!buckets.has(label)) buckets.set(label, []);
+      buckets.get(label)!.push(e);
+    }
+    return Array.from(buckets.entries()).map(([label, list]) => ({
+      label,
+      list: list.sort((a, b) => b.createdAt - a.createdAt),
+      total: list.reduce((a, e) => a + e.durationSec, 0),
+      value: list.reduce((a, e) => a + entryValue(e), 0),
+    }));
+  }, [submittedFiltered]);
+
   return (
-    <FirmShell title="Time Entries" subtitle="All your captured and logged time across matters." action={
-      <button className="h-10 px-4 rounded-full bg-accent hover:bg-accent-dim text-white font-semibold text-sm inline-flex items-center gap-1.5">
-        <span className="text-base leading-none">+</span> Add Entry
-      </button>
-    }>
-      <div className="flex items-center gap-2 mb-4">
-        <div className="flex items-center gap-2 flex-1 max-w-md bg-card border border-border rounded-lg px-3 h-10">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-            <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.8" />
-            <path d="M20 20l-3-3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-          </svg>
-          <input placeholder="Search..." className="flex-1 bg-transparent outline-none text-sm placeholder:text-fg-subtle" />
-        </div>
-        <button className="px-3 h-10 rounded-lg border border-border bg-card text-sm font-medium hover:bg-white">Filter</button>
+    <FirmShell
+      title="Your time"
+      subtitle="Everything you've logged, submitted, and what's come back for revision."
+      action={
+        <button
+          onClick={() => setAddOpen(true)}
+          className="bg-accent hover:bg-accent-dim text-white font-semibold text-sm px-4 h-10 rounded-lg inline-flex items-center gap-1.5">
+          <span className="text-base leading-none">+</span> Add Entry
+        </button>
+      }>
+      {/* Tabs */}
+      <div className="flex items-center gap-1 border-b border-border mb-4">
+        {(['all', 'drafts', 'pending', 'approved', 'rejected'] as const).map((k) => (
+          <button
+            key={k}
+            onClick={() => setTab(k)}
+            className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 -mb-px ${
+              tab === k ? 'border-accent text-accent' : 'border-transparent text-fg-muted hover:text-fg'
+            }`}>
+            {k === 'all' ? 'All' : k[0].toUpperCase() + k.slice(1)}
+            <span className={`px-1.5 py-0.5 text-xs rounded-full ${tab === k ? 'bg-accent text-white' : 'bg-bg text-fg-muted'}`}>
+              {counts[k]}
+            </span>
+          </button>
+        ))}
       </div>
 
-      {ENTRIES.map((g) => (
-        <div key={g.date} className="mb-4">
-          <div className="text-sm font-medium text-fg-muted mb-2 pl-1">{g.date}</div>
-          <div className="bg-card border border-border rounded-2xl divide-y divide-border overflow-hidden">
-            {g.items.map((e, i) => (
-              <div key={i} className="flex items-center gap-3 px-4 py-3">
-                <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
-                  e.tagColor === 'green' ? 'bg-accent-soft text-accent' :
-                  e.tagColor === 'blue' ? 'bg-[#DBEAFE] text-[#1D4ED8]' : 'bg-bg text-fg-muted'
-                }`}>
-                  {e.tagColor === 'green' ? <IconPhone /> : e.tagColor === 'blue' ? <IconCal /> : <IconEdit />}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-fg truncate">{e.title}</span>
-                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                      e.tagColor === 'green' ? 'bg-accent-soft text-accent-dark' :
-                      e.tagColor === 'blue' ? 'bg-[#DBEAFE] text-[#1D4ED8]' : 'bg-bg text-fg-muted'
-                    }`}>{e.type}</span>
-                  </div>
-                  <div className="text-xs text-fg-muted mt-0.5">{e.sub}</div>
-                </div>
-                {e.billable && (
-                  <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-accent-soft text-accent-dark">Billable</span>
-                )}
-                <div className="text-sm font-semibold text-fg tabular-nums w-16 text-right">{e.dur}</div>
-              </div>
-            ))}
+      {/* Drafts section */}
+      {showDrafts && drafts.length > 0 && (
+        <div className="bg-card border border-accent/40 rounded-2xl overflow-hidden mb-4">
+          <div className="px-5 py-3 border-b border-border bg-accent-soft/30 flex items-center justify-between">
+            <div className="text-sm font-semibold">Drafts saved on your device</div>
+            <span className="text-xs text-fg-muted">Submit when you're ready — your partner will review.</span>
           </div>
+          {drafts.map((d) => {
+            const m = matterById(d.matterId);
+            const c = m ? clientById(m.clientId) : undefined;
+            const val = m && !d.nonBillable ? (m.rate * d.durationSec) / 3600 : 0;
+            return (
+              <div key={d.id} className="grid grid-cols-[80px_1fr_120px_140px_180px] gap-3 items-center px-5 py-3.5 border-b border-border last:border-0">
+                <div className={`px-2 py-0.5 rounded text-[10px] font-bold inline-flex items-center justify-center ${d.source === 'call' ? 'bg-accent-soft text-accent-dark' : 'bg-bg text-fg-muted'}`}>
+                  {d.source === 'call' ? 'CALL' : 'MANUAL'}
+                </div>
+                <div className="min-w-0">
+                  <div className="text-sm font-medium truncate">{d.description}</div>
+                  <div className="text-xs text-fg-muted">{c?.name} · {m?.shortName}</div>
+                </div>
+                <div className="text-sm font-semibold tabular-nums">{formatHoursH(d.durationSec)}</div>
+                <div className="text-sm tabular-nums">
+                  {d.nonBillable ? <span className="text-fg-subtle">Non-billable</span> : <span className="font-semibold">{formatMoneyCompact(val)}</span>}
+                </div>
+                <div className="flex justify-end gap-1.5">
+                  <button onClick={() => deleteDraft(d.id)} className="h-8 px-3 rounded-lg border border-border text-xs font-semibold text-fg-muted hover:text-danger hover:border-danger">
+                    Discard
+                  </button>
+                  <button onClick={() => submitDraft(d.id)} className="h-8 px-3 rounded-lg bg-accent hover:bg-accent-dim text-white text-xs font-semibold">
+                    Submit
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
-      ))}
+      )}
+
+      {/* Submitted entries */}
+      {showSubmitted && (
+        <>
+          {groups.length === 0 ? (
+            <div className="bg-card border border-border rounded-2xl p-12 text-center text-sm text-fg-muted">
+              {tab === 'rejected' ? 'Nothing has been sent back to you. Nice.' :
+                tab === 'pending' ? 'No entries awaiting approval.' :
+                tab === 'approved' ? 'No approved entries yet.' :
+                'No entries logged yet — hit Add Entry to start.'}
+            </div>
+          ) : (
+            groups.map((group) => (
+              <div key={group.label} className="mb-4">
+                <div className="flex items-center justify-between mb-2 px-1">
+                  <div className="text-sm font-medium text-fg-muted">{group.label}</div>
+                  <div className="text-xs text-fg-muted tabular-nums">
+                    {formatHoursH(group.total)} · <span className="font-semibold text-fg">{formatMoneyCompact(group.value)}</span>
+                  </div>
+                </div>
+                <div className="bg-card border border-border rounded-2xl divide-y divide-border overflow-hidden">
+                  {group.list.map((e) => {
+                    const m = matterById(e.matterId);
+                    const c = m ? clientById(m.clientId) : undefined;
+                    const val = entryValue(e);
+                    const rejected = (e.status as string) === 'rejected';
+                    return (
+                      <div key={e.id} className={`grid grid-cols-[60px_1fr_110px_110px_120px] gap-3 items-start px-5 py-3 ${rejected ? 'bg-danger-soft/20' : ''}`}>
+                        <div className={`px-2 py-0.5 rounded text-[10px] font-bold inline-flex items-center justify-center mt-0.5 ${e.source === 'call' ? 'bg-accent-soft text-accent-dark' : 'bg-bg text-fg-muted'}`}>
+                          {e.source === 'call' ? 'CALL' : 'MANUAL'}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-sm font-medium text-fg leading-snug">{e.description}</div>
+                          <div className="text-xs text-fg-muted mt-0.5">{c?.name} · {m?.shortName}</div>
+                          {rejected && e.rejectReason && (
+                            <div className="mt-2 px-3 py-2 bg-danger-soft border border-danger/30 rounded-lg">
+                              <div className="text-[10px] font-bold uppercase tracking-wide text-danger mb-1">Marcus's note</div>
+                              <div className="text-sm text-fg leading-snug">{e.rejectReason}</div>
+                              <button className="mt-2 text-xs font-semibold text-accent hover:underline">Edit and resubmit →</button>
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-sm font-semibold tabular-nums">{formatHoursH(e.durationSec)}</div>
+                        <div className="text-sm tabular-nums">
+                          {e.nonBillable ? <span className="text-fg-subtle">Non-billable</span> : <span className="font-semibold">{formatMoneyCompact(val)}</span>}
+                        </div>
+                        <div className="flex justify-end">
+                          <StatusBadge status={e.status as string} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))
+          )}
+        </>
+      )}
+
+      <AddEntrySlideOut open={addOpen} onClose={() => setAddOpen(false)} />
     </FirmShell>
   );
 }
 
-function IconPhone() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-      <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.37 1.9.72 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.35 1.85.59 2.81.72A2 2 0 0122 16.92z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-function IconCal() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-      <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  );
-}
-function IconEdit() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-      <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.12 2.12 0 113 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
+function StatusBadge({ status }: { status: string }) {
+  const map: Record<string, { cls: string; label: string }> = {
+    approved: { cls: 'bg-accent-soft text-accent-dark', label: 'Confirmed' },
+    pending: { cls: 'bg-warning-soft text-warning', label: 'Pending' },
+    draft: { cls: 'bg-bg text-fg-muted', label: 'Draft' },
+    rejected: { cls: 'bg-danger-soft text-danger', label: 'Needs fix' },
+  };
+  const s = map[status] ?? map.draft;
+  return <span className={`px-2.5 py-1 text-xs rounded-full font-semibold ${s.cls}`}>{s.label}</span>;
 }

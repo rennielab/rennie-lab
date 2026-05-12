@@ -3,297 +3,332 @@
 import Link from 'next/link';
 import { useState } from 'react';
 
+import { AddEntrySlideOut } from '@/components/AddEntrySlideOut';
 import { FirmShell } from '@/components/FirmShell';
+import {
+  clientById,
+  currentFirmUser,
+  entryValue,
+  formatHoursH,
+  formatMoneyCompact,
+  matterById,
+  matters,
+  seedEntries,
+} from '@/lib/mock';
+import { useEntryOverrides } from '@/lib/adminState';
+import {
+  submitAllDrafts,
+  toggleMatterPin,
+  useFirmDrafts,
+  usePinnedMatterIds,
+} from '@/lib/firmState';
 
-// ---------- Mock data tailored for Sophia / lawyer view ----------
+const dayMs = 24 * 60 * 60 * 1000;
+const WEEKLY_TARGET_HOURS = 35;
 
-const MEETINGS = [
-  { title: 'Deposition prep meeting with Anderson counsel', time: '9:00 AM · 01:00:00', who: 'Sarah', flag: 'accent' as const },
-  { title: 'Due diligence review — Whitmore acquisition', time: '11:00 AM · 00:45:00', who: 'James', flag: 'accent' as const },
-];
-
-const RECENT = [
-  { type: 'Calls', title: 'Corporate — M&A Advisory', date: '18 Mar, 2026 1:12 PM', dur: '00:42:15', who: 'Whitmore Industries', billable: true, time: '0h 42m', icon: 'phone' as const, tagColor: 'green' as const },
-  { type: 'Calls', title: 'Real Estate — Lease Negotiation', date: '18 Mar, 2026 10:20 AM', dur: '00:25:10', who: '+1 (555) 091-4823', billable: true, time: '0h 25m', icon: 'phone' as const, tagColor: 'green' as const },
-  { type: 'Meetings', title: 'Due diligence review — Whitmore acqu...', date: '18 Mar, 2026 11:00 AM', dur: '00:45:00', who: 'Whitmore Industries', billable: true, time: '0h 45m', icon: 'cal' as const, tagColor: 'blue' as const },
-  { type: 'Calls', title: 'IP — Patent Filing', date: '18 Mar, 2026 11:45 AM', dur: '00:08:30', who: 'Chen Biotech Ltd', billable: true, time: '0h 8m', icon: 'phone' as const, tagColor: 'green' as const },
-  { type: 'Meetings', title: 'Patent claims review with Chen Biotech IP team', date: '18 Mar, 2026 2:00 PM', dur: '00:30:00', who: 'Chen Biotech · Marcus', billable: true, time: '0h 30m', icon: 'cal' as const, tagColor: 'blue' as const },
-  { type: 'Calls', title: 'Litigation — Contract Dispute', date: '18 Mar, 2026 2:34 PM', dur: '00:18:42', who: 'Anderson & Cole LLP', billable: true, time: '0h 18m', icon: 'phone' as const, tagColor: 'green' as const },
-];
+function startOf(d: Date) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime(); }
+function startOfWeek() {
+  const d = new Date();
+  const day = d.getDay();
+  const diff = (day + 6) % 7; // Monday-start
+  return startOf(new Date(d.getFullYear(), d.getMonth(), d.getDate() - diff));
+}
 
 export default function FirmDashboard() {
-  const [period, setPeriod] = useState<'week' | 'month'>('month');
+  const overrides = useEntryOverrides();
+  const drafts = useFirmDrafts();
+  const pinned = usePinnedMatterIds();
+  const [addOpen, setAddOpen] = useState(false);
+  const [addDefault, setAddDefault] = useState<string | undefined>(undefined);
+
+  // Scope everything to Sophia
+  const myEntries = seedEntries
+    .filter((e) => e.lawyerId === currentFirmUser.id)
+    .map((e) => ({
+      ...e,
+      status: (overrides[e.id]?.status as typeof e.status) ?? e.status,
+      nonBillable: overrides[e.id]?.nonBillable ?? e.nonBillable,
+    }));
+
+  const sow = startOfWeek();
+  const today = startOf(new Date());
+  const thisMonth = new Date();
+  thisMonth.setDate(1);
+  const som = startOf(thisMonth);
+
+  const todaySec = myEntries.filter((e) => e.createdAt >= today).reduce((a, e) => a + e.durationSec, 0);
+  const weekSec = myEntries.filter((e) => e.createdAt >= sow).reduce((a, e) => a + e.durationSec, 0);
+  const monthSec = myEntries.filter((e) => e.createdAt >= som).reduce((a, e) => a + e.durationSec, 0);
+  const monthBillableSec = myEntries.filter((e) => e.createdAt >= som && !e.nonBillable).reduce((a, e) => a + e.durationSec, 0);
+  const monthBilled = myEntries.filter((e) => e.createdAt >= som).reduce((a, e) => a + entryValue(e), 0);
+  const pendingCount = myEntries.filter((e) => e.status === 'pending').length;
+  const rejectedCount = myEntries.filter((e) => (e.status as string) === 'rejected').length;
+
+  const weekTargetSec = WEEKLY_TARGET_HOURS * 3600;
+  const weekProgress = Math.min(1, weekSec / weekTargetSec);
+
+  // My pinned matters (scoped to ones Sophia has entries on too, in case data drifts)
+  const myMatterIds = Array.from(new Set(myEntries.map((e) => e.matterId)));
+  const pinnedList = matters.filter((m) => pinned.has(m.id) || myMatterIds.includes(m.id));
+
+  // Last 7 days for Sophia
+  const days: { label: string; sec: number }[] = [];
+  for (let i = 6; i >= 0; i--) {
+    const end = Date.now() - i * dayMs + dayMs;
+    const start = end - dayMs;
+    const sec = myEntries.filter((e) => e.createdAt >= start && e.createdAt < end).reduce((a, e) => a + e.durationSec, 0);
+    const d = new Date(start);
+    days.push({ label: `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`, sec });
+  }
+
+  function openAddFor(matterId?: string) {
+    setAddDefault(matterId);
+    setAddOpen(true);
+  }
 
   return (
     <FirmShell
-      title="Dashboard"
-      subtitle="Welcome to Clockd"
+      title={`Welcome back, ${currentFirmUser.name.split(' ')[0]}`}
+      subtitle="Here's your time at a glance — and what needs logging."
       action={
-        <div className="flex items-center gap-2">
-          <PeriodPicker value={period} onChange={setPeriod} />
-          <button className="h-10 px-4 rounded-full bg-accent hover:bg-accent-dim text-white font-semibold text-sm transition inline-flex items-center gap-1.5">
-            <span className="text-base leading-none">+</span> Add Entry
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-              <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-        </div>
+        <button
+          onClick={() => openAddFor()}
+          className="bg-accent hover:bg-accent-dim text-white font-semibold text-sm px-4 h-10 rounded-lg inline-flex items-center gap-1.5">
+          <span className="text-base leading-none">+</span> Add Entry
+        </button>
       }>
-      {/* 6 KPI cards */}
-      <div className="grid grid-cols-6 gap-3">
-        <Kpi icon={<IconClock />} value="1h 47m" label="Total Hours" delta="+12%" />
-        <Kpi icon={<IconClock />} value="1h" label="Hours Today" />
-        <Kpi icon={<IconTimer />} value="1h 47m" label="Billable Hours" delta="+12%" />
-        <Kpi icon={<IconPause />} value="0h 0m" label="Non-Billable" />
-        <Kpi icon={<IconHelp />} value="2" label="Unconfirmed" />
-        <Kpi icon={<IconBriefcase />} value="4" label="Active Matters" />
-      </div>
-
-      {/* Hours Over Time */}
-      <div className="mt-4 bg-card border border-border rounded-2xl p-6">
-        <div className="flex items-start justify-between mb-6">
-          <div className="text-sm font-semibold text-fg">Hours Over Time</div>
-          <button className="text-sm text-fg-muted inline-flex items-center gap-1.5 border border-border rounded-lg px-3 h-9 hover:bg-bg">
-            Weekly
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-              <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
+      {/* Hero: this week + utilization */}
+      <div className="grid grid-cols-3 gap-3 mb-4">
+        <div className="bg-card border border-border rounded-2xl p-5">
+          <div className="text-xs text-fg-muted">Today</div>
+          <div className="text-3xl font-semibold tabular-nums tracking-tight mt-1">{formatHoursH(todaySec)}</div>
+          <div className="text-xs text-fg-muted mt-2">{myEntries.filter((e) => e.createdAt >= today).length} entries logged</div>
         </div>
-        <BarChart values={[3.5, 0.8, 1.4, 3.7, 0.6, 1.5, 0]} labels={['02-02', '02-03', '02-04', '02-05', '02-06', '02-07', '02-08']} />
-      </div>
-
-      {/* Meetings + Captured */}
-      <div className="grid grid-cols-3 gap-3 mt-4">
-        <div className="col-span-2 bg-card border border-border rounded-2xl p-6 min-h-[260px]">
-          <div className="flex items-center justify-between mb-4">
-            <div className="text-sm font-semibold text-fg">Meetings</div>
-            <Link href="#" className="text-xs font-medium text-accent inline-flex items-center gap-1">
-              View All
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </Link>
+        <div className="bg-card border border-accent/40 rounded-2xl p-5">
+          <div className="flex items-center justify-between">
+            <div className="text-xs text-fg-muted">This week</div>
+            <div className="text-xs text-fg-muted">target {WEEKLY_TARGET_HOURS}h</div>
           </div>
-          <div className="space-y-3">
-            {MEETINGS.map((m, i) => (
-              <div key={i} className="flex items-start gap-3 pl-3 relative bg-bg/50 rounded-lg py-3 pr-4">
-                <span className="absolute left-0 top-3 bottom-3 w-1 rounded-full bg-accent" />
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-fg truncate">{m.title}</div>
-                  <div className="text-xs text-fg-muted mt-0.5">{m.time} · {m.who}</div>
-                </div>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-fg-subtle mt-1">
-                  <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </div>
-            ))}
+          <div className="text-3xl font-semibold tabular-nums tracking-tight mt-1">{formatHoursH(weekSec)}</div>
+          <div className="mt-3 h-1.5 bg-bg rounded-full overflow-hidden">
+            <div className="h-full bg-accent rounded-full transition-all" style={{ width: `${weekProgress * 100}%` }} />
+          </div>
+          <div className="text-xs text-fg-muted mt-1.5 flex items-center justify-between">
+            <span>{Math.round(weekProgress * 100)}% of weekly target</span>
+            <span>{formatHoursH(Math.max(0, weekTargetSec - weekSec))} to go</span>
           </div>
         </div>
-
-        <div className="bg-card border border-border rounded-2xl p-6">
-          <div className="text-sm font-semibold text-fg mb-3">Manual vs Captured</div>
-          <ManualCapturedDonut manual={21.5} captured={9} />
-          <div className="flex items-center justify-center gap-4 mt-3 text-xs">
-            <span className="inline-flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#1D4ED8]" />
-              Manual <span className="font-semibold text-fg ml-1">21.5h</span>
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-accent" />
-              Auto-Captured <span className="font-semibold text-fg ml-1">9.0h</span>
-            </span>
+        <div className="bg-card border border-border rounded-2xl p-5">
+          <div className="text-xs text-fg-muted">This month</div>
+          <div className="text-3xl font-semibold tabular-nums tracking-tight mt-1">{formatHoursH(monthSec)}</div>
+          <div className="text-xs text-fg-muted mt-2">
+            <span className="text-accent-dark font-semibold">{formatMoneyCompact(monthBilled)}</span> billable
+            <span className="ml-2">· {formatHoursH(monthBillableSec)}</span>
           </div>
         </div>
       </div>
 
-      {/* Recent Entries */}
-      <div className="mt-4 bg-card border border-border rounded-2xl p-6">
+      {/* Drafts / rejections strip */}
+      {(drafts.length > 0 || rejectedCount > 0 || pendingCount > 0) && (
+        <div className="grid grid-cols-3 gap-3 mb-4">
+          <ActionCard
+            tone={drafts.length > 0 ? 'accent' : 'ok'}
+            count={drafts.length}
+            label="Drafts saved"
+            sub={drafts.length === 0 ? 'Nothing waiting to submit' : 'Submit so partners can approve'}
+            cta={drafts.length > 0 ? 'Submit all →' : undefined}
+            onCta={() => submitAllDrafts()}
+            href="/firm/time?tab=drafts"
+          />
+          <ActionCard
+            tone={pendingCount > 0 ? 'warn' : 'ok'}
+            count={pendingCount}
+            label="Awaiting approval"
+            sub={pendingCount === 0 ? 'No entries pending review' : `Waiting on Marcus to confirm`}
+            href="/firm/time?tab=pending"
+          />
+          <ActionCard
+            tone={rejectedCount > 0 ? 'danger' : 'ok'}
+            count={rejectedCount}
+            label="Sent back to you"
+            sub={rejectedCount === 0 ? 'Nothing to fix' : 'Review comment, edit, resubmit'}
+            href="/firm/time?tab=rejected"
+            cta={rejectedCount > 0 ? 'Fix →' : undefined}
+          />
+        </div>
+      )}
+
+      {/* My matters quick-log */}
+      <div className="bg-card border border-border rounded-2xl p-6 mb-4">
         <div className="flex items-center justify-between mb-4">
-          <div className="text-sm font-semibold text-fg">Recent Entries</div>
-          <Link href="/firm/time" className="text-xs font-medium text-accent inline-flex items-center gap-1">
-            View All
+          <div>
+            <div className="text-sm font-semibold">Your matters</div>
+            <div className="text-xs text-fg-muted mt-0.5">One click to log time against any matter you touch.</div>
+          </div>
+          <Link href="/firm/matters" className="text-xs font-medium text-accent inline-flex items-center gap-1">
+            View all
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
               <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </Link>
         </div>
-        <div className="divide-y divide-border">
-          {RECENT.map((e, i) => (
-            <div key={i} className="flex items-center gap-3 py-3">
-              <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
-                e.icon === 'phone' ? 'bg-accent-soft text-accent' : 'bg-[#DBEAFE] text-[#1D4ED8]'
-              }`}>
-                {e.icon === 'phone' ? <IconPhone /> : <IconCalendar />}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <div className="text-sm font-semibold text-fg truncate">{e.title}</div>
-                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                    e.tagColor === 'green' ? 'bg-accent-soft text-accent-dark' : 'bg-[#DBEAFE] text-[#1D4ED8]'
-                  }`}>{e.type}</span>
+        <div className="grid grid-cols-2 gap-3">
+          {pinnedList.slice(0, 4).map((m) => {
+            const c = clientById(m.clientId);
+            const mySec = myEntries.filter((e) => e.matterId === m.id).reduce((a, e) => a + e.durationSec, 0);
+            return (
+              <div key={m.id} className="border border-border rounded-xl p-4 hover:border-accent transition flex items-center gap-3">
+                <button
+                  onClick={() => toggleMatterPin(m.id)}
+                  className="text-fg-subtle hover:text-warning"
+                  title={pinned.has(m.id) ? 'Unpin' : 'Pin'}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill={pinned.has(m.id) ? '#F59E0B' : 'none'}>
+                    <path d="M12 17v5M5 9.5l7 1.5 7-1.5L17 7l-2-4-3 1-3-1-2 4-2 2.5z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+                <div className="flex-1 min-w-0">
+                  <Link href={`/firm/matters/${m.id}`} className="text-sm font-semibold truncate block hover:text-accent">{m.shortName}</Link>
+                  <div className="text-xs text-fg-muted truncate">{c?.name} · {formatHoursH(mySec)} logged · ${m.rate}/hr</div>
                 </div>
-                <div className="text-xs text-fg-muted mt-0.5">{e.date} · {e.dur} · {e.who}</div>
+                <button
+                  onClick={() => openAddFor(m.id)}
+                  className="h-8 px-3 rounded-lg bg-accent hover:bg-accent-dim text-white text-xs font-semibold">
+                  Log time
+                </button>
               </div>
-              {e.billable && (
-                <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-accent-soft text-accent-dark">Billable</span>
-              )}
-              <div className="text-sm font-semibold text-fg tabular-nums w-16 text-right">{e.time}</div>
+            );
+          })}
+          {pinnedList.length === 0 && (
+            <div className="col-span-2 text-sm text-fg-muted text-center py-6">
+              No matters yet — Marcus needs to assign you.
             </div>
-          ))}
+          )}
         </div>
       </div>
+
+      {/* Hours chart + recent entries */}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="col-span-2 bg-card border border-border rounded-2xl p-6">
+          <div className="flex items-start justify-between mb-5">
+            <div>
+              <div className="text-sm font-semibold">Your hours this week</div>
+              <div className="text-xs text-fg-muted mt-0.5">Total <span className="text-fg font-semibold">{formatHoursH(days.reduce((a, x) => a + x.sec, 0))}</span></div>
+            </div>
+          </div>
+          <AutoScaleBarChart series={days} />
+        </div>
+        <div className="bg-card border border-border rounded-2xl p-6">
+          <div className="text-sm font-semibold mb-1">Recent entries</div>
+          <div className="text-xs text-fg-muted mb-4">Your latest logged time</div>
+          <div className="space-y-3">
+            {[...myEntries].sort((a, b) => b.createdAt - a.createdAt).slice(0, 5).map((e) => {
+              const m = matterById(e.matterId);
+              return (
+                <div key={e.id} className="flex items-center gap-2.5">
+                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold ${
+                    e.source === 'call' ? 'bg-accent-soft text-accent-dark' : 'bg-bg text-fg-muted'
+                  }`}>
+                    {e.source === 'call' ? <Phone /> : <ClockSm />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-fg truncate">{m?.shortName}</div>
+                    <div className="text-xs text-fg-muted">{formatHoursH(e.durationSec)} · <StatusInline status={e.status} /></div>
+                  </div>
+                </div>
+              );
+            })}
+            {myEntries.length === 0 && (
+              <div className="text-sm text-fg-muted text-center py-4">No entries yet. Hit + Add Entry.</div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <AddEntrySlideOut open={addOpen} onClose={() => setAddOpen(false)} defaultMatterId={addDefault} />
     </FirmShell>
   );
 }
 
-// ---------- Components ----------
-
-function PeriodPicker({ value, onChange }: { value: 'week' | 'month'; onChange: (v: 'week' | 'month') => void }) {
+function ActionCard({ tone, count, label, sub, href, cta, onCta }: {
+  tone: 'ok' | 'warn' | 'danger' | 'accent';
+  count: number;
+  label: string;
+  sub: string;
+  href: string;
+  cta?: string;
+  onCta?: () => void;
+}) {
+  const map = {
+    ok: { ring: 'border-border', tile: 'bg-bg text-fg-muted' },
+    warn: { ring: 'border-warning/40', tile: 'bg-warning-soft text-warning' },
+    danger: { ring: 'border-danger/40', tile: 'bg-danger-soft text-danger' },
+    accent: { ring: 'border-accent/40', tile: 'bg-accent-soft text-accent-dark' },
+  }[tone];
   return (
-    <button
-      onClick={() => onChange(value === 'month' ? 'week' : 'month')}
-      className="h-10 px-3.5 rounded-full border border-border bg-card text-sm text-fg inline-flex items-center gap-2 hover:bg-white">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-        <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.8" />
-        <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      </svg>
-      <span className="font-medium">{value === 'month' ? 'This month' : 'This week'}</span>
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-        <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    </button>
-  );
-}
-
-function Kpi({ icon, value, label, delta }: { icon: React.ReactNode; value: string; label: string; delta?: string }) {
-  return (
-    <div className="bg-card border border-border rounded-2xl p-4">
-      <div className="w-9 h-9 rounded-lg bg-bg flex items-center justify-center text-fg-muted">{icon}</div>
-      <div className="flex items-baseline gap-1.5 mt-3">
-        <div className="text-2xl font-semibold text-fg tabular-nums tracking-tight">{value}</div>
-        {delta && (
-          <span className="text-xs font-medium text-accent inline-flex items-center">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" className="mr-0.5">
-              <path d="M7 17L17 7M17 7H8M17 7v9" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            {delta}
-          </span>
+    <div className={`bg-card border ${map.ring} rounded-2xl p-4`}>
+      <div className="flex items-center justify-between mb-1">
+        <div className="text-2xl font-semibold tabular-nums tracking-tight">{count}</div>
+        {cta && (
+          onCta ? (
+            <button onClick={onCta} className="text-xs font-semibold text-accent hover:underline">{cta}</button>
+          ) : (
+            <Link href={href} className="text-xs font-semibold text-accent hover:underline">{cta}</Link>
+          )
         )}
       </div>
-      <div className="text-xs text-fg-muted mt-1">{label}</div>
+      <div className="text-sm font-medium text-fg">{label}</div>
+      <div className="text-xs text-fg-muted mt-0.5">{sub}</div>
     </div>
   );
 }
 
-function BarChart({ values, labels }: { values: number[]; labels: string[] }) {
-  const max = Math.max(...values, 4);
+function AutoScaleBarChart({ series }: { series: { label: string; sec: number }[] }) {
+  const hours = series.map((s) => s.sec / 3600);
+  const peak = Math.max(...hours, 0.5);
+  const niceSteps = [1, 2, 3, 4, 5, 8, 10];
+  const max = niceSteps.find((s) => s >= peak * 1.1) ?? Math.ceil(peak * 1.2);
   return (
     <div>
-      <div className="relative h-[200px] pl-9">
+      <div className="relative h-[180px] pl-10">
         {[0, 1, 2, 3, 4].map((i) => (
-          <div key={i} className="absolute left-9 right-0 border-t border-dashed border-border" style={{ top: `${(i / 4) * 100}%` }} />
+          <div key={i} className="absolute left-10 right-0 border-t border-dashed border-border" style={{ top: `${(i / 4) * 100}%` }} />
         ))}
-        {[16, 12, 8, 4, 0].map((t, i) => (
-          <div key={i} className="absolute left-0 w-8 text-right text-xs text-fg-subtle tabular-nums" style={{ top: `calc(${(i / 4) * 100}% - 7px)` }}>{t}h</div>
+        {[max, (max * 3) / 4, max / 2, max / 4, 0].map((t, i) => (
+          <div key={i} className="absolute left-0 w-9 text-right text-xs text-fg-subtle tabular-nums" style={{ top: `calc(${(i / 4) * 100}% - 7px)` }}>
+            {Number.isInteger(t) ? `${t}h` : `${t.toFixed(1)}h`}
+          </div>
         ))}
-        <div className="absolute left-9 right-0 top-0 bottom-0 flex items-end gap-2 px-2">
-          {values.map((v, i) => (
+        <div className="absolute left-10 right-0 top-0 bottom-0 flex items-end gap-2 px-2">
+          {hours.map((h, i) => (
             <div key={i} className="flex-1 flex justify-center">
-              <div className="w-7 bg-accent rounded-md" style={{ height: `${(v / max) * 100}%`, minHeight: v > 0 ? 4 : 0 }} />
+              <div className="w-7 bg-accent rounded-md" style={{ height: `${(h / max) * 100}%`, minHeight: h > 0 ? 4 : 0 }} title={`${h.toFixed(2)}h`} />
             </div>
           ))}
         </div>
       </div>
-      <div className="flex pl-9 mt-2">
-        {labels.map((l, i) => (
-          <div key={i} className="flex-1 text-center text-xs text-fg-subtle tabular-nums">{l}</div>
+      <div className="flex pl-10 mt-2">
+        {series.map((s, i) => (
+          <div key={i} className="flex-1 text-center text-xs text-fg-subtle tabular-nums">{s.label}</div>
         ))}
       </div>
     </div>
   );
 }
 
-function ManualCapturedDonut({ manual, captured }: { manual: number; captured: number }) {
-  const total = manual + captured;
-  const capturedPct = captured / total;
-  const manualPct = manual / total;
-  const C = 2 * Math.PI * 50;
-  return (
-    <div className="flex items-center justify-center">
-      <svg viewBox="0 0 120 120" className="w-44 h-44">
-        <circle cx="60" cy="60" r="50" stroke="#1D4ED8" strokeWidth="14" fill="none" strokeDasharray={`${C * manualPct} ${C}`} transform="rotate(-90 60 60)" strokeLinecap="butt" />
-        <circle cx="60" cy="60" r="50" stroke="#22C55E" strokeWidth="14" fill="none" strokeDasharray={`${C * capturedPct} ${C}`} strokeDashoffset={`-${C * manualPct}`} transform="rotate(-90 60 60)" strokeLinecap="butt" />
-        <text x="60" y="58" textAnchor="middle" fontSize="22" fontWeight="700" fill="#0F1419">
-          {Math.round(capturedPct * 100)}%
-        </text>
-        <text x="60" y="76" textAnchor="middle" fontSize="10" fill="#6B7280">
-          Captured
-        </text>
-      </svg>
-    </div>
-  );
+function StatusInline({ status }: { status: string }) {
+  const map: Record<string, { cls: string; label: string }> = {
+    approved: { cls: 'text-accent-dark', label: 'Confirmed' },
+    pending: { cls: 'text-warning', label: 'Pending' },
+    draft: { cls: 'text-fg-muted', label: 'Draft' },
+    rejected: { cls: 'text-danger', label: 'Sent back' },
+  };
+  const s = map[status] ?? map.draft;
+  return <span className={`font-medium ${s.cls}`}>{s.label}</span>;
 }
 
-// ---------- Icons ----------
-
-function IconClock() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M12 7v5l3 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  );
+function Phone() {
+  return <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.37 1.9.72 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.35 1.85.59 2.81.72A2 2 0 0122 16.92z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>;
 }
-function IconTimer() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <path d="M10 2h4M12 14V8M20 14a8 8 0 11-16 0 8 8 0 0116 0z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  );
-}
-function IconPause() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <rect x="6" y="5" width="4" height="14" rx="1" stroke="currentColor" strokeWidth="1.8" />
-      <rect x="14" y="5" width="4" height="14" rx="1" stroke="currentColor" strokeWidth="1.8" />
-    </svg>
-  );
-}
-function IconHelp() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M9.5 9.5a2.5 2.5 0 015 0c0 1.5-2.5 2-2.5 4M12 17h.01" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  );
-}
-function IconBriefcase() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <rect x="3" y="7" width="18" height="13" rx="2" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2" stroke="currentColor" strokeWidth="1.8" />
-    </svg>
-  );
-}
-function IconPhone() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.37 1.9.72 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.35 1.85.59 2.81.72A2 2 0 0122 16.92z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-function IconCalendar() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  );
+function ClockSm() {
+  return <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" /><path d="M12 7v5l3 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>;
 }

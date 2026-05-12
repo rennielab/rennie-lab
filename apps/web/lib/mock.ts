@@ -109,6 +109,11 @@ export const seedEntries: TimeEntry[] = [
   { id: 'te_8', matterId: 'mat_north_1', lawyerId: 'lwy_jord', durationSec: 4200, description: 'Underwriter call — risk factor language for S-1.', createdAt: now - 5 * dayMs, status: 'approved', nonBillable: false, source: 'call', contactId: 'ct_dchen' },
   { id: 'te_9', matterId: 'mat_acme_1', lawyerId: 'lwy_soph', durationSec: 2280, description: 'Drafted opposition to motion to dismiss — Section II argument.', createdAt: now - 4 * 3600000, status: 'pending', nonBillable: false, source: 'manual' },
   { id: 'te_10', matterId: 'mat_north_1', lawyerId: 'lwy_soph', durationSec: 1620, description: 'Call with David Chen re: comfort letter coordination.', createdAt: now - 8 * 3600000, status: 'pending', nonBillable: false, source: 'call', contactId: 'ct_dchen' },
+  { id: 'te_11', matterId: 'mat_acme_1', lawyerId: 'lwy_soph', durationSec: 5400, description: 'Researched analogous case law for motion to dismiss — pulled 6 authorities.', createdAt: now - 1 * dayMs - 2 * 3600000, status: 'approved', nonBillable: false, source: 'manual' },
+  { id: 'te_12', matterId: 'mat_north_1', lawyerId: 'lwy_soph', durationSec: 3600, description: 'Drafted comfort letter language for Section 11 — circulated for review.', createdAt: now - 2 * dayMs, status: 'approved', nonBillable: false, source: 'manual' },
+  { id: 'te_13', matterId: 'mat_acme_1', lawyerId: 'lwy_soph', durationSec: 1800, description: 'Internal strategy call with Jordan on opposition brief.', createdAt: now - 2 * dayMs - 5 * 3600000, status: 'approved', nonBillable: true, source: 'call' },
+  { id: 'te_14', matterId: 'mat_vert_1', lawyerId: 'lwy_soph', durationSec: 2700, description: 'Reviewed patent prosecution history for Vertex \'847 — flagged file wrapper estoppel risk.', createdAt: now - 3 * dayMs, status: 'approved', nonBillable: false, source: 'manual' },
+  { id: 'te_15', matterId: 'mat_reyes_1', lawyerId: 'lwy_soph', durationSec: 900, description: 'Quick call with Miguel re: section 4 of trust funding memo.', createdAt: now - 4 * dayMs, status: 'approved', nonBillable: false, source: 'call', contactId: 'ct_mreyes' },
 ];
 
 // The "hero" entry submitted from mobile during the demo. Appears on admin after a delay.

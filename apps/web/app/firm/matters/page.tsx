@@ -1,165 +1,212 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
+import { AddEntrySlideOut } from '@/components/AddEntrySlideOut';
 import { FirmShell } from '@/components/FirmShell';
+import {
+  clientById,
+  currentFirmUser,
+  entryValue,
+  formatHoursH,
+  formatMoneyCompact,
+  matters as allMatters,
+  seedEntries,
+} from '@/lib/mock';
+import { useEntryOverrides } from '@/lib/adminState';
+import { toggleMatterPin, usePinnedMatterIds } from '@/lib/firmState';
 
-type Matter = {
-  id: string;
-  name: string;
-  practice: string;
-  opened: string;
-  hours: string;
-  entries: number;
-  billed: string;
-  status: 'active' | 'unassigned';
-  team: number;
+const STAGE_TINTS: Record<string, { bg: string; fg: string; border: string }> = {
+  Intake: { bg: '#DBEAFE', fg: '#1D4ED8', border: '#93C5FD' },
+  'In Progress': { bg: '#DCFCE7', fg: '#166534', border: '#86EFAC' },
+  Discovery: { bg: '#FED7AA', fg: '#9A3412', border: '#FDBA74' },
+  Judgement: { bg: '#E9D5FF', fg: '#6D28D9', border: '#C4B5FD' },
+  Closed: { bg: '#F3F4F6', fg: '#4B5563', border: '#D1D5DB' },
 };
 
-const ASSIGNED: Matter[] = [
-  { id: 'fm1', name: 'Litigation — Contract Dispute', practice: 'Litigation', opened: '2025-11-05', hours: '13.4h', entries: 14, billed: '$4,051', status: 'active', team: 2 },
-  { id: 'fm2', name: 'Corporate — Annual Filing', practice: 'Corporate', opened: '2025-11-05', hours: '0.0h', entries: 0, billed: '$0', status: 'active', team: 3 },
-];
+const CLIENT_TINTS: Record<string, { bg: string; fg: string }> = {
+  A: { bg: '#FEE2E2', fg: '#B91C1C' },
+  R: { bg: '#E9D5FF', fg: '#6D28D9' },
+  N: { bg: '#DBEAFE', fg: '#1D4ED8' },
+  V: { bg: '#DCFCE7', fg: '#166534' },
+};
 
-const UNASSIGNED: Matter[] = [
-  { id: 'fm3', name: 'Litigation — Contract Dispute', practice: 'Litigation', opened: '2025-11-05', hours: '13.4h', entries: 14, billed: '$4,051', status: 'unassigned', team: 2 },
-];
-
-const TEAM_COLORS = [
-  { bg: '#FEE2E2', fg: '#B91C1C' },
-  { bg: '#DBEAFE', fg: '#1D4ED8' },
-  { bg: '#FEF3C7', fg: '#92400E' },
-];
+// Per-matter stage (matches admin)
+const MATTER_STAGE: Record<string, 'In Progress' | 'Intake' | 'Discovery' | 'Closed'> = {
+  mat_acme_1: 'In Progress',
+  mat_acme_2: 'Discovery',
+  mat_reyes_1: 'Intake',
+  mat_reyes_2: 'In Progress',
+  mat_north_1: 'Discovery',
+  mat_vert_1: 'Closed',
+};
 
 export default function FirmMatters() {
+  const overrides = useEntryOverrides();
+  const pinned = usePinnedMatterIds();
+  const [q, setQ] = useState('');
+  const [addOpen, setAddOpen] = useState(false);
+  const [addDefault, setAddDefault] = useState<string | undefined>(undefined);
+
+  // Sophia's assigned matters — derived from where she's logged time (plus pinned).
+  // Treat that as "matters I'm on".
+  const sophiaEntries = useMemo(() => seedEntries
+    .filter((e) => e.lawyerId === currentFirmUser.id)
+    .map((e) => ({
+      ...e,
+      status: (overrides[e.id]?.status as typeof e.status) ?? e.status,
+    })), [overrides]);
+
+  const myMatterIds = new Set([
+    ...Array.from(new Set(sophiaEntries.map((e) => e.matterId))),
+    ...Array.from(pinned),
+  ]);
+
+  const myMatters = allMatters.filter((m) => myMatterIds.has(m.id));
+
+  // Compute per-matter stats for Sophia
+  const rows = myMatters.map((m) => {
+    const myEntries = sophiaEntries.filter((e) => e.matterId === m.id);
+    const myHours = myEntries.reduce((a, e) => a + e.durationSec, 0);
+    const myBilled = myEntries.reduce((a, e) => a + entryValue(e), 0);
+    const pendingCount = myEntries.filter((e) => e.status === 'pending').length;
+    const rejectedCount = myEntries.filter((e) => (e.status as string) === 'rejected').length;
+    const stage = MATTER_STAGE[m.id] ?? 'In Progress';
+    return { matter: m, myHours, myBilled, pendingCount, rejectedCount, stage, isPinned: pinned.has(m.id) };
+  });
+
+  const filtered = q
+    ? rows.filter((r) => r.matter.name.toLowerCase().includes(q.toLowerCase()) || r.matter.shortName.toLowerCase().includes(q.toLowerCase()))
+    : rows;
+
+  // Pinned first
+  const sortedRows = [...filtered].sort((a, b) => Number(b.isPinned) - Number(a.isPinned));
+
+  function openAddFor(matterId: string) {
+    setAddDefault(matterId);
+    setAddOpen(true);
+  }
+
   return (
-    <FirmShell title="Time Entries" subtitle="Insert page description here.">
-      {/* Search + Filter */}
-      <div className="flex items-center gap-2 mb-6">
+    <FirmShell
+      title="Your matters"
+      subtitle={`${rows.length} ${rows.length === 1 ? 'matter' : 'matters'} assigned to you at ${currentFirmUser.name.split(' ')[0]}'s caseload.`}
+      action={
+        <button
+          onClick={() => setAddOpen(true)}
+          className="bg-accent hover:bg-accent-dim text-white font-semibold text-sm px-4 h-10 rounded-lg inline-flex items-center gap-1.5">
+          <span className="text-base leading-none">+</span> Add Entry
+        </button>
+      }>
+      <div className="flex items-center gap-2 mb-4">
         <div className="flex items-center gap-2 flex-1 max-w-md bg-card border border-border rounded-lg px-3 h-10">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
             <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.8" />
             <path d="M20 20l-3-3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
           </svg>
-          <input placeholder="Search..." className="flex-1 bg-transparent outline-none text-sm placeholder:text-fg-subtle" />
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search your matters..."
+            className="flex-1 bg-transparent outline-none text-sm placeholder:text-fg-subtle"
+          />
         </div>
-        <button className="px-3 h-10 rounded-lg border border-border bg-card text-sm font-medium hover:bg-white flex items-center gap-2">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-            <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          Filter
-        </button>
       </div>
 
-      <Section title="Assigned to" matters={ASSIGNED} />
-      <div className="h-6" />
-      <Section title="Unassigned" matters={UNASSIGNED} />
+      <div className="grid grid-cols-2 gap-3">
+        {sortedRows.length === 0 ? (
+          <div className="col-span-2 bg-card border border-border rounded-2xl p-12 text-center">
+            <div className="text-sm font-semibold text-fg">No matters yet</div>
+            <div className="text-xs text-fg-muted mt-1">Marcus needs to add you to a matter. Ping him.</div>
+          </div>
+        ) : sortedRows.map((row) => {
+          const m = row.matter;
+          const c = clientById(m.clientId);
+          const ci = c?.name[0] ?? 'C';
+          const tint = CLIENT_TINTS[ci] ?? { bg: '#F3F4F6', fg: '#4B5563' };
+          return (
+            <div key={m.id} className={`bg-card border ${row.isPinned ? 'border-warning/40' : 'border-border'} rounded-2xl p-5 hover:border-accent transition`}>
+              <div className="flex items-start justify-between mb-3 gap-2">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <button
+                      onClick={() => toggleMatterPin(m.id)}
+                      className={`shrink-0 ${row.isPinned ? 'text-warning' : 'text-fg-subtle hover:text-warning'}`}
+                      title={row.isPinned ? 'Unpin' : 'Pin to top'}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill={row.isPinned ? 'currentColor' : 'none'}>
+                        <path d="M12 17v5M5 9.5l7 1.5 7-1.5L17 7l-2-4-3 1-3-1-2 4-2 2.5z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </button>
+                    <Link href={`/firm/matters/${m.id}`} className="text-base font-semibold hover:text-accent truncate">{m.name}</Link>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-fg-muted">
+                    <span style={{ background: tint.bg, color: tint.fg }} className="w-5 h-5 rounded-md flex items-center justify-center font-bold text-[10px]">{ci}</span>
+                    {c?.name}
+                  </div>
+                </div>
+                <StagePill stage={row.stage} />
+              </div>
+
+              {/* Alert row for rejections */}
+              {row.rejectedCount > 0 && (
+                <div className="mb-3 px-3 py-2 bg-danger-soft border border-danger/30 rounded-lg flex items-center gap-2">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-danger">
+                    <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" />
+                    <path d="M12 8v4M12 16h.01" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                  </svg>
+                  <div className="text-xs text-danger font-medium">{row.rejectedCount} entry sent back · review and resubmit</div>
+                </div>
+              )}
+
+              <div className="flex items-center gap-5 text-xs mb-4">
+                <div>
+                  <div className="text-fg-muted">Your hours</div>
+                  <div className="text-base font-semibold tabular-nums mt-0.5">{formatHoursH(row.myHours)}</div>
+                </div>
+                <div>
+                  <div className="text-fg-muted">Billed</div>
+                  <div className="text-base font-semibold tabular-nums mt-0.5">{formatMoneyCompact(row.myBilled)}</div>
+                </div>
+                <div>
+                  <div className="text-fg-muted">Rate</div>
+                  <div className="text-base font-semibold tabular-nums mt-0.5">${m.rate}/hr</div>
+                </div>
+                {row.pendingCount > 0 && (
+                  <div className="ml-auto">
+                    <div className="text-fg-muted">Pending</div>
+                    <div className="text-base font-semibold tabular-nums mt-0.5 text-warning">{row.pendingCount}</div>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2 pt-3 border-t border-border">
+                <Link
+                  href={`/firm/matters/${m.id}`}
+                  className="flex-1 h-9 px-3 rounded-lg border border-border text-center text-sm font-medium hover:bg-bg flex items-center justify-center">
+                  Open matter
+                </Link>
+                <button
+                  onClick={() => openAddFor(m.id)}
+                  className="h-9 px-4 rounded-lg bg-accent hover:bg-accent-dim text-white text-sm font-semibold inline-flex items-center gap-1.5">
+                  <span className="text-base leading-none">+</span> Log time
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <AddEntrySlideOut open={addOpen} onClose={() => setAddOpen(false)} defaultMatterId={addDefault} />
     </FirmShell>
   );
 }
 
-function Section({ title, matters }: { title: string; matters: Matter[] }) {
-  const [open, setOpen] = useState(true);
+function StagePill({ stage }: { stage: string }) {
+  const tint = STAGE_TINTS[stage] ?? { bg: '#F3F4F6', fg: '#4B5563', border: '#D1D5DB' };
   return (
-    <div>
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-2 mb-3 text-sm font-medium text-fg">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className={`text-fg-muted transition-transform ${open ? '' : '-rotate-90'}`}>
-          <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-        {title}
-      </button>
-      {open && (
-        <div className="space-y-3">
-          {matters.map((m) => (
-            <Link key={m.id} href={`/firm/matters/${m.id}`} className="block bg-card border border-border rounded-2xl px-5 py-4 hover:border-accent transition">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-lg bg-bg flex items-center justify-center text-fg-muted shrink-0">
-                  <IconBriefcase />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-base font-semibold text-fg mb-1">{m.name}</div>
-                  <div className="text-xs text-fg-muted mb-2">
-                    {m.practice} · Opened {m.opened}
-                  </div>
-                  <div className="flex items-center gap-5 text-xs">
-                    <span className="inline-flex items-center gap-1.5 text-fg-muted">
-                      <IconClockSm />
-                      Hours: <span className="font-semibold text-fg">{m.hours}</span>
-                    </span>
-                    <span className="inline-flex items-center gap-1.5 text-fg-muted">
-                      <IconDocSm />
-                      Entries: <span className="font-semibold text-fg">{m.entries}</span>
-                    </span>
-                    <span className="inline-flex items-center gap-1.5 text-fg-muted">
-                      <IconDollarSm />
-                      Billed: <span className="font-semibold text-fg">{m.billed}</span>
-                    </span>
-                  </div>
-                </div>
-                <div className="flex -space-x-2 mr-2">
-                  {Array.from({ length: m.team }).map((_, i) => (
-                    <span
-                      key={i}
-                      style={{ background: TEAM_COLORS[i % 3].bg, color: TEAM_COLORS[i % 3].fg }}
-                      className="w-8 h-8 rounded-full ring-2 ring-card flex items-center justify-center text-[10px] font-bold">
-                      {['SC', 'JC', 'MR'][i % 3]}
-                    </span>
-                  ))}
-                </div>
-                <span
-                  className={`px-2.5 py-1 rounded text-[10px] font-bold tracking-wide uppercase ${
-                    m.status === 'active'
-                      ? 'bg-accent-soft text-accent-dark'
-                      : 'bg-danger-soft text-danger'
-                  }`}>
-                  {m.status === 'active' ? 'Active' : 'Unassigned'}
-                </span>
-                <button onClick={(e) => e.preventDefault()} className="text-fg-muted hover:text-fg ml-2">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="6" r="1.5" fill="currentColor" />
-                    <circle cx="12" cy="12" r="1.5" fill="currentColor" />
-                    <circle cx="12" cy="18" r="1.5" fill="currentColor" />
-                  </svg>
-                </button>
-              </div>
-            </Link>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function IconBriefcase() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-      <rect x="3" y="7" width="18" height="13" rx="2" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2" stroke="currentColor" strokeWidth="1.8" />
-    </svg>
-  );
-}
-function IconClockSm() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M12 7v5l3 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  );
-}
-function IconDocSm() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zM14 2v6h6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-function IconDollarSm() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-      <path d="M12 2v20M17 5H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 110 7H6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
+    <span style={{ background: tint.bg, color: tint.fg, borderColor: tint.border }} className="px-2.5 py-1 text-xs rounded-md font-semibold border shrink-0">
+      {stage}
+    </span>
   );
 }
