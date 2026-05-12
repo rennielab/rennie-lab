@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 
+import { Avatar } from '@/components/Avatar';
 import { Logo } from '@/components/Logo';
 
 const PERSONAS = [
@@ -12,6 +13,7 @@ const PERSONAS = [
     title: 'Managing Partner · Bennett & Hayes LLP',
     blurb: 'Approve time, issue invoices, chase overdue, manage the team. Marcus runs the firm.',
     initials: 'MH',
+    avatar: '/avatars/marcus.jpg',
     bg: '#FED7AA',
     fg: '#9A3412',
     href: '/admin/login',
@@ -25,6 +27,7 @@ const PERSONAS = [
     title: 'Lawyer · Bennett & Hayes LLP',
     blurb: 'Log time, work on matters, submit for partner approval. Sophia bills the hours.',
     initials: 'SW',
+    avatar: '/avatars/sophia.jpg',
     bg: '#FEF3C7',
     fg: '#92400E',
     href: '/firm/login',
@@ -38,6 +41,7 @@ const PERSONAS = [
     title: 'Representing Reyes Family Trust',
     blurb: 'See case status, pay invoices, message the firm. Sarah is the customer.',
     initials: 'SM',
+    avatar: '/avatars/sarah.jpg',
     bg: '#FFE4E6',
     fg: '#9F1239',
     href: '/portal/login',
@@ -90,9 +94,15 @@ export default function Index() {
                 <div className="text-[10px] font-bold uppercase tracking-wider text-fg-muted mb-4">{p.role}</div>
 
                 <div className="flex items-center gap-3 mb-4">
-                  <span style={{ background: p.bg, color: p.fg }} className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-sm shrink-0">
-                    {p.initials}
-                  </span>
+                  <Avatar
+                    src={p.avatar}
+                    name={p.name}
+                    initials={p.initials}
+                    size={56}
+                    bg={p.bg}
+                    fg={p.fg}
+                    className="shrink-0 ring-2 ring-white"
+                  />
                   <div className="min-w-0">
                     <div className="text-base font-semibold text-fg truncate">{p.name}</div>
                     <div className="text-xs text-fg-muted truncate">{p.title}</div>
@@ -169,6 +179,7 @@ function FlowDiagram() {
           name="Sophia"
           role="Lawyer"
           initials="SW"
+          avatar="/avatars/sophia.jpg"
           bg="#FEF3C7"
           fg="#92400E"
           tint="accent"
@@ -182,6 +193,7 @@ function FlowDiagram() {
           name="Marcus"
           role="Managing Partner"
           initials="MH"
+          avatar="/avatars/marcus.jpg"
           bg="#FED7AA"
           fg="#9A3412"
           tint="accent"
@@ -195,6 +207,7 @@ function FlowDiagram() {
           name="Sarah"
           role="Client"
           initials="SM"
+          avatar="/avatars/sarah.jpg"
           bg="#FFE4E6"
           fg="#9F1239"
           tint="client"
@@ -235,12 +248,12 @@ function FlowDiagram() {
   );
 }
 
-function PersonaPill({ name, role, initials, bg, fg, tint }: { name: string; role: string; initials: string; bg: string; fg: string; tint: 'accent' | 'client' }) {
+function PersonaPill({ name, role, initials, bg, fg, tint, avatar }: { name: string; role: string; initials: string; bg: string; fg: string; tint: 'accent' | 'client'; avatar?: string }) {
   const wrapClass = tint === 'accent' ? 'bg-accent-soft/60 border-accent/40' : 'bg-card border-border';
   return (
     <div className={`rounded-2xl border px-4 py-4 text-center ${wrapClass}`}>
-      <span style={{ background: bg, color: fg }} className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-sm mx-auto mb-2">
-        {initials}
+      <span className="block w-12 h-12 mx-auto mb-2">
+        <Avatar src={avatar} name={name} initials={initials} size={48} bg={bg} fg={fg} className="ring-2 ring-white" />
       </span>
       <div className="text-sm font-semibold text-fg">{name}</div>
       <div className="text-[11px] text-fg-muted">{role}</div>

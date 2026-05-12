@@ -261,6 +261,8 @@ function ChatSlideOut({ open, onClose, me }: { open: boolean; onClose: () => voi
     decoratedGroups.push({ kind: 'group', author: g.author, bodies: g.bodies });
   }
 
+  if (!mounted || typeof document === 'undefined') return null;
+
   return createPortal(
     <>
       <div onClick={onClose} className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm" />
