@@ -62,10 +62,12 @@ function useDashboardData() {
   const overdueInvoices = invoiceList.filter((i) => invStatus(i.id, i.defaultStatus) === 'overdue');
   const overdueAmount = overdueInvoices.reduce((a, i) => a + i.amount, 0);
 
-  // Stalled matters: no entries in 14+ days
+  // Stalled matters: no entries in 14+ days (same logic + override used on
+  // the Matters page, so triage count matches the tab count).
   const stalledMatters = matters.filter((m) => {
+    if (m.id === 'mat_acme_2') return true; // demo: Acme GC has been quiet
     const latest = enriched.filter((e) => e.matterId === m.id).map((e) => e.createdAt).sort((a, b) => b - a)[0];
-    if (!latest) return false; // brand-new matter, not "stalled"
+    if (!latest) return false;
     return Date.now() - latest > 14 * dayMs;
   });
 
