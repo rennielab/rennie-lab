@@ -138,20 +138,23 @@ const INVOICES_ROWS = [
   { num: 'INV-005', issued: '05 Mar 2026', paidOn: '11 Mar 2026', hours: '5.0h', amount: '$1,500', status: 'Partially Paid' as const },
 ];
 
+// Client-facing timeline: only events the client should see. Excludes firm-internal
+// admin events like permissions changes. Stage changes are kept but reworded in
+// client-friendly language ("Your case has been escalated") rather than firm-side
+// jargon.
 const TIMELINE = [
   { date: '12 Mar 2026', events: [
-    { chip: 'TIME ENTRY', chipColor: 'green', sub: '9:00 AM · CALENDAR', title: 'New calendar entry added', body: '01:00:00 · $350/hr — Quarterly compliance review meeting with client.', person: 'James Donovan', personInitials: 'JD' },
+    { chip: 'NOTE', chipColor: 'purple', sub: '9:00 AM', title: 'James posted a case update', body: 'Quarterly compliance review meeting held with client. Next step: review draft response by Friday.', person: 'James Donovan', personInitials: 'JD' },
   ]},
   { date: '10 Mar 2026', events: [
-    { chip: 'TIME ENTRY', chipColor: 'green', sub: '10:00 AM · CALL', title: 'New call entry added', body: '00:15:00 · $200/hr — Quick call with Companies House re: filing confirmation receipt.', person: 'Emily Park', personInitials: 'EP' },
+    { chip: 'TIME', chipColor: 'green', sub: '10:00 AM · CALL', title: '15 minutes logged on your matter', body: 'Quick call with Companies House re: filing confirmation receipt.', person: 'Emily Park', personInitials: 'EP' },
   ]},
   { date: '8 Mar 2026', events: [
-    { chip: 'INVOICE', chipColor: 'purple', sub: '9:00 AM', title: 'Invoice INV-2026-047 created', body: 'Amount: $1,038 · 3 line items', person: 'Sarah Chen', personInitials: 'SC' },
-    { chip: 'EDIT', chipColor: 'gray', sub: '4:00 PM · PERMISSIONS', title: 'Matter permissions updated', body: 'Access changed from Everyone to Specific users only.', person: 'William Smith', personInitials: 'WS' },
+    { chip: 'INVOICE', chipColor: 'blue', sub: '9:00 AM', title: 'Invoice INV-2026-047 issued', body: 'Amount: $1,038 · 3 line items', person: 'Sarah Chen', personInitials: 'SC' },
   ]},
   { date: '5 Mar 2026', events: [
-    { chip: 'TIME ENTRY', chipColor: 'green', sub: '2:00 PM · RESEARCH', title: 'New research entry added', body: '00:45:00 · $350/hr — Reviewing post-filing compliance requirements for next quarter.', person: 'James Donovan', personInitials: 'JD' },
-    { chip: 'STAGE', chipColor: 'red', sub: '11:30 AM', title: 'Case stage updated', body: 'Escalated to Litigation after settlement talks stalled.', person: 'William Smith', personInitials: 'WS', stageFrom: 'Negotiation', stageTo: 'Litigation' },
+    { chip: 'TIME', chipColor: 'green', sub: '2:00 PM · RESEARCH', title: '45 minutes logged on your matter', body: 'Reviewing post-filing compliance requirements for next quarter.', person: 'James Donovan', personInitials: 'JD' },
+    { chip: 'STATUS', chipColor: 'orange', sub: '11:30 AM', title: 'Case stage updated', body: 'Your case has moved into litigation after settlement talks concluded without agreement.', person: 'John Carter', personInitials: 'JC', stageFrom: 'Negotiation', stageTo: 'Litigation' },
   ]},
 ];
 
@@ -287,11 +290,14 @@ function OverviewTab({ matter }: { matter: typeof MATTERS[string] }) {
       {/* Activity timeline */}
       <div className="bg-card border border-border rounded-2xl p-6">
         <div className="flex items-center justify-between mb-4">
-          <div className="text-sm font-semibold">Activity Timeline</div>
-          <div className="text-xs text-fg-muted">57 events</div>
+          <div>
+            <div className="text-sm font-semibold">Recent Updates</div>
+            <div className="text-xs text-fg-muted mt-0.5">What your firm has been doing on this matter.</div>
+          </div>
+          <div className="text-xs text-fg-muted">{TIMELINE.reduce((a, g) => a + g.events.length, 0)} updates</div>
         </div>
         <div className="flex items-center gap-1.5 mb-4">
-          {['All', 'Time', 'Invoices', 'Team', 'Contacts', 'Notes', 'Status', 'Docs'].map((f, i) => (
+          {['All', 'Time', 'Invoices', 'Notes', 'Status'].map((f, i) => (
             <button
               key={f}
               className={`px-3 h-8 rounded-full border text-xs font-medium ${
@@ -300,8 +306,6 @@ function OverviewTab({ matter }: { matter: typeof MATTERS[string] }) {
               {f}
             </button>
           ))}
-          <div className="flex-1" />
-          <div className="text-xs text-fg-muted">57 events</div>
         </div>
 
         <div className="space-y-6">
@@ -315,6 +319,8 @@ function OverviewTab({ matter }: { matter: typeof MATTERS[string] }) {
                       className={`absolute -left-[33px] top-0 w-7 h-7 rounded-md flex items-center justify-center ${
                         ev.chipColor === 'green' ? 'bg-accent-soft text-accent' :
                         ev.chipColor === 'purple' ? 'bg-[#F3E8FF] text-[#7E22CE]' :
+                        ev.chipColor === 'blue' ? 'bg-[#DBEAFE] text-[#1D4ED8]' :
+                        ev.chipColor === 'orange' ? 'bg-warning-soft text-warning' :
                         ev.chipColor === 'red' ? 'bg-danger-soft text-danger' : 'bg-bg text-fg-muted'
                       }`}>
                       <IconClock />
@@ -324,6 +330,8 @@ function OverviewTab({ matter }: { matter: typeof MATTERS[string] }) {
                         className={`px-1.5 py-0.5 text-[9px] font-bold tracking-wide rounded uppercase ${
                           ev.chipColor === 'green' ? 'bg-accent-soft text-accent-dark' :
                           ev.chipColor === 'purple' ? 'bg-[#F3E8FF] text-[#7E22CE]' :
+                          ev.chipColor === 'blue' ? 'bg-[#DBEAFE] text-[#1D4ED8]' :
+                          ev.chipColor === 'orange' ? 'bg-warning-soft text-warning' :
                           ev.chipColor === 'red' ? 'bg-danger-soft text-danger' : 'bg-bg text-fg-muted'
                         }`}>
                         {ev.chip}
@@ -350,9 +358,6 @@ function OverviewTab({ matter }: { matter: typeof MATTERS[string] }) {
           ))}
         </div>
 
-        <div className="mt-6 pt-4 border-t border-border text-center">
-          <button className="text-sm font-semibold text-accent hover:underline">Show all 57 events</button>
-        </div>
       </div>
     </>
   );

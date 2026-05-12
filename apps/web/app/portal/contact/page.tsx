@@ -1,75 +1,61 @@
 'use client';
 
-import { useState } from 'react';
+import Link from 'next/link';
 
 import { PortalShell } from '@/components/PortalShell';
 import { firm } from '@/lib/mock';
 
-export default function PortalContact() {
-  const [subject, setSubject] = useState('');
-  const [message, setMessage] = useState('');
-  const [sent, setSent] = useState(false);
+const PEOPLE = [
+  { name: 'John Carter', role: 'Managing Partner · Your attorney', email: 'john.carter@bennetthayes.law', phone: '+1 (415) 555-0190', initials: 'JC', bg: '#DCFCE7', fg: '#166534' },
+  { name: 'Sarah Chen', role: 'Senior Associate', email: 'sarah.chen@bennetthayes.law', phone: '+1 (415) 555-0191', initials: 'SC', bg: '#DBEAFE', fg: '#1D4ED8' },
+  { name: 'Marcus Rivera', role: 'Associate', email: 'marcus.rivera@bennetthayes.law', phone: '+1 (415) 555-0192', initials: 'MR', bg: '#FEF3C7', fg: '#92400E' },
+];
 
+export default function PortalContact() {
   return (
     <PortalShell>
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-fg">Contact</h1>
-        <p className="text-sm text-fg-muted mt-1">Reach out to your legal team or send a message.</p>
+      <div className="mb-6 flex items-start justify-between gap-6">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-[-0.5px]">Contact</h1>
+          <p className="text-sm text-fg-muted mt-1">Reach your legal team by phone or email — or send a message for in-portal reply.</p>
+        </div>
+        <Link
+          href="/portal/messages"
+          className="h-11 px-5 rounded-[10px] bg-accent hover:bg-accent-dim text-white text-sm font-semibold transition inline-flex items-center gap-2">
+          Open messages
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </Link>
       </div>
 
-      {/* Organization card */}
+      {/* Firm card */}
       <div className="bg-card border border-border rounded-2xl px-6 py-6 mb-4">
-        <h2 className="text-base font-semibold text-fg mb-5">Organization</h2>
+        <h2 className="text-base font-semibold text-fg mb-5">{firm.name}</h2>
         <div className="grid grid-cols-2 gap-x-10 gap-y-5">
-          <Row icon={<IconBuilding />} label="Organization" value={firm.name} />
-          <Row icon={<IconMail />} label="Email" value="contact@bennetthayes.law" />
-          <Row icon={<IconPhone />} label="Phone" value="+1 (415) 555-0120" />
-          <Row icon={<IconPin />} label="Address" value="100 Market Street, Suite 2400 San Francisco, CA 94105" />
+          <Row icon={<IconMail />} label="General email" value="contact@bennetthayes.law" />
+          <Row icon={<IconPhone />} label="Main line" value="+1 (415) 555-0120" />
+          <Row icon={<IconPin />} label="Office" value="100 Market Street, Suite 2400, San Francisco, CA 94105" />
+          <Row icon={<IconClock />} label="Hours" value="Mon–Fri, 8 AM – 6 PM PT" />
         </div>
       </div>
 
-      {/* Send a message */}
+      {/* People */}
       <div className="bg-card border border-border rounded-2xl px-6 py-6">
-        <h2 className="text-base font-semibold text-fg mb-5">Send a Message</h2>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            setSent(true);
-            setSubject('');
-            setMessage('');
-            setTimeout(() => setSent(false), 2500);
-          }}
-          className="space-y-4">
-          <label className="block">
-            <span className="text-sm font-medium text-fg">Subject</span>
-            <input
-              type="text"
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
-              placeholder="What is this regarding?"
-              className="mt-1.5 w-full h-11 px-3.5 rounded-[10px] border border-border bg-card text-sm placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
-            />
-          </label>
-          <label className="block">
-            <span className="text-sm font-medium text-fg">Message</span>
-            <textarea
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Type your message here..."
-              rows={6}
-              className="mt-1.5 w-full px-3.5 py-3 rounded-[10px] border border-border bg-card text-sm placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent resize-none"
-            />
-          </label>
-          <div className="flex justify-end items-center gap-3">
-            {sent && <span className="text-sm font-medium text-accent">Message sent ✓</span>}
-            <button
-              type="submit"
-              disabled={!subject || !message}
-              className="h-11 px-6 rounded-[10px] bg-accent hover:bg-accent-dim text-white text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed">
-              Send Message
-            </button>
-          </div>
-        </form>
+        <h2 className="text-base font-semibold text-fg mb-5">Your team</h2>
+        <div className="grid grid-cols-3 gap-4">
+          {PEOPLE.map((p) => (
+            <div key={p.email} className="border border-border rounded-xl p-5 flex flex-col items-center text-center">
+              <span style={{ background: p.bg, color: p.fg }} className="w-14 h-14 rounded-full flex items-center justify-center text-sm font-bold mb-3">
+                {p.initials}
+              </span>
+              <div className="text-sm font-semibold text-fg">{p.name}</div>
+              <div className="text-xs text-fg-muted mb-3">{p.role}</div>
+              <div className="text-xs text-fg-muted truncate w-full">{p.email}</div>
+              <div className="text-xs text-fg-muted">{p.phone}</div>
+            </div>
+          ))}
+        </div>
       </div>
     </PortalShell>
   );
@@ -87,13 +73,6 @@ function Row({ icon, label, value }: { icon: React.ReactNode; label: string; val
   );
 }
 
-function IconBuilding() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h.01M9 13h.01M9 17h.01M15 9h.01M15 13h.01M15 17h.01" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
 function IconMail() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -120,6 +99,14 @@ function IconPin() {
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
       <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" stroke="currentColor" strokeWidth="1.8" />
       <circle cx="12" cy="10" r="3" stroke="currentColor" strokeWidth="1.8" />
+    </svg>
+  );
+}
+function IconClock() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M12 7v5l3 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   );
 }

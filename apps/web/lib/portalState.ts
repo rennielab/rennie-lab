@@ -1,0 +1,187 @@
+// In-memory portal state for the demo: notifications, message thread, and paid
+// invoices. Mirrors what the real backend will own (messages table, notifications
+// feed, invoice.status mutations). useSyncExternalStore so multiple components
+// stay in sync without prop-drilling.
+
+import { useSyncExternalStore } from 'react';
+
+export type Notification = {
+  id: string;
+  kind: 'invoice' | 'note' | 'time' | 'message';
+  title: string;
+  body: string;
+  at: number;
+  read: boolean;
+  href?: string;
+};
+
+export type Message = {
+  id: string;
+  from: 'client' | 'firm';
+  authorName: string;
+  authorInitials: string;
+  body: string;
+  at: number;
+};
+
+type State = {
+  notifications: Notification[];
+  messages: Message[];
+  paidInvoiceIds: Set<string>;
+};
+
+const now = Date.now();
+const min = 60_000;
+const hr = 60 * min;
+const day = 24 * hr;
+
+const initial: State = {
+  notifications: [
+    { id: 'n1', kind: 'invoice', title: 'New invoice issued', body: 'INV-008 — $700 for Litigation', at: now - 2 * hr, read: false, href: '/portal/invoices' },
+    { id: 'n2', kind: 'note', title: 'New note on IP — Patent Filing', body: 'James Donovan posted a case update', at: now - 1 * day, read: false, href: '/portal/matters/m1' },
+    { id: 'n3', kind: 'time', title: 'New time entry logged', body: 'Sarah Chen — 1h 15m on Patent Filing', at: now - 2 * day, read: true, href: '/portal/matters/m1' },
+  ],
+  messages: [
+    {
+      id: 'm1',
+      from: 'firm',
+      authorName: 'John Carter',
+      authorInitials: 'JC',
+      body: 'Hi Sarah — quick heads up: the USPTO sent back the first office action on the CB-401 application. Marcus and I will draft a response this week. No action needed from you yet — I’ll send the response for your review before we file.',
+      at: now - 3 * day,
+    },
+    {
+      id: 'm2',
+      from: 'client',
+      authorName: 'Sarah Mitchell',
+      authorInitials: 'SM',
+      body: 'Thanks John — sounds good. Can you also share the latest cost estimate for the response? Want to make sure we’re tracking on budget.',
+      at: now - 3 * day + 90 * min,
+    },
+    {
+      id: 'm3',
+      from: 'firm',
+      authorName: 'John Carter',
+      authorInitials: 'JC',
+      body: 'Of course. The response should land around 6 billable hours total — I’ll send a written estimate by Friday so we have it on paper.',
+      at: now - 3 * day + 95 * min,
+    },
+  ],
+  paidInvoiceIds: new Set<string>(),
+};
+
+let state: State = initial;
+const listeners = new Set<() => void>();
+
+function emit() {
+  state = { ...state };
+  listeners.forEach((l) => l());
+}
+
+function subscribe(l: () => void) {
+  listeners.add(l);
+  return () => listeners.delete(l);
+}
+
+function getSnapshot() {
+  return state;
+}
+
+// ---------- Public API ----------
+
+export function useNotifications() {
+  return useSyncExternalStore(subscribe, getSnapshot, getSnapshot).notifications;
+}
+
+export function useUnreadCount() {
+  return useSyncExternalStore(subscribe, getSnapshot, getSnapshot).notifications.filter((n) => !n.read).length;
+}
+
+export function markAllNotificationsRead() {
+  state.notifications = state.notifications.map((n) => ({ ...n, read: true }));
+  emit();
+}
+
+export function markNotificationRead(id: string) {
+  state.notifications = state.notifications.map((n) => (n.id === id ? { ...n, read: true } : n));
+  emit();
+}
+
+export function useMessages() {
+  return useSyncExternalStore(subscribe, getSnapshot, getSnapshot).messages;
+}
+
+export function sendClientMessage(body: string) {
+  const id = `m_${Date.now()}`;
+  state.messages = [
+    ...state.messages,
+    { id, from: 'client', authorName: 'Sarah Mitchell', authorInitials: 'SM', body, at: Date.now() },
+  ];
+  emit();
+
+  // Fake the firm replying after a short delay so the demo feels alive.
+  const replies = [
+    'Got it — thanks Sarah. I’ll loop back with the team and follow up shortly.',
+    'Noted. We’ll have an update for you by end of day tomorrow.',
+    'Appreciate the heads-up. I’ll pull the file and respond within the hour.',
+  ];
+  const reply = replies[Math.floor(Math.random() * replies.length)];
+  setTimeout(() => {
+    state.messages = [
+      ...state.messages,
+      {
+        id: `m_${Date.now()}_r`,
+        from: 'firm',
+        authorName: 'John Carter',
+        authorInitials: 'JC',
+        body: reply,
+        at: Date.now(),
+      },
+    ];
+    state.notifications = [
+      {
+        id: `n_${Date.now()}`,
+        kind: 'message',
+        title: 'John Carter replied',
+        body: reply.slice(0, 60) + (reply.length > 60 ? '…' : ''),
+        at: Date.now(),
+        read: false,
+        href: '/portal/messages',
+      },
+      ...state.notifications,
+    ];
+    emit();
+  }, 3500);
+}
+
+export function usePaidInvoiceIds() {
+  return useSyncExternalStore(subscribe, getSnapshot, getSnapshot).paidInvoiceIds;
+}
+
+export function markInvoicePaid(id: string) {
+  const next = new Set(state.paidInvoiceIds);
+  next.add(id);
+  state.paidInvoiceIds = next;
+  state.notifications = [
+    {
+      id: `n_${Date.now()}`,
+      kind: 'invoice',
+      title: 'Payment confirmed',
+      body: `${id} marked paid · receipt emailed`,
+      at: Date.now(),
+      read: false,
+      href: '/portal/invoices',
+    },
+    ...state.notifications,
+  ];
+  emit();
+}
+
+export function formatRelative(at: number): string {
+  const delta = Date.now() - at;
+  if (delta < min) return 'just now';
+  if (delta < hr) return `${Math.floor(delta / min)}m ago`;
+  if (delta < day) return `${Math.floor(delta / hr)}h ago`;
+  if (delta < 7 * day) return `${Math.floor(delta / day)}d ago`;
+  return new Date(at).toLocaleDateString();
+}
