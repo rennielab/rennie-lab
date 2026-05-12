@@ -20,14 +20,24 @@ export type Message = {
   from: 'client' | 'firm';
   authorName: string;
   authorInitials: string;
+  authorRole?: string;
   body: string;
   at: number;
+};
+
+export type ChatAuthor = {
+  side: 'client' | 'firm';
+  name: string;
+  initials: string;
+  role: string;
 };
 
 type State = {
   notifications: Notification[];
   messages: Message[];
   paidInvoiceIds: Set<string>;
+  clientLastReadAt: number;
+  firmLastReadAt: number;
 };
 
 const now = Date.now();
@@ -45,9 +55,10 @@ const initial: State = {
     {
       id: 'm1',
       from: 'firm',
-      authorName: 'John Carter',
-      authorInitials: 'JC',
-      body: 'Hi Sarah — quick heads up: the USPTO sent back the first office action on the CB-401 application. Marcus and I will draft a response this week. No action needed from you yet — I’ll send the response for your review before we file.',
+      authorName: 'Marcus Hayes',
+      authorInitials: 'MH',
+      authorRole: 'Managing Partner',
+      body: 'Hi Sarah — quick heads up: the USPTO sent back the first office action on the CB-401 application. Sophia and I will draft a response this week. No action needed from you yet — I’ll send the response for your review before we file.',
       at: now - 3 * day,
     },
     {
@@ -55,19 +66,23 @@ const initial: State = {
       from: 'client',
       authorName: 'Sarah Mitchell',
       authorInitials: 'SM',
-      body: 'Thanks John — sounds good. Can you also share the latest cost estimate for the response? Want to make sure we’re tracking on budget.',
+      authorRole: 'Reyes Family Trust',
+      body: 'Thanks Marcus — sounds good. Can you also share the latest cost estimate for the response? Want to make sure we’re tracking on budget.',
       at: now - 3 * day + 90 * min,
     },
     {
       id: 'm3',
       from: 'firm',
-      authorName: 'John Carter',
-      authorInitials: 'JC',
-      body: 'Of course. The response should land around 6 billable hours total — I’ll send a written estimate by Friday so we have it on paper.',
+      authorName: 'Sophia Williams',
+      authorInitials: 'SW',
+      authorRole: 'Lawyer',
+      body: 'Hi Sarah — I’m drafting the response. Rough estimate: 6 billable hours. I’ll send a written quote by Friday so we have it on paper.',
       at: now - 3 * day + 95 * min,
     },
   ],
   paidInvoiceIds: new Set<string>(),
+  clientLastReadAt: now,
+  firmLastReadAt: now - 4 * day,
 };
 
 let state: State = initial;
@@ -111,38 +126,57 @@ export function useMessages() {
   return useSyncExternalStore(subscribe, getSnapshot, getSnapshot).messages;
 }
 
-export function sendClientMessage(body: string) {
-  const id = `m_${Date.now()}`;
+// Per-side unread counts — firm and client each track when they last opened
+// chat. Counts messages from the other side after that timestamp.
+export function useChatUnread(side: 'client' | 'firm') {
+  const s = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+  const lastRead = side === 'client' ? s.clientLastReadAt : s.firmLastReadAt;
+  const otherSide = side === 'client' ? 'firm' : 'client';
+  return s.messages.filter((m) => m.from === otherSide && m.at > lastRead).length;
+}
+
+export function markChatRead(side: 'client' | 'firm') {
+  if (side === 'client') state.clientLastReadAt = Date.now();
+  else state.firmLastReadAt = Date.now();
+  emit();
+}
+
+// Generic send — any persona can post.
+export function sendMessage(author: ChatAuthor, body: string) {
+  const id = `m_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
   state.messages = [
     ...state.messages,
-    { id, from: 'client', authorName: 'Sarah Mitchell', authorInitials: 'SM', body, at: Date.now() },
+    {
+      id,
+      from: author.side,
+      authorName: author.name,
+      authorInitials: author.initials,
+      authorRole: author.role,
+      body,
+      at: Date.now(),
+    },
   ];
   emit();
+}
 
-  // Fake the firm replying after a short delay so the demo feels alive.
+// Legacy wrapper — kept so existing /portal/messages page still works.
+// Also triggers a faked firm reply for the demo when the client posts.
+export function sendClientMessage(body: string) {
+  sendMessage({ side: 'client', name: 'Sarah Mitchell', initials: 'SM', role: 'Reyes Family Trust' }, body);
+
   const replies = [
-    'Got it — thanks Sarah. I’ll loop back with the team and follow up shortly.',
+    'Got it — thanks Sarah. Looping in the team and following up shortly.',
     'Noted. We’ll have an update for you by end of day tomorrow.',
     'Appreciate the heads-up. I’ll pull the file and respond within the hour.',
   ];
   const reply = replies[Math.floor(Math.random() * replies.length)];
   setTimeout(() => {
-    state.messages = [
-      ...state.messages,
-      {
-        id: `m_${Date.now()}_r`,
-        from: 'firm',
-        authorName: 'John Carter',
-        authorInitials: 'JC',
-        body: reply,
-        at: Date.now(),
-      },
-    ];
+    sendMessage({ side: 'firm', name: 'Marcus Hayes', initials: 'MH', role: 'Managing Partner' }, reply);
     state.notifications = [
       {
         id: `n_${Date.now()}`,
         kind: 'message',
-        title: 'John Carter replied',
+        title: 'Marcus replied',
         body: reply.slice(0, 60) + (reply.length > 60 ? '…' : ''),
         at: Date.now(),
         read: false,

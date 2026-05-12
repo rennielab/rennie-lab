@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 
+import { ChatButton } from '@/components/ChatSlideOut';
 import { Logo } from '@/components/Logo';
 import {
   formatRelative,
@@ -57,6 +58,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
           </nav>
 
           <div className="flex items-center gap-3">
+            <ChatButton me={{ side: 'client', name: 'Sarah Mitchell', initials: 'SM', role: 'Reyes Family Trust' }} />
             <NotificationsBell />
             <button
               onClick={() => router.push('/')}

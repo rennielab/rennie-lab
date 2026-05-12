@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 
+import { ChatButton } from '@/components/ChatSlideOut';
 import { currentFirmUser, firm } from '@/lib/mock';
 import {
   formatRelativeFirm,
@@ -122,6 +123,7 @@ export function FirmShell({
             {subtitle && <p className="text-sm text-fg-muted mt-0.5">{subtitle}</p>}
           </div>
           <div className="flex items-center gap-3">
+            <ChatButton me={{ side: 'firm', name: currentFirmUser.name, initials: currentFirmUser.initials, role: currentFirmUser.role }} />
             <FirmNotificationsBell />
             {action}
           </div>

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 
+import { ChatButton } from '@/components/ChatSlideOut';
 import { Logo } from '@/components/Logo';
 import { currentAdmin, firm } from '@/lib/mock';
 import {
@@ -117,6 +118,7 @@ export function AdminShell({
             {subtitle && <p className="text-sm text-fg-muted mt-0.5">{subtitle}</p>}
           </div>
           <div className="flex items-center gap-3">
+            <ChatButton me={{ side: 'firm', name: currentAdmin.name, initials: currentAdmin.initials, role: currentAdmin.role }} />
             <NotificationsBell />
             {action}
           </div>
