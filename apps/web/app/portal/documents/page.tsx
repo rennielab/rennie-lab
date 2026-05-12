@@ -3,7 +3,9 @@
 import { useMemo, useState } from 'react';
 
 import { PortalShell } from '@/components/PortalShell';
-import { DOCUMENTS, Document, formatFileSize, formatDueRelative } from '@/lib/portalData';
+import { SignDocumentModal } from '@/components/SignDocumentModal';
+import { useAllDocuments, useSignedIds } from '@/lib/docsState';
+import { Document, formatFileSize, formatDueRelative } from '@/lib/portalData';
 
 type Kind = 'all' | 'filing' | 'contract' | 'draft' | 'receipt' | 'letter';
 
@@ -24,18 +26,21 @@ const KIND_COLOR: Record<Exclude<Kind, 'all'>, { bg: string; fg: string }> = {
 };
 
 export default function PortalDocuments() {
+  const allDocs = useAllDocuments();
+  const signedIds = useSignedIds();
   const [kind, setKind] = useState<Kind>('all');
   const [q, setQ] = useState('');
+  const [signing, setSigning] = useState<Document | null>(null);
 
   const filtered = useMemo(() => {
-    let docs = DOCUMENTS;
+    let docs = allDocs;
     if (kind !== 'all') docs = docs.filter((d) => d.kind === kind);
     if (q.trim()) {
       const term = q.toLowerCase();
       docs = docs.filter((d) => d.name.toLowerCase().includes(term) || d.matterName.toLowerCase().includes(term));
     }
     return [...docs].sort((a, b) => b.uploadedAt - a.uploadedAt);
-  }, [kind, q]);
+  }, [allDocs, kind, q]);
 
   const byMatter = useMemo(() => {
     const groups: Record<string, { matterName: string; docs: Document[] }> = {};
@@ -46,7 +51,7 @@ export default function PortalDocuments() {
     return Object.entries(groups);
   }, [filtered]);
 
-  const needsSig = DOCUMENTS.filter((d) => d.needsSignature);
+  const needsSig = allDocs.filter((d) => d.needsSignature && !signedIds.has(d.id));
 
   return (
     <PortalShell>
@@ -121,19 +126,22 @@ export default function PortalDocuments() {
                 <div className="text-xs text-fg-muted">{group.docs.length} {group.docs.length === 1 ? 'document' : 'documents'}</div>
               </div>
               {group.docs.map((d) => (
-                <DocRow key={d.id} d={d} />
+                <DocRow key={d.id} d={d} signed={signedIds.has(d.id)} onSign={() => setSigning(d)} />
               ))}
             </div>
           ))}
         </div>
       )}
+
+      {signing && <SignDocumentModal doc={signing} onClose={() => setSigning(null)} />}
     </PortalShell>
   );
 }
 
-function DocRow({ d }: { d: Document }) {
+function DocRow({ d, signed, onSign }: { d: Document; signed: boolean; onSign: () => void }) {
   const color = KIND_COLOR[d.kind];
   const date = new Date(d.uploadedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const showSign = d.needsSignature && !signed;
   return (
     <div className="grid grid-cols-[40px_1fr_140px_140px_180px] gap-3 items-center px-6 py-3.5 border-b border-border last:border-0 hover:bg-bg/40">
       <span style={{ background: color.bg, color: color.fg }} className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0">
@@ -147,11 +155,8 @@ function DocRow({ d }: { d: Document }) {
           <span style={{ background: color.bg, color: color.fg }} className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide">
             {KIND_LABEL[d.kind]}
           </span>
-          {d.needsSignature && (
-            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-warning text-white">
-              SIGN
-            </span>
-          )}
+          {showSign && <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-warning text-white">SIGN</span>}
+          {d.needsSignature && signed && <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-accent text-white">SIGNED</span>}
         </div>
         <div className="text-xs text-fg-muted mt-0.5">
           Uploaded {date} by {d.uploadedBy}
@@ -160,8 +165,8 @@ function DocRow({ d }: { d: Document }) {
       <div className="text-xs text-fg-muted tabular-nums">{formatFileSize(d.sizeKb)}</div>
       <div className="text-xs text-fg-muted">{formatDueRelative(d.uploadedAt).label.replace('overdue', 'ago')}</div>
       <div className="flex justify-end gap-1">
-        {d.needsSignature && (
-          <button className="h-8 px-3 rounded-lg bg-warning hover:bg-warning/90 text-white text-xs font-semibold">
+        {showSign && (
+          <button onClick={onSign} className="h-8 px-3 rounded-lg bg-warning hover:bg-warning/90 text-white text-xs font-semibold">
             Review &amp; sign
           </button>
         )}

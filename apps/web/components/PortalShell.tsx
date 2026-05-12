@@ -6,6 +6,7 @@ import { ReactNode, useEffect, useRef, useState } from 'react';
 
 import { ChatButton } from '@/components/ChatSlideOut';
 import { Logo } from '@/components/Logo';
+import { currentClient } from '@/lib/mock';
 import {
   formatRelative,
   markAllNotificationsRead,
@@ -60,19 +61,15 @@ export function PortalShell({ children }: { children: ReactNode }) {
           <div className="flex items-center gap-3">
             <ChatButton me={{ side: 'client', name: 'Sarah Mitchell', initials: 'SM', role: 'Reyes Family Trust' }} />
             <NotificationsBell />
-            <button
-              onClick={() => router.push('/')}
+            <Link
+              href="/portal/profile"
               className="flex items-center gap-2 pl-1 pr-3 h-10 rounded-full border border-border hover:bg-bg">
-              <span
-                style={{ background: '#FFE4E6', color: '#9F1239' }}
-                className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs">
-                SM
-              </span>
-              <span className="text-sm font-medium">Sarah</span>
+              <img src={currentClient.avatarUrl} alt={currentClient.name} className="w-8 h-8 rounded-full bg-[#FFE4E6]" />
+              <span className="text-sm font-medium">{currentClient.name.split(' ')[0]}</span>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
                 <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-            </button>
+            </Link>
           </div>
         </div>
       </header>

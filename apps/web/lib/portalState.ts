@@ -32,12 +32,37 @@ export type ChatAuthor = {
   role: string;
 };
 
+export type Mention = {
+  id: string;
+  name: string;
+  initials: string;
+  role: string;
+  side: 'client' | 'firm';
+  avatarUrl: string;
+};
+
+// Mention candidates — everyone in the campfire room. Avatars are stable
+// DiceBear images keyed by seed so refresh-after-deploy stays consistent.
+export const MENTIONS: Mention[] = [
+  { id: 'marcus', name: 'Marcus Hayes', initials: 'MH', role: 'Managing Partner', side: 'firm', avatarUrl: 'https://api.dicebear.com/7.x/personas/svg?seed=Marcus&backgroundColor=fed7aa&hair=shortHair&hairColor=362c47' },
+  { id: 'sophia', name: 'Sophia Williams', initials: 'SW', role: 'Lawyer', side: 'firm', avatarUrl: 'https://api.dicebear.com/7.x/personas/svg?seed=Sophia&backgroundColor=fef3c7' },
+  { id: 'jordan', name: 'Jordan Bennett', initials: 'JB', role: 'Partner', side: 'firm', avatarUrl: 'https://api.dicebear.com/7.x/personas/svg?seed=Jordan&backgroundColor=fee2e2' },
+  { id: 'sarah-chen', name: 'Sarah Chen', initials: 'SC', role: 'Senior Associate', side: 'firm', avatarUrl: 'https://api.dicebear.com/7.x/personas/svg?seed=SarahChen&backgroundColor=dbeafe' },
+  { id: 'sarah-mitchell', name: 'Sarah Mitchell', initials: 'SM', role: 'Reyes Family Trust', side: 'client', avatarUrl: 'https://api.dicebear.com/7.x/personas/svg?seed=SarahMitchell&backgroundColor=ffe4e6' },
+];
+
+export function findMention(name: string): Mention | undefined {
+  return MENTIONS.find((m) => m.name === name);
+}
+
 type State = {
   notifications: Notification[];
   messages: Message[];
   paidInvoiceIds: Set<string>;
   clientLastReadAt: number;
   firmLastReadAt: number;
+  // Who's currently typing (transient — auto-cleared after 4s)
+  typingNames: Record<string, number>; // name -> timestamp last typed
 };
 
 const now = Date.now();
@@ -52,37 +77,35 @@ const initial: State = {
     { id: 'n3', kind: 'time', title: 'New time entry logged', body: 'Sarah Chen — 1h 15m on Patent Filing', at: now - 2 * day, read: true, href: '/portal/matters/m1' },
   ],
   messages: [
-    {
-      id: 'm1',
-      from: 'firm',
-      authorName: 'Marcus Hayes',
-      authorInitials: 'MH',
-      authorRole: 'Managing Partner',
-      body: 'Hi Sarah — quick heads up: the USPTO sent back the first office action on the CB-401 application. Sophia and I will draft a response this week. No action needed from you yet — I’ll send the response for your review before we file.',
-      at: now - 3 * day,
-    },
-    {
-      id: 'm2',
-      from: 'client',
-      authorName: 'Sarah Mitchell',
-      authorInitials: 'SM',
-      authorRole: 'Reyes Family Trust',
-      body: 'Thanks Marcus — sounds good. Can you also share the latest cost estimate for the response? Want to make sure we’re tracking on budget.',
-      at: now - 3 * day + 90 * min,
-    },
-    {
-      id: 'm3',
-      from: 'firm',
-      authorName: 'Sophia Williams',
-      authorInitials: 'SW',
-      authorRole: 'Lawyer',
-      body: 'Hi Sarah — I’m drafting the response. Rough estimate: 6 billable hours. I’ll send a written quote by Friday so we have it on paper.',
-      at: now - 3 * day + 95 * min,
-    },
+    { id: 'm1', from: 'firm', authorName: 'Marcus Hayes', authorInitials: 'MH', authorRole: 'Managing Partner',
+      body: 'Hi @Sarah Mitchell — quick heads up: the USPTO sent back the first office action on the CB-401 application. @Sophia Williams and I will draft a response this week. No action needed from you yet — I\'ll send the response for your review before we file.',
+      at: now - 3 * day },
+    { id: 'm2', from: 'client', authorName: 'Sarah Mitchell', authorInitials: 'SM', authorRole: 'Reyes Family Trust',
+      body: 'Thanks @Marcus Hayes — sounds good. Can you also share the latest cost estimate for the response? Want to make sure we\'re tracking on budget.',
+      at: now - 3 * day + 90 * min },
+    { id: 'm3', from: 'firm', authorName: 'Sophia Williams', authorInitials: 'SW', authorRole: 'Lawyer',
+      body: 'Hi Sarah — I\'m drafting the response. Rough estimate: 6 billable hours. I\'ll send a written quote by Friday so we have it on paper.',
+      at: now - 3 * day + 95 * min },
+    { id: 'm4', from: 'firm', authorName: 'Sophia Williams', authorInitials: 'SW', authorRole: 'Lawyer',
+      body: 'One more thing — I pulled three analogous USPTO decisions to cite. Will share the strongest one with the response draft.',
+      at: now - 3 * day + 97 * min },
+    { id: 'm5', from: 'client', authorName: 'Sarah Mitchell', authorInitials: 'SM', authorRole: 'Reyes Family Trust',
+      body: 'Perfect, thanks both. The board meets next Tuesday so any update before then would help me prep.',
+      at: now - 2 * day },
+    { id: 'm6', from: 'firm', authorName: 'Jordan Bennett', authorInitials: 'JB', authorRole: 'Partner',
+      body: 'Jumping in — I just reviewed the draft. Looks solid. @Sophia Williams nice work on Section II. @Marcus Hayes do you want me to handle the filing?',
+      at: now - 1 * day },
+    { id: 'm7', from: 'firm', authorName: 'Marcus Hayes', authorInitials: 'MH', authorRole: 'Managing Partner',
+      body: 'Yes @Jordan Bennett — please. @Sarah Mitchell we\'re on track to file before your board meeting. Will confirm Monday.',
+      at: now - 1 * day + 30 * min },
+    { id: 'm8', from: 'client', authorName: 'Sarah Mitchell', authorInitials: 'SM', authorRole: 'Reyes Family Trust',
+      body: 'Amazing — really appreciate you all keeping me in the loop.',
+      at: now - 4 * hr },
   ],
   paidInvoiceIds: new Set<string>(),
   clientLastReadAt: now,
   firmLastReadAt: now - 4 * day,
+  typingNames: {},
 };
 
 let state: State = initial;
@@ -139,6 +162,28 @@ export function markChatRead(side: 'client' | 'firm') {
   if (side === 'client') state.clientLastReadAt = Date.now();
   else state.firmLastReadAt = Date.now();
   emit();
+}
+
+// Typing presence — call when the textarea is active. Auto-clears after 4s.
+export function setTyping(name: string) {
+  state.typingNames = { ...state.typingNames, [name]: Date.now() };
+  emit();
+}
+
+export function clearTyping(name: string) {
+  if (!(name in state.typingNames)) return;
+  const next = { ...state.typingNames };
+  delete next[name];
+  state.typingNames = next;
+  emit();
+}
+
+export function useTypingOthers(myName: string): string[] {
+  const s = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+  const cutoff = Date.now() - 4000;
+  return Object.entries(s.typingNames)
+    .filter(([n, ts]) => n !== myName && ts > cutoff)
+    .map(([n]) => n);
 }
 
 // Generic send — any persona can post.

@@ -31,6 +31,7 @@ const NAV: NavItem[] = [
   { href: '/admin/matters', label: 'Matters', icon: <Icon d="M4 7h16v13H4zM8 7V5a2 2 0 012-2h4a2 2 0 012 2v2" /> },
   { href: '/admin/clients', label: 'Clients', icon: <Icon d="M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" /> },
   { href: '/admin/invoices', label: 'Invoices', icon: <Icon d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zM14 2v6h6M9 13h6M9 17h6" /> },
+  { href: '/admin/documents', label: 'Documents', icon: <Icon d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zM14 2v6h6" /> },
   { href: '/admin/team', label: 'Team', icon: <Icon d="M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8z" /> },
 ];
 
@@ -96,17 +97,24 @@ export function AdminShell({
             <Icon d="M12 15a3 3 0 100-6 3 3 0 000 6zM19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33h0a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82h0a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z" />
             <span>Settings</span>
           </Link>
-          <button
-            onClick={() => router.push('/')}
+          <Link
+            href="/admin/profile"
             className="w-full flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-white/5 text-left">
-            <div className="w-9 h-9 rounded-full bg-accent-soft-2/20 text-accent flex items-center justify-center font-semibold text-sm">
-              {currentAdmin.initials}
-            </div>
+            {currentAdmin.avatarUrl ? (
+              <img src={currentAdmin.avatarUrl} alt={currentAdmin.name} className="w-9 h-9 rounded-full bg-accent-soft-2/20" />
+            ) : (
+              <div className="w-9 h-9 rounded-full bg-accent-soft-2/20 text-accent flex items-center justify-center font-semibold text-sm">
+                {currentAdmin.initials}
+              </div>
+            )}
             <div className="min-w-0 flex-1">
               <div className="text-sm font-medium truncate">{currentAdmin.name}</div>
               <div className="text-xs text-sidebar-muted truncate">{currentAdmin.role}</div>
             </div>
-          </button>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-sidebar-muted shrink-0">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </Link>
         </div>
       </aside>
 

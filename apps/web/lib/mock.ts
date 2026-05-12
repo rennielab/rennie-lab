@@ -2,7 +2,7 @@
 // Same shape as the future Convex schema so this swaps cleanly later.
 
 export type Firm = { id: string; name: string; location: string };
-export type Lawyer = { id: string; firmId: string; name: string; initials: string; role: string };
+export type Lawyer = { id: string; firmId: string; name: string; initials: string; role: string; avatarUrl?: string; email?: string; phone?: string; bio?: string };
 export type Client = { id: string; firmId: string; name: string };
 export type Contact = {
   id: string;
@@ -51,24 +51,44 @@ export const firm: Firm = {
   location: 'San Francisco, CA',
 };
 
+const AVATAR_BASE = 'https://api.dicebear.com/7.x/personas/svg?seed=';
+
 export const currentAdmin: Lawyer = {
   id: 'lwy_marc',
   firmId: firm.id,
   name: 'Marcus Hayes',
   initials: 'MH',
   role: 'Managing Partner',
+  avatarUrl: `${AVATAR_BASE}Marcus&backgroundColor=fed7aa&hair=shortHair&hairColor=362c47`,
+  email: 'marcus@bennetthayes.law',
+  phone: '+1 (415) 555-0190',
+  bio: 'Managing Partner at Bennett & Hayes LLP. 18 years in commercial litigation. Bar admitted in CA and NY. Caltech BS, Stanford JD.',
 };
 
 export const lawyers: Lawyer[] = [
-  { id: 'lwy_jord', firmId: firm.id, name: 'Jordan Bennett', initials: 'JB', role: 'Partner' },
-  { id: 'lwy_sara', firmId: firm.id, name: 'Sarah Chen', initials: 'SC', role: 'Senior Associate' },
-  { id: 'lwy_marc', firmId: firm.id, name: 'Marcus Hayes', initials: 'MH', role: 'Managing Partner' },
-  { id: 'lwy_soph', firmId: firm.id, name: 'Sophia Williams', initials: 'SW', role: 'Lawyer' },
+  { id: 'lwy_jord', firmId: firm.id, name: 'Jordan Bennett', initials: 'JB', role: 'Partner', avatarUrl: `${AVATAR_BASE}Jordan&backgroundColor=fee2e2`, email: 'jordan@bennetthayes.law', phone: '+1 (415) 555-0191', bio: 'Partner focused on IP litigation and patent prosecution. Bar admitted in CA. UC Berkeley JD.' },
+  { id: 'lwy_sara', firmId: firm.id, name: 'Sarah Chen', initials: 'SC', role: 'Senior Associate', avatarUrl: `${AVATAR_BASE}SarahChen&backgroundColor=dbeafe`, email: 'sarah.chen@bennetthayes.law', phone: '+1 (415) 555-0192', bio: 'Senior Associate in corporate transactions. UCLA JD.' },
+  { id: 'lwy_marc', firmId: firm.id, name: 'Marcus Hayes', initials: 'MH', role: 'Managing Partner', avatarUrl: `${AVATAR_BASE}Marcus&backgroundColor=fed7aa&hair=shortHair&hairColor=362c47`, email: 'marcus@bennetthayes.law', phone: '+1 (415) 555-0190', bio: 'Managing Partner at Bennett & Hayes LLP. 18 years in commercial litigation. Bar admitted in CA and NY. Caltech BS, Stanford JD.' },
+  { id: 'lwy_soph', firmId: firm.id, name: 'Sophia Williams', initials: 'SW', role: 'Lawyer', avatarUrl: `${AVATAR_BASE}Sophia&backgroundColor=fef3c7`, email: 'sophia.williams@bennetthayes.law', phone: '+1 (415) 555-0199', bio: 'Lawyer focused on patent prosecution and commercial litigation. Bar admitted in CA. NYU JD.' },
 ];
 
 // The "current firm user" in the /firm/* demo — a regular staff lawyer, NOT
 // the admin. Logs into the same firm as Marcus but sees a scoped view.
 export const currentFirmUser: Lawyer = lawyers[3];
+
+// The "current client" in the /portal/* demo.
+export type ClientUser = { id: string; name: string; initials: string; role: string; clientId: string; email: string; phone: string; bio: string; avatarUrl: string };
+export const currentClient: ClientUser = {
+  id: 'usr_sarah',
+  name: 'Sarah Mitchell',
+  initials: 'SM',
+  role: 'Trustee',
+  clientId: 'cli_reyes',
+  email: 'sarah.mitchell@example.com',
+  phone: '+1 (415) 555-0142',
+  bio: 'Trustee for Reyes Family Trust. Authorized portal user for the trust\'s matters at Bennett & Hayes LLP.',
+  avatarUrl: `${AVATAR_BASE}SarahMitchell&backgroundColor=ffe4e6`,
+};
 
 // Universal matter stages — work across every practice area.
 // Litigation sub-stages (Discovery, Trial etc) can be a sub-status later.
