@@ -35,7 +35,7 @@ export default function PortalLogin() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            router.push('/portal/matters');
+            router.push('/portal/home');
           }}
           className="w-full max-w-[420px] bg-card border border-border rounded-2xl px-10 py-10 shadow-[0_8px_32px_-12px_rgba(15,20,25,0.12)]">
           <h1 className="text-2xl font-semibold text-center tracking-[-0.5px]">Login to your account</h1>

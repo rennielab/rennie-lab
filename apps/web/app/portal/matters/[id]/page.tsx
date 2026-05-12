@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { useState } from 'react';
 
 import { PortalShell } from '@/components/PortalShell';
+import { DEADLINES, MATTER_STATUS, formatDueRelative } from '@/lib/portalData';
 
 // ---------- Mock data for this matter ----------
 
@@ -199,7 +200,7 @@ export default function MatterDetail() {
 
       {/* Title + stage pills + avatars */}
       <h1 className="text-3xl font-semibold tracking-[-0.5px] mb-3 max-w-2xl leading-tight">{matter.name}</h1>
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex items-center gap-3 mb-4">
         {matter.stages.map((s, i) => (
           <StagePill key={i} stage={s} />
         ))}
@@ -207,6 +208,7 @@ export default function MatterDetail() {
           {TEAM_AVATARS.map((a, i) => (
             <span
               key={i}
+              title={matter.team[i % matter.team.length]?.name}
               style={{ background: a.bg, color: a.fg }}
               className="w-7 h-7 rounded-full ring-2 ring-bg flex items-center justify-center text-[10px] font-bold">
               {matter.team[i % matter.team.length]?.initials ?? 'JC'}
@@ -214,6 +216,9 @@ export default function MatterDetail() {
           ))}
         </div>
       </div>
+
+      {/* Status line + next deadline */}
+      <MatterStatusAndDeadline id={matter.id} />
 
       {/* Tabs */}
       <div className="flex items-center gap-1 border-b border-border mb-6">
@@ -571,6 +576,44 @@ function InvoicesTab() {
 }
 
 // ---------- Helpers ----------
+
+function MatterStatusAndDeadline({ id }: { id: string }) {
+  const status = MATTER_STATUS[id];
+  const nextDeadline = DEADLINES
+    .filter((d) => d.matterId === id)
+    .sort((a, b) => a.dueAt - b.dueAt)[0];
+
+  if (!status && !nextDeadline) return null;
+
+  return (
+    <div className="grid grid-cols-3 gap-3 mb-6">
+      {status && (
+        <div className="col-span-2 bg-card border border-border rounded-2xl px-5 py-4">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="text-[10px] font-bold uppercase tracking-wide text-accent-dark bg-accent-soft px-1.5 py-0.5 rounded">Status</span>
+            <span className="text-xs text-fg-muted">Updated {status.updatedAt} by {status.updatedBy}</span>
+          </div>
+          <p className="text-sm text-fg leading-relaxed">{status.status}</p>
+        </div>
+      )}
+      {nextDeadline && (
+        <div className="bg-card border border-border rounded-2xl px-5 py-4">
+          <div className="text-[10px] font-bold uppercase tracking-wide text-fg-muted mb-1.5">Next deadline</div>
+          <div className="text-sm font-semibold text-fg leading-snug">{nextDeadline.title}</div>
+          {(() => {
+            const due = formatDueRelative(nextDeadline.dueAt);
+            const toneCls =
+              due.tone === 'overdue' ? 'text-danger' :
+              due.tone === 'urgent' ? 'text-warning' :
+              due.tone === 'soon' ? 'text-accent-dark' :
+              'text-fg-muted';
+            return <div className={`text-xs font-medium mt-1 ${toneCls}`}>{due.label}</div>;
+          })()}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function StagePill({ stage }: { stage: 'Intake' | 'In Progress' | 'Judgement' | 'Closed' }) {
   const map = {

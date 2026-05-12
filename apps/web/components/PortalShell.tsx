@@ -14,8 +14,10 @@ import {
 } from '@/lib/portalState';
 
 const NAV = [
+  { href: '/portal/home', label: 'Home', icon: <HomeIcon /> },
   { href: '/portal/matters', label: 'Matters', icon: <BriefcaseIcon /> },
   { href: '/portal/invoices', label: 'Invoices', icon: <InvoiceIcon /> },
+  { href: '/portal/documents', label: 'Documents', icon: <FileIcon /> },
   { href: '/portal/messages', label: 'Messages', icon: <MessageIcon /> },
   { href: '/portal/contact', label: 'Contact', icon: <BookIcon /> },
 ];
@@ -28,7 +30,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
     <div className="min-h-screen flex flex-col bg-bg">
       <header className="bg-card/95 backdrop-blur border-b border-border sticky top-0 z-20">
         <div className="max-w-[1280px] mx-auto px-8 h-16 flex items-center justify-between">
-          <Link href="/portal" className="flex items-center">
+          <Link href="/portal/home" className="flex items-center">
             <Logo height={28} />
           </Link>
 
@@ -173,6 +175,20 @@ function NotificationsBell() {
 
 // ---------- Icons ----------
 
+function HomeIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+      <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1V9.5z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+function FileIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zM14 2v6h6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
 function BriefcaseIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
