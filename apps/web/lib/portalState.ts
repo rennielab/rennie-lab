@@ -102,7 +102,9 @@ const initial: State = {
       body: 'Amazing — really appreciate you all keeping me in the loop.',
       at: now - 4 * hr },
   ],
-  paidInvoiceIds: new Set<string>(),
+  // INV-005 was paid via wire (offline) — admin's invoiceOverrides reflects
+  // this and so does the portal so all three views agree.
+  paidInvoiceIds: new Set<string>(['inv_5']),
   clientLastReadAt: now,
   firmLastReadAt: now - 4 * day,
   typingNames: {},

@@ -14,7 +14,7 @@ export const MATTER_STATUS: Record<string, MatterStatusLine> = {
     matterId: 'm1',
     status: 'Filed application — awaiting USPTO first office action, est. 6 weeks.',
     updatedAt: '21 Feb 2026',
-    updatedBy: 'John Carter',
+    updatedBy: 'Marcus Hayes',
   },
   m2: {
     matterId: 'm2',
@@ -26,7 +26,7 @@ export const MATTER_STATUS: Record<string, MatterStatusLine> = {
     matterId: 'm3',
     status: 'Closed — settlement paid in full Dec 2025.',
     updatedAt: '15 Dec 2025',
-    updatedBy: 'John Carter',
+    updatedBy: 'Marcus Hayes',
   },
 };
 
@@ -63,13 +63,13 @@ export type Document = {
 };
 
 export const DOCUMENTS: Document[] = [
-  { id: 'doc1', matterId: 'm1', matterName: 'IP — Patent Filing', name: 'USPTO Application — CB-401.pdf', kind: 'filing', sizeKb: 2840, uploadedAt: now - 8 * day, uploadedBy: 'John Carter' },
-  { id: 'doc2', matterId: 'm1', matterName: 'IP — Patent Filing', name: 'Prior Art Search Results.pdf', kind: 'draft', sizeKb: 1240, uploadedAt: now - 10 * day, uploadedBy: 'Marcus Rivera' },
-  { id: 'doc3', matterId: 'm1', matterName: 'IP — Patent Filing', name: 'Engagement Letter — signed.pdf', kind: 'contract', sizeKb: 420, uploadedAt: now - 95 * day, uploadedBy: 'John Carter' },
+  { id: 'doc1', matterId: 'm1', matterName: 'IP — Patent Filing', name: 'USPTO Application — CB-401.pdf', kind: 'filing', sizeKb: 2840, uploadedAt: now - 8 * day, uploadedBy: 'Marcus Hayes' },
+  { id: 'doc2', matterId: 'm1', matterName: 'IP — Patent Filing', name: 'Prior Art Search Results.pdf', kind: 'draft', sizeKb: 1240, uploadedAt: now - 10 * day, uploadedBy: 'Jordan Bennett' },
+  { id: 'doc3', matterId: 'm1', matterName: 'IP — Patent Filing', name: 'Engagement Letter — signed.pdf', kind: 'contract', sizeKb: 420, uploadedAt: now - 95 * day, uploadedBy: 'Marcus Hayes' },
   { id: 'doc4', matterId: 'm2', matterName: 'Corporate — Contract Review', name: 'Updated MSA — for signature.pdf', kind: 'contract', sizeKb: 680, uploadedAt: now - 1 * day, uploadedBy: 'Sarah Chen', needsSignature: true },
   { id: 'doc5', matterId: 'm2', matterName: 'Corporate — Contract Review', name: 'Vendor Risk Memo.pdf', kind: 'draft', sizeKb: 920, uploadedAt: now - 6 * day, uploadedBy: 'Sarah Chen' },
   { id: 'doc6', matterId: 'm1', matterName: 'IP — Patent Filing', name: 'Receipt INV-006.pdf', kind: 'receipt', sizeKb: 180, uploadedAt: now - 14 * day, uploadedBy: 'Billing' },
-  { id: 'doc7', matterId: 'm3', matterName: 'Reyes v. Horizon', name: 'Settlement Agreement — executed.pdf', kind: 'contract', sizeKb: 1180, uploadedAt: now - 55 * day, uploadedBy: 'John Carter' },
+  { id: 'doc7', matterId: 'm3', matterName: 'Reyes v. Horizon', name: 'Settlement Agreement — executed.pdf', kind: 'contract', sizeKb: 1180, uploadedAt: now - 55 * day, uploadedBy: 'Marcus Hayes' },
   { id: 'doc8', matterId: 'm3', matterName: 'Reyes v. Horizon', name: 'Final Statement of Account.pdf', kind: 'receipt', sizeKb: 220, uploadedAt: now - 52 * day, uploadedBy: 'Billing' },
 ];
 

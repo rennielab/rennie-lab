@@ -6,9 +6,9 @@ import { PortalShell } from '@/components/PortalShell';
 import { firm } from '@/lib/mock';
 
 const PEOPLE = [
-  { name: 'John Carter', role: 'Managing Partner · Your attorney', email: 'john.carter@bennetthayes.law', phone: '+1 (415) 555-0190', initials: 'JC', bg: '#DCFCE7', fg: '#166534' },
+  { name: 'Marcus Hayes', role: 'Managing Partner · Your attorney', email: 'marcus.hayes@bennetthayes.law', phone: '+1 (415) 555-0190', initials: 'MH', bg: '#DCFCE7', fg: '#166534' },
   { name: 'Sarah Chen', role: 'Senior Associate', email: 'sarah.chen@bennetthayes.law', phone: '+1 (415) 555-0191', initials: 'SC', bg: '#DBEAFE', fg: '#1D4ED8' },
-  { name: 'Marcus Rivera', role: 'Associate', email: 'marcus.rivera@bennetthayes.law', phone: '+1 (415) 555-0192', initials: 'MR', bg: '#FEF3C7', fg: '#92400E' },
+  { name: 'Jordan Bennett', role: 'Partner', email: 'jordan@bennetthayes.law', phone: '+1 (415) 555-0192', initials: 'JB', bg: '#FEE2E2', fg: '#B91C1C' },
 ];
 
 export default function PortalContact() {

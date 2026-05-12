@@ -33,7 +33,7 @@ const MATTERS: Record<string, {
     name: 'IP — Patent Filing',
     stages: ['Active'],
     practiceArea: 'Intellectual Property',
-    originatingAttorney: 'John Carter',
+    originatingAttorney: 'Marcus Hayes',
     opened: '15 Oct 2025',
     lastActivity: '21 Feb 2026, 1:12 PM',
     description: 'Advisory on USPTO patent filing for CB-401 compound. Includes prior art research, claims drafting, and prosecution strategy.',
@@ -42,9 +42,9 @@ const MATTERS: Record<string, {
     totalPaid: 3000,
     outstanding: 2572,
     team: [
-      { name: 'John Carter', role: 'Managing Partner', rate: 300, hours: 8.5, amount: 2550, addedOn: '12 Feb 2025', lastActivity: '21 Feb 2026, 11:45 AM', initials: 'JC' },
-      { name: 'Sarah Chen', role: 'Senior Solicitor', rate: 250, hours: 5, amount: 1250, addedOn: '15 Feb 2025', lastActivity: '21 Feb 2026, 11:45 AM', initials: 'SC' },
-      { name: 'Marcus Rivera', role: 'Associate', rate: 210, hours: 5, amount: 1050, addedOn: '18 Feb 2025', lastActivity: '21 Feb 2026, 11:45 AM', initials: 'MR' },
+      { name: 'Marcus Hayes', role: 'Managing Partner', rate: 300, hours: 8.5, amount: 2550, addedOn: '12 Feb 2025', lastActivity: '21 Feb 2026, 11:45 AM', initials: 'MH' },
+      { name: 'Sarah Chen', role: 'Senior Associate', rate: 250, hours: 5, amount: 1250, addedOn: '15 Feb 2025', lastActivity: '21 Feb 2026, 11:45 AM', initials: 'SC' },
+      { name: 'Jordan Bennett', role: 'Partner', rate: 650, hours: 5, amount: 3250, addedOn: '18 Feb 2025', lastActivity: '21 Feb 2026, 11:45 AM', initials: 'JB' },
     ],
     contactsCount: 8,
     notesCount: 2,
@@ -56,7 +56,7 @@ const MATTERS: Record<string, {
     name: 'Corporate — Contract Review',
     stages: ['Active'],
     practiceArea: 'Corporate',
-    originatingAttorney: 'John Carter',
+    originatingAttorney: 'Marcus Hayes',
     opened: '15 Oct 2025',
     lastActivity: '21 Feb 2026, 1:12 PM',
     description: 'Quarterly vendor and SaaS contract review program. Standardize MSAs and flag regulatory risk.',
@@ -65,8 +65,8 @@ const MATTERS: Record<string, {
     totalPaid: 1500,
     outstanding: 1560,
     team: [
-      { name: 'John Carter', role: 'Managing Partner', rate: 300, hours: 4.5, amount: 1350, addedOn: '12 Feb 2025', lastActivity: '21 Feb 2026, 11:45 AM', initials: 'JC' },
-      { name: 'Sarah Chen', role: 'Senior Solicitor', rate: 250, hours: 4, amount: 1000, addedOn: '15 Feb 2025', lastActivity: '21 Feb 2026, 11:45 AM', initials: 'SC' },
+      { name: 'Marcus Hayes', role: 'Managing Partner', rate: 300, hours: 4.5, amount: 1350, addedOn: '12 Feb 2025', lastActivity: '21 Feb 2026, 11:45 AM', initials: 'MH' },
+      { name: 'Sarah Chen', role: 'Senior Associate', rate: 250, hours: 4, amount: 1000, addedOn: '15 Feb 2025', lastActivity: '21 Feb 2026, 11:45 AM', initials: 'SC' },
     ],
     contactsCount: 5,
     notesCount: 1,
@@ -78,7 +78,7 @@ const MATTERS: Record<string, {
     name: 'Reyes v. Horizon — Wrongful Termination',
     stages: ['Closed'],
     practiceArea: 'Employment Litigation',
-    originatingAttorney: 'John Carter',
+    originatingAttorney: 'Marcus Hayes',
     opened: '15 Oct 2025',
     lastActivity: '21 Feb 2026, 1:12 PM',
     description: 'Wrongful termination claim against Horizon Corp. Closed with favorable settlement.',
@@ -87,7 +87,7 @@ const MATTERS: Record<string, {
     totalPaid: 5572,
     outstanding: 0,
     team: [
-      { name: 'John Carter', role: 'Managing Partner', rate: 300, hours: 10, amount: 3000, addedOn: '01 Jul 2025', lastActivity: '14 Feb 2026, 9:00 AM', initials: 'JC' },
+      { name: 'Marcus Hayes', role: 'Managing Partner', rate: 300, hours: 10, amount: 3000, addedOn: '01 Jul 2025', lastActivity: '14 Feb 2026, 9:00 AM', initials: 'MH' },
     ],
     contactsCount: 3,
     notesCount: 3,
@@ -107,7 +107,7 @@ const TIME_ROWS: { date: string; entries: { person: string; type: string; typeCo
     date: 'Saturday, Feb 21',
     entries: [
       { person: 'Sarah Chen', type: 'CALL', typeColor: 'green', title: 'Client call re: patent application scope and prior art search results', duration: '0:38', amount: '$237.50', iconType: 'phone' },
-      { person: 'Marcus Rivera', type: 'RESEARCH', typeColor: 'orange', title: 'Prior art search — USPTO database review for competing claims', duration: '1:15', amount: '$250.00', iconType: 'book' },
+      { person: 'Jordan Bennett', type: 'RESEARCH', typeColor: 'orange', title: 'Prior art search — USPTO database review for competing claims', duration: '1:15', amount: '$250.00', iconType: 'book' },
     ],
     total: '1h 53m',
     totalAmount: '$487.50',
@@ -116,7 +116,7 @@ const TIME_ROWS: { date: string; entries: { person: string; type: string; typeCo
     date: 'Friday, Feb 20',
     entries: [
       { person: 'Sarah Chen', type: 'IN PERSON', typeColor: 'blue', title: 'Draft patent claims 1–12 for compound CB-401', duration: '2:30', amount: '$937.50', iconType: 'people' },
-      { person: 'Marcus Rivera', type: 'RESEARCH', typeColor: 'green', title: 'Technical review of bioassay data supporting novelty argument', duration: '1:45', amount: '$350.00', iconType: 'book' },
+      { person: 'Jordan Bennett', type: 'RESEARCH', typeColor: 'green', title: 'Technical review of bioassay data supporting novelty argument', duration: '1:45', amount: '$350.00', iconType: 'book' },
     ],
     total: '4h 15m',
     totalAmount: '$1,287.50',
@@ -155,7 +155,7 @@ const TIMELINE = [
   ]},
   { date: '5 Mar 2026', events: [
     { chip: 'TIME', chipColor: 'green', sub: '2:00 PM · RESEARCH', title: '45 minutes logged on your matter', body: 'Reviewing post-filing compliance requirements for next quarter.', person: 'James Donovan', personInitials: 'JD' },
-    { chip: 'STATUS', chipColor: 'orange', sub: '11:30 AM', title: 'Case stage updated', body: 'Your case has moved into litigation after settlement talks concluded without agreement.', person: 'John Carter', personInitials: 'JC', stageFrom: 'Negotiation', stageTo: 'Litigation' },
+    { chip: 'STATUS', chipColor: 'orange', sub: '11:30 AM', title: 'Case stage updated', body: 'Your case has moved into litigation after settlement talks concluded without agreement.', person: 'Marcus Hayes', personInitials: 'MH', stageFrom: 'Negotiation', stageTo: 'Litigation' },
   ]},
 ];
 
@@ -245,13 +245,6 @@ export default function MatterDetail() {
 function OverviewTab({ matter }: { matter: typeof MATTERS[string] }) {
   return (
     <>
-      <button className="text-sm text-fg inline-flex items-center gap-1.5 mb-4">
-        Since joining
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-          <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </button>
-
       {/* KPIs */}
       <div className="grid grid-cols-4 gap-3 mb-4">
         <KpiCard label="Total Hours" value={formatHoursShort(matter.totalHours)} />
@@ -722,6 +715,8 @@ function formatHoursShort(sec: number) {
   return `${h.toFixed(1)}h`;
 }
 function formatMoney(n: number) {
+  // Whole dollars unless cents matter — matches admin + portal home + invoices.
+  if (Number.isInteger(n) || n % 1 < 0.005) return `$${Math.round(n).toLocaleString()}`;
   return `$${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 

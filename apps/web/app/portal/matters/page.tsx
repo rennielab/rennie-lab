@@ -3,7 +3,7 @@
 import Link from 'next/link';
 
 import { PortalShell } from '@/components/PortalShell';
-import { formatHours, formatMoney } from '@/lib/mock';
+import { formatHours, formatMoneyCompact } from '@/lib/mock';
 import { MATTER_STATUS } from '@/lib/portalData';
 
 type Stage = 'Intake' | 'Active' | 'On Hold' | 'Closed';
@@ -92,7 +92,7 @@ function MatterCard({ m, dimmed = false }: { m: typeof myMatters[number]; dimmed
         </div>
         <div className="flex-1">
           <div className="text-xs text-fg-muted mb-0.5">Billed</div>
-          <div className="text-lg font-semibold tabular-nums">{formatMoney(m.billed)}</div>
+          <div className="text-lg font-semibold tabular-nums">{formatMoneyCompact(m.billed)}</div>
         </div>
         <div>
           <div className="text-xs text-fg-muted mb-1">Team</div>
@@ -111,8 +111,8 @@ function MatterCard({ m, dimmed = false }: { m: typeof myMatters[number]; dimmed
       </div>
 
       <div className="space-y-1.5 text-sm pt-4 border-t border-border">
-        <Row label="Paid" value={formatMoney(m.paid)} valueClass="text-accent" />
-        <Row label="Outstanding" value={formatMoney(m.outstanding)} valueClass={m.outstanding > 0 ? 'text-warning' : ''} />
+        <Row label="Paid" value={formatMoneyCompact(m.paid)} valueClass="text-accent" />
+        <Row label="Outstanding" value={formatMoneyCompact(m.outstanding)} valueClass={m.outstanding > 0 ? 'text-warning' : ''} />
         <Row label="Last update" value={m.lastActivity} />
       </div>
     </Link>

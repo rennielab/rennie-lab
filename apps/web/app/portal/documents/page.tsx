@@ -33,7 +33,9 @@ export default function PortalDocuments() {
   const [signing, setSigning] = useState<Document | null>(null);
 
   const filtered = useMemo(() => {
-    let docs = allDocs;
+    // Drop internal-only docs (drafts are firm work product; clients see
+    // filings, signed contracts, and receipts).
+    let docs = allDocs.filter((d) => d.kind !== 'draft');
     if (kind !== 'all') docs = docs.filter((d) => d.kind === kind);
     if (q.trim()) {
       const term = q.toLowerCase();
@@ -60,12 +62,9 @@ export default function PortalDocuments() {
           <h1 className="text-2xl font-semibold tracking-[-0.5px]">Documents</h1>
           <p className="text-sm text-fg-muted mt-1">Court filings, contracts, drafts, and receipts across your matters.</p>
         </div>
-        <button className="h-11 px-5 rounded-[10px] border border-border bg-card hover:bg-bg text-sm font-semibold inline-flex items-center gap-2">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          Upload document
-        </button>
+        {/* Upload from the client side is intentionally out of scope for v1 —
+            adding it would need a "send to firm" flow distinct from the admin
+            upload modal (no share-with-client toggle etc). */}
       </div>
 
       {/* Needs signature banner */}
@@ -100,7 +99,7 @@ export default function PortalDocuments() {
           />
         </div>
         <div className="flex items-center gap-1 border border-border bg-card rounded-lg p-1">
-          {(['all', 'filing', 'contract', 'draft', 'receipt'] as const).map((k) => (
+          {(['all', 'filing', 'contract', 'receipt'] as const).map((k) => (
             <button
               key={k}
               onClick={() => setKind(k)}

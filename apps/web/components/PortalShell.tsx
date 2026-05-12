@@ -16,12 +16,12 @@ import {
   useUnreadCount,
 } from '@/lib/portalState';
 
+// Messages is now the campfire chat slide-out from the header — no nav slot.
 const NAV = [
   { href: '/portal/home', label: 'Home', icon: <HomeIcon /> },
   { href: '/portal/matters', label: 'Matters', icon: <BriefcaseIcon /> },
   { href: '/portal/invoices', label: 'Invoices', icon: <InvoiceIcon /> },
   { href: '/portal/documents', label: 'Documents', icon: <FileIcon /> },
-  { href: '/portal/messages', label: 'Messages', icon: <MessageIcon /> },
   { href: '/portal/contact', label: 'Contact', icon: <BookIcon /> },
 ];
 
@@ -100,7 +100,12 @@ function NotificationsBell() {
   return (
     <div className="relative" ref={ref}>
       <button
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => {
+          const next = !open;
+          setOpen(next);
+          // Clear unread count when the popover opens — same UX as Slack/Linear.
+          if (next) markAllNotificationsRead();
+        }}
         className="w-10 h-10 rounded-full border border-border bg-card hover:bg-bg flex items-center justify-center relative">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
           <path

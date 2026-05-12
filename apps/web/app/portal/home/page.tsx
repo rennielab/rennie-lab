@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 import { PortalShell } from '@/components/PortalShell';
-import { formatHours, formatMoney } from '@/lib/mock';
+import { formatHours, formatMoneyCompact } from '@/lib/mock';
 import { DEADLINES, DOCUMENTS, MATTER_STATUS, formatDueRelative } from '@/lib/portalData';
 import { markInvoicePaid, useUnreadCount, usePaidInvoiceIds } from '@/lib/portalState';
 
@@ -70,7 +70,7 @@ export default function PortalHome() {
           <div className="text-xs text-fg-muted">Total outstanding</div>
           <div className="flex items-baseline gap-3 mt-1">
             <span className={`text-3xl font-semibold tabular-nums tracking-tight ${totalOutstanding > 0 ? 'text-fg' : 'text-fg-muted'}`}>
-              {formatMoney(totalOutstanding)}
+              {formatMoneyCompact(totalOutstanding)}
             </span>
             <span className="text-sm text-fg-muted">
               across {outstandingInvoices.length} {outstandingInvoices.length === 1 ? 'invoice' : 'invoices'}
@@ -79,7 +79,7 @@ export default function PortalHome() {
           {overdueAmount > 0 && (
             <div className="mt-2 inline-flex items-center gap-2 text-xs font-medium text-danger">
               <span className="w-1.5 h-1.5 rounded-full bg-danger" />
-              {formatMoney(overdueAmount)} overdue · {overdueCount} {overdueCount === 1 ? 'invoice' : 'invoices'}
+              {formatMoneyCompact(overdueAmount)} overdue · {overdueCount} {overdueCount === 1 ? 'invoice' : 'invoices'}
             </div>
           )}
         </div>
@@ -90,7 +90,7 @@ export default function PortalHome() {
             className="h-11 px-5 rounded-[10px] bg-accent hover:bg-accent-dim text-white text-sm font-semibold transition inline-flex items-center gap-2 disabled:opacity-60">
             {payingAll ? 'Processing…' : (
               <>
-                Pay all · {formatMoney(totalOutstanding)}
+                Pay all · {formatMoneyCompact(totalOutstanding)}
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                   <path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
@@ -150,11 +150,11 @@ export default function PortalHome() {
                         Hours <span className="text-fg font-semibold tabular-nums ml-1">{formatHours(m.hours)}</span>
                       </span>
                       <span className="text-fg-muted">
-                        Billed <span className="text-fg font-semibold tabular-nums ml-1">{formatMoney(m.billed)}</span>
+                        Billed <span className="text-fg font-semibold tabular-nums ml-1">{formatMoneyCompact(m.billed)}</span>
                       </span>
                       {m.outstanding > 0 && (
                         <span className="text-fg-muted">
-                          Outstanding <span className="text-warning font-semibold tabular-nums ml-1">{formatMoney(m.outstanding)}</span>
+                          Outstanding <span className="text-warning font-semibold tabular-nums ml-1">{formatMoneyCompact(m.outstanding)}</span>
                         </span>
                       )}
                       {status && (
@@ -230,15 +230,6 @@ export default function PortalHome() {
             </div>
           </div>
 
-          {/* Quick actions */}
-          <div className="bg-card border border-border rounded-2xl p-5">
-            <div className="text-sm font-semibold mb-3">Quick actions</div>
-            <div className="space-y-2">
-              <QuickLink href="/portal/messages" label="Message your attorney" icon={<IconChat />} />
-              <QuickLink href="/portal/documents" label="Browse documents" icon={<IconFile />} />
-              <QuickLink href="/portal/invoices" label="Review invoices" icon={<IconDollar />} />
-            </div>
-          </div>
         </div>
       </div>
     </PortalShell>
@@ -275,38 +266,3 @@ function DeadlineCard({ d, prominent = false }: { d: typeof DEADLINES[number]; p
   );
 }
 
-function QuickLink({ href, label, icon }: { href: string; label: string; icon: React.ReactNode }) {
-  return (
-    <Link href={href} className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-bg transition group">
-      <span className="w-8 h-8 rounded-md bg-bg text-fg-muted group-hover:text-accent flex items-center justify-center transition">
-        {icon}
-      </span>
-      <span className="text-sm font-medium text-fg flex-1">{label}</span>
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-fg-subtle">
-        <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    </Link>
-  );
-}
-
-function IconChat() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-      <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-function IconFile() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zM14 2v6h6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-function IconDollar() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-      <path d="M12 2v20M17 5H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 110 7H6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  );
-}

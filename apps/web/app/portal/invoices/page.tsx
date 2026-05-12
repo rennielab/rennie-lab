@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 import { PortalShell } from '@/components/PortalShell';
-import { formatDate, formatHours, formatMoney } from '@/lib/mock';
+import { formatDate, formatHours, formatMoneyCompact } from '@/lib/mock';
 import { markInvoicePaid, usePaidInvoiceIds } from '@/lib/portalState';
 
 type Status = 'paid' | 'issued' | 'overdue' | 'partial';
@@ -88,7 +88,7 @@ export default function PortalInvoices() {
               </>
             ) : (
               <>
-                Pay all outstanding · {formatMoney(totalOutstanding)}
+                Pay all outstanding · {formatMoneyCompact(totalOutstanding)}
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                   <path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
@@ -108,7 +108,7 @@ export default function PortalInvoices() {
             </svg>
           </span>
           <div className="flex-1 text-sm">
-            <span className="font-semibold text-danger">{formatMoney(overdueAmount)} overdue</span>
+            <span className="font-semibold text-danger">{formatMoneyCompact(overdueAmount)} overdue</span>
             <span className="text-fg-muted"> · {counts.overdue} {counts.overdue === 1 ? 'invoice' : 'invoices'} past due. Pay now to avoid late fees.</span>
           </div>
           <button onClick={() => setTab('overdue')} className="text-sm font-semibold text-danger hover:underline">
@@ -143,9 +143,9 @@ export default function PortalInvoices() {
 
       {/* KPIs — collapsed: hide $0 buckets so we don't show empty cards */}
       <div className={`grid gap-3 mb-6 ${overdueAmount > 0 ? 'grid-cols-3' : 'grid-cols-2'}`}>
-        <Kpi label="Total Billed" value={formatMoney(totalBilled)} />
-        <Kpi label="Total Outstanding" value={formatMoney(totalOutstanding)} tone={totalOutstanding > 0 ? 'warn' : 'ok'} />
-        {overdueAmount > 0 && <Kpi label="Overdue" value={formatMoney(overdueAmount)} tone="danger" />}
+        <Kpi label="Total Billed" value={formatMoneyCompact(totalBilled)} />
+        <Kpi label="Total Outstanding" value={formatMoneyCompact(totalOutstanding)} tone={totalOutstanding > 0 ? 'warn' : 'ok'} />
+        {overdueAmount > 0 && <Kpi label="Overdue" value={formatMoneyCompact(overdueAmount)} tone="danger" />}
       </div>
 
       {/* Search + Filter */}
