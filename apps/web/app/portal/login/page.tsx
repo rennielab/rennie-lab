@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+import { Logo } from '@/components/Logo';
+
 export default function PortalLogin() {
   const router = useRouter();
   const [email, setEmail] = useState('sarah.mitchell@example.com');
@@ -25,7 +27,7 @@ export default function PortalLogin() {
 
       {/* Logo top-left */}
       <Link href="/" className="absolute top-8 left-8 z-10 flex items-center">
-        <Wordmark />
+        <Logo height={32} />
       </Link>
 
       {/* Centered card */}
@@ -33,40 +35,41 @@ export default function PortalLogin() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            router.push('/portal/invoices');
+            router.push('/portal/matters');
           }}
-          className="w-full max-w-md bg-card border border-border rounded-2xl px-10 py-10 shadow-sm">
-          <h1 className="text-2xl font-bold text-center">Login to your account</h1>
-          <p className="text-sm text-fg-muted text-center mt-2 mb-8">
+          className="w-full max-w-[420px] bg-card border border-border rounded-2xl px-10 py-10 shadow-[0_8px_32px_-12px_rgba(15,20,25,0.12)]">
+          <h1 className="text-2xl font-semibold text-center tracking-[-0.5px]">Login to your account</h1>
+          <p className="text-sm text-fg-muted text-center mt-2 mb-7 leading-relaxed">
             Access your client portal to view cases, track progress, and manage invoices.
           </p>
 
           <label className="block mb-4">
-            <span className="text-sm font-semibold">Email Address</span>
+            <span className="text-sm font-medium text-fg">Email Address</span>
             <input
               type="email"
               value={email}
               onChange={(ev) => setEmail(ev.target.value)}
-              className="mt-1.5 w-full px-4 py-3 rounded-lg border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-accent/40 placeholder:text-fg-subtle"
-              placeholder="iamwaleedshabbir@gmail.com"
+              className="mt-1.5 w-full h-11 px-3.5 rounded-[10px] border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent placeholder:text-fg-subtle"
+              placeholder="you@example.com"
             />
           </label>
 
           <label className="block">
-            <span className="text-sm font-semibold">Password</span>
+            <span className="text-sm font-medium text-fg">Password</span>
             <div className="mt-1.5 relative">
               <input
                 type={reveal ? 'text' : 'password'}
                 value={password}
                 onChange={(ev) => setPassword(ev.target.value)}
-                className="w-full px-4 py-3 pr-10 rounded-lg border border-border bg-card text-sm tracking-widest focus:outline-none focus:ring-2 focus:ring-accent/40"
+                placeholder="••••••••••"
+                className="w-full h-11 pl-3.5 pr-11 rounded-[10px] border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
               />
               <button
                 type="button"
                 onClick={() => setReveal((r) => !r)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-fg-muted">
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-fg-subtle hover:text-fg-muted">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="1.8" />
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z" stroke="currentColor" strokeWidth="1.8" />
                   <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8" />
                 </svg>
               </button>
@@ -74,14 +77,14 @@ export default function PortalLogin() {
           </label>
 
           <div className="flex items-center justify-between mt-4 mb-6">
-            <label className="flex items-center gap-2 cursor-pointer">
+            <label className="flex items-center gap-2 cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={keepLogged}
                 onChange={(ev) => setKeepLogged(ev.target.checked)}
-                className="w-4 h-4 accent-[#22C55E]"
+                className="w-4 h-4 rounded border-border accent-[var(--color-accent)]"
               />
-              <span className="text-sm">Keep me logged in</span>
+              <span className="text-sm text-fg">Keep me logged in</span>
             </label>
             <button type="button" className="text-sm font-medium underline underline-offset-2 hover:text-accent">
               Forgot password?
@@ -90,7 +93,7 @@ export default function PortalLogin() {
 
           <button
             type="submit"
-            className="w-full py-3 rounded-lg bg-accent hover:bg-accent-dim text-white font-semibold transition">
+            className="w-full h-11 rounded-[10px] bg-accent hover:bg-accent-dim text-white text-sm font-semibold transition shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
             Login
           </button>
         </form>
@@ -98,22 +101,5 @@ export default function PortalLogin() {
 
       <div className="absolute bottom-6 left-8 text-xs text-fg-subtle">© 2026 Clockd</div>
     </div>
-  );
-}
-
-function Wordmark() {
-  return (
-    <svg width="120" height="32" viewBox="0 0 180 32" fill="none">
-      <text
-        x="0"
-        y="24"
-        fontFamily="ui-sans-serif, system-ui, -apple-system, sans-serif"
-        fontSize="28"
-        fontWeight="900"
-        letterSpacing="2"
-        fill="#22C55E">
-        CLOCKD
-      </text>
-    </svg>
   );
 }

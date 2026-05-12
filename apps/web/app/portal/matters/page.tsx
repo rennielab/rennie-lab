@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import { PortalShell } from '@/components/PortalShell';
 import { formatHours, formatMoney } from '@/lib/mock';
 
@@ -27,7 +29,7 @@ export default function PortalMatters() {
 
       <div className="grid grid-cols-2 gap-4">
         {myMatters.map((m) => (
-          <div key={m.id} className="bg-card border border-border rounded-2xl p-6 hover:border-accent transition cursor-pointer">
+          <Link href={`/portal/matters/${m.id}`} key={m.id} className="block bg-card border border-border rounded-2xl p-6 hover:border-accent transition cursor-pointer">
             <div className="flex items-start justify-between mb-3">
               <h3 className="text-lg font-bold flex-1 mr-2">{m.name}</h3>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="text-fg-muted shrink-0">
@@ -71,7 +73,7 @@ export default function PortalMatters() {
               <Row label="Created" value={m.createdAt} />
               <Row label="Last Activity" value={m.lastActivity} />
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </PortalShell>
