@@ -1,76 +1,86 @@
-# Clockd — Demo cheat sheet
+# Clockd — Client review pack
+
+A working prototype of Clockd across **three personas at one firm
+(Bennett & Hayes LLP)** plus a native mobile app for the firm user.
+Everything below is live and reviewable. Any email + password works on
+every sign-in screen.
 
 ## 🔗 Live URLs
 
-### Web (production on Vercel)
-- **Landing**: https://web-fawn-six-40.vercel.app
-- **Admin login**: https://web-fawn-six-40.vercel.app/admin/login
-- **Client portal**: https://web-fawn-six-40.vercel.app/portal/login
+### Web (production)
+**Landing — three-tier persona picker**
+https://web-fawn-six-40.vercel.app
 
-(any email + password works, mock data only)
+| Persona | What they do | Direct URL |
+| --- | --- | --- |
+| **Admin** (Marcus Hayes) | Approve time, issue invoices, see firm cashflow | https://web-fawn-six-40.vercel.app/admin |
+| **Firm User** (Sophia Williams) | Log time, manage matters, message client | https://web-fawn-six-40.vercel.app/firm |
+| **Client** (Sarah Mitchell) | View matters, pay invoices, sign documents, chat | https://web-fawn-six-40.vercel.app/portal |
 
-### Mobile (Expo Go, EAS preview)
-- **Deep link**: `exp://u.expo.dev/9611b8de-aebf-4411-b78a-b26cff67656f?channel-name=preview`
-- **QR code**: `apps/mobile/EXPO-QR.png`
-- **EAS dashboard**: https://expo.dev/accounts/rennielab/projects/clockd
+### Mobile (Sophia — the firm user, native app)
+- **Deep link** (tap on your phone): `exp://u.expo.dev/9611b8de-aebf-4411-b78a-b26cff67656f?channel-name=preview`
+- **QR code:** `apps/mobile/EXPO-QR.png` (also pasted into the email below)
 
-### Install instructions for the client
-1. Install **Expo Go** from the App Store or Play Store
-2. Open Expo Go → **Scan QR code** → scan `apps/mobile/EXPO-QR.png`
-3. Clockd loads in 5–10 seconds
+## 📱 How to open the mobile app
 
-## 🎬 The 90-second demo script
+1. Install **Expo Go** from the App Store (iOS) or Play Store (Android)
+2. Open Expo Go → tap **Scan QR code**
+3. Scan the QR from this doc / email
+4. Clockd loads in 5–10s and lands on Sophia's Daily Brief
 
-> "Sarah's a partner at Bennett & Hayes. She's about to call her client about a deposition."
+> iOS Camera app can't open `exp://` links — open inside Expo Go.
 
-**On mobile (Expo Go):**
-1. Open Clockd → splash auto-advances → Login → tap **Login** (any creds)
-2. Land on Home → tap **Directory** tab → tap **Sarah Mitchell** (Reyes v. Horizon)
-3. Call screen — let the timer run for 5–10 seconds, then tap the **red End** button
-4. Watch Processing Call → "Identifying matter" → "Drafting time entry"
-5. Review screen — point out the **AI-summarized description**, the matter pre-selected, billing at $700/hr
-6. Tap **Submit Entry** → Success animation → "Pending approval"
+## 🎬 The 5-minute demo
 
-**Switch to web (browser):**
-7. `/admin/login` → click **Sign in** → land on Dashboard
-8. Click **Time Entries** in sidebar → calendar loads → **wait 2 seconds** → the new entry pulses in with a "NEW" badge and toast notification
-9. Click the new entry → Entry Detail with AI summary + call recording + $94.45 billing → tap **Approve & Confirm**
-10. After approve, the button becomes **Generate Invoice →** — click it
-11. New Invoice page — entries are pre-selected → click **Issue Invoice**
-12. Invoice page renders with full letterhead, line items, $2,961.67 total
+This walks one complete cycle: lawyer logs time → admin approves → client pays.
 
-**Switch to client portal:**
-13. `/portal/login` → sign in → land on Invoices
-14. The new invoice has a **NEW** badge → click it → click **Pay Now**
-15. "Processing payment…" → "Payment received ✓"
+### 1. Lawyer on mobile (Sophia)
+1. Open Clockd on Expo Go → lands on **Daily Brief**
+2. Point out: Bennett & Hayes firm bar, animated $ counter, real 7-day sparkline, the *Next* card with "Tap to dial" to David Chen
+3. **Press and hold the green + button (3s)** → matter picker → pick *Reyes v. Horizon* → timer starts
+4. Hit **Pause**, **Resume**, then **Stop** → review state → describe the work → **Save entry**
+5. Show the **Campfire chat** (chat icon in firm bar) — @mention typeahead, client-tone amber bubbles, full Basecamp feel
+6. Show the **Calls tab** — recents / contacts / dial pad
 
-> "That whole loop — call to paid invoice — used to take this firm hours of admin time. Clockd does it in 90 seconds, with one human approval click."
+### 2. Admin on web (Marcus)
+7. Go to `/admin` → notice the time entry that just submitted is in the **Entries** queue
+8. Approve it → invoice gets a +$ ready to issue
+9. Issue invoice → it appears on the client portal
 
-## ⚠️ Caveats for the demo
+### 3. Client on web (Sarah)
+10. Go to `/portal` → outstanding invoice with **Pay** button
+11. Tap **Pay** → routes into invoice detail → **Review → Card → Processing → Success** with full card form
+12. Or use **Pay all outstanding** → batch checkout against combined total
 
-- **No real call** — "Processing Call" is a 4-second simulation. The AI summary is hardcoded.
-- **Mock data only** — submitting on mobile doesn't actually push to the server. The admin web page is timed to "discover" the entry 2.4 seconds after page load. **Don't refresh** the entries page or the entry disappears.
-- **The Pay button is fake** — no real Stripe.
+### 4. Bonus moments
+- **Firm User (`/firm`)** is Sophia's web view — matters, entries, the same Campfire chat the mobile uses
+- **Documents** on admin + firm: upload, mark as needing signature → client reviews & signs
+- **Stage simplification:** Intake / Active / On Hold / Closed everywhere
 
-These are all swapped for real services in M3 (Twilio Voice + Twilio Voice Intelligence) and M5 (Stripe).
+## ⚠️ Faked-for-demo (real in M3+)
 
-## 🚨 Backup plan if Wi-Fi flakes
+| What's faked | Real plan |
+| --- | --- |
+| AI call summary is hardcoded | Twilio Voice Intelligence transcription |
+| Mobile "submit" doesn't push to backend | Convex backend wiring |
+| Pay flow is a 1.5–4s animation | Stripe Checkout |
+| In-app call screen simulates the dial | Twilio Voice + CallKit |
+| Chat is in-memory per session | Convex + push notifications |
 
-Run before the demo:
+## 🔄 Republishing
+
+```bash
+# Web (production)
+cd apps/web && npx vercel --prod --yes --scope ben-9361s-projects
+
+# Mobile (Expo Go via EAS Update — propagates on next app open)
+cd apps/mobile && npx eas-cli update --branch preview --message "what changed"
+```
+
+## 🚨 Backup if EAS Update is slow
+
+Run a tunneled dev server alongside:
 ```bash
 cd apps/mobile && npx expo start --tunnel
 ```
-This gives a fallback QR via ngrok if EAS Update CDN is slow.
-
-A pre-recorded video of the full hero loop should also be on hand — see `apps/mobile/DEMO-BACKUP.mp4` (TODO: record this).
-
-## 🔄 Republishing if you change something
-
-```bash
-# Web
-cd apps/web && npx vercel --prod --yes --scope ben-9361s-projects
-
-# Mobile
-cd apps/mobile && npx eas-cli update --branch preview --message "Tweak X"
-```
-EAS Update is instant — your client's Expo Go app picks up the new bundle next time they open it.
+Gives a fallback QR via ngrok the client can scan in Expo Go.
