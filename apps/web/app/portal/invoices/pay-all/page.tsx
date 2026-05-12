@@ -1,67 +1,47 @@
 'use client';
 
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { BHLogo } from '@/components/BHLogo';
 import { PortalShell } from '@/components/PortalShell';
-import {
-  clientById,
-  firm,
-  formatDate,
-  formatDuration,
-  formatMoneyCompact,
-  heroEntry,
-  invoices as seedInvoices,
-  matterById,
-  seedEntries,
-} from '@/lib/mock';
+import { firm, formatDate, formatMoneyCompact } from '@/lib/mock';
 import { markInvoicePaid, usePaidInvoiceIds } from '@/lib/portalState';
 
-// All invoices on the portal — same list as /portal/invoices.
-const PORTAL_INVOICES = [
-  { id: 'inv_hero', number: 'INV-008', clientId: 'cli_reyes', matterName: 'Litigation — Contract Dispute', entryIds: [heroEntry.id, 'te_2', 'te_6'], subtotal: 700, tax: 0, total: 700, issuedAt: Date.now(), dueAt: Date.now() + 30 * 24 * 3600 * 1000 },
-  { id: 'inv_7', number: 'INV-007', clientId: 'cli_reyes', matterName: 'Corporate — Annual Filing', entryIds: ['te_3', 'te_4'], subtotal: 1200, tax: 0, total: 1200, issuedAt: Date.parse('2026-03-08'), dueAt: Date.parse('2026-04-07') },
-  { id: 'inv_6', number: 'INV-006', clientId: 'cli_reyes', matterName: 'Corporate — M&A Advisory', entryIds: ['te_1'], subtotal: 1300, tax: 0, total: 1300, issuedAt: Date.parse('2026-03-03'), dueAt: Date.parse('2026-04-02') },
-  { id: 'inv_5', number: 'INV-005', clientId: 'cli_reyes', matterName: 'IP — Patent Filing', entryIds: ['te_5', 'te_8'], subtotal: 1500, tax: 0, total: 1500, issuedAt: Date.parse('2026-03-05'), dueAt: Date.parse('2026-04-04') },
+// Same invoice list as /portal/invoices/[id] — multiple unpaid invoices selected
+// for a single combined payment.
+const ALL_INVOICES = [
+  { id: 'inv_hero', number: 'INV-008', matterName: 'Litigation — Contract Dispute', amount: 700, issuedAt: Date.now(), dueAt: Date.now() + 30 * 24 * 3600 * 1000 },
+  { id: 'inv_7', number: 'INV-007', matterName: 'Corporate — Annual Filing', amount: 1200, issuedAt: Date.parse('2026-03-08'), dueAt: Date.parse('2026-04-07'), overdue: true },
+  { id: 'inv_5', number: 'INV-005', matterName: 'IP — Patent Filing', amount: 1500, issuedAt: Date.parse('2026-03-05'), dueAt: Date.parse('2026-04-04') },
 ];
 
 type Step = 'review' | 'card' | 'processing' | 'success';
 
-export default function PortalInvoiceDetail() {
-  const params = useParams<{ id: string }>();
+export default function PayAllCheckout() {
   const router = useRouter();
   const paidIds = usePaidInvoiceIds();
 
-  const invoice = PORTAL_INVOICES.find((i) => i.id === params.id) ?? PORTAL_INVOICES[0];
-  const alreadyPaid = paidIds.has(invoice.id);
+  const unpaid = ALL_INVOICES.filter((i) => !paidIds.has(i.id));
+  const total = unpaid.reduce((a, i) => a + i.amount, 0);
 
-  const [step, setStep] = useState<Step>(alreadyPaid ? 'success' : 'review');
+  const [step, setStep] = useState<Step>('review');
   const [method, setMethod] = useState<'saved' | 'new'>('saved');
   const [cardNumber, setCardNumber] = useState('');
   const [exp, setExp] = useState('');
   const [cvv, setCvv] = useState('');
   const [zip, setZip] = useState('');
   const [cardholderName, setCardholderName] = useState('Sarah Mitchell');
-  const [savingCard, setSavingCard] = useState(true);
 
   useEffect(() => {
     if (step !== 'processing') return;
     const t = setTimeout(() => {
-      markInvoicePaid(invoice.id);
+      unpaid.forEach((i) => markInvoicePaid(i.id));
       setStep('success');
-    }, 1800);
+    }, 2200);
     return () => clearTimeout(t);
-  }, [step, invoice.id]);
-
-  const client = clientById(invoice.clientId)!;
-  const allEntries = [heroEntry, ...seedEntries];
-  const lineEntries = invoice.entryIds
-    .map((id) => allEntries.find((e) => e.id === id))
-    .filter(Boolean) as typeof seedEntries;
-
-  const overdue = !alreadyPaid && step !== 'success' && Date.now() > invoice.dueAt;
+  }, [step, unpaid]);
 
   const cardValid =
     method === 'saved' ||
@@ -77,6 +57,23 @@ export default function PortalInvoiceDetail() {
     setStep('processing');
   }
 
+  if (unpaid.length === 0 && step !== 'success') {
+    return (
+      <PortalShell>
+        <div className="bg-card border border-border rounded-2xl p-12 text-center max-w-xl mx-auto">
+          <div className="w-16 h-16 mx-auto bg-accent-soft rounded-full flex items-center justify-center mb-4">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" className="text-accent-dark">
+              <path d="M5 12l5 5L20 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+          <div className="text-lg font-semibold">No outstanding invoices</div>
+          <div className="text-sm text-fg-muted mt-1 mb-4">You&apos;re all paid up.</div>
+          <Link href="/portal/invoices" className="text-sm font-medium text-accent hover:underline">Back to invoices →</Link>
+        </div>
+      </PortalShell>
+    );
+  }
+
   return (
     <PortalShell>
       <div className="mb-6 flex items-center gap-3">
@@ -88,102 +85,67 @@ export default function PortalInvoiceDetail() {
         </Link>
       </div>
 
+      <div className="mb-6">
+        <h1 className="text-2xl font-semibold tracking-[-0.5px]">Pay all outstanding</h1>
+        <p className="text-sm text-fg-muted mt-1">{unpaid.length} invoices · paid in a single transaction.</p>
+      </div>
+
       <div className="grid grid-cols-[1fr_400px] gap-6 items-start">
-        {/* Invoice document */}
-        <div className="bg-card border border-border rounded-2xl p-10">
-          <div className="flex items-start justify-between mb-10">
-            <div className="flex items-start gap-3">
-              <BHLogo size={48} />
-              <div>
-                <div className="font-semibold text-fg">{firm.name}</div>
-                <div className="text-xs text-fg-muted mt-0.5">{firm.location}</div>
-                <div className="text-xs text-fg-muted">contact@bennetthayes.law</div>
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-xs uppercase tracking-wide text-fg-muted font-semibold">Invoice</div>
-              <div className="text-2xl font-semibold mt-1">{invoice.number}</div>
-              <div className="text-xs text-fg-muted mt-2">
-                Issued {formatDate(invoice.issuedAt)}<br />
-                Due {formatDate(invoice.dueAt)}
-                {overdue && <span className="block text-danger font-semibold mt-1">Past due</span>}
-              </div>
+        {/* Invoice summary */}
+        <div className="bg-card border border-border rounded-2xl p-8">
+          <div className="flex items-start gap-3 mb-8">
+            <BHLogo size={48} />
+            <div>
+              <div className="font-semibold text-fg">{firm.name}</div>
+              <div className="text-xs text-fg-muted mt-0.5">{firm.location}</div>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 mb-10">
-            <div>
-              <div className="text-xs uppercase text-fg-muted font-semibold mb-2">Bill to</div>
-              <div className="font-semibold text-fg">{client.name}</div>
-              <div className="text-sm text-fg-muted">Reyes Family Trust</div>
-              <div className="text-sm text-fg-muted">c/o Sarah Mitchell, Trustee</div>
+          <div className="text-xs uppercase tracking-wide text-fg-muted font-semibold mb-3">Invoices being paid</div>
+
+          <div className="bg-bg/40 border border-border rounded-xl overflow-hidden mb-6">
+            <div className="grid grid-cols-[100px_1fr_120px_120px] gap-3 px-5 py-3 border-b border-border text-xs font-semibold text-fg-muted">
+              <div>Invoice #</div>
+              <div>Matter</div>
+              <div>Due</div>
+              <div className="text-right">Amount</div>
             </div>
-            <div>
-              <div className="text-xs uppercase text-fg-muted font-semibold mb-2">Matter</div>
-              <div className="font-semibold text-fg">{invoice.matterName}</div>
-              <div className="text-xs text-fg-muted mt-2">Total due</div>
-              <div className="text-3xl font-semibold text-accent tabular-nums mt-1">{formatMoneyCompact(invoice.total)}</div>
-            </div>
+            {unpaid.map((inv) => (
+              <div key={inv.id} className="grid grid-cols-[100px_1fr_120px_120px] gap-3 items-center px-5 py-3 border-b border-border last:border-0">
+                <div className="text-sm font-semibold text-accent">{inv.number}</div>
+                <div className="text-sm truncate">{inv.matterName}</div>
+                <div className="text-sm text-fg-muted">
+                  {formatDate(inv.dueAt)}
+                  {inv.overdue && <div className="text-xs font-semibold text-danger">Past due</div>}
+                </div>
+                <div className="text-sm font-semibold tabular-nums text-right">{formatMoneyCompact(inv.amount)}</div>
+              </div>
+            ))}
           </div>
 
-          <table className="w-full text-sm">
-            <thead className="border-b border-border text-fg-muted">
-              <tr>
-                <th className="text-left py-3 font-semibold">Description</th>
-                <th className="text-right py-3 font-semibold">Hours</th>
-                <th className="text-right py-3 font-semibold">Rate</th>
-                <th className="text-right py-3 font-semibold">Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              {lineEntries.map((e) => {
-                const m = matterById(e.matterId)!;
-                return (
-                  <tr key={e.id} className="border-b border-border">
-                    <td className="py-3">
-                      <div className="font-medium text-fg leading-snug">{e.description}</div>
-                      <div className="text-xs text-fg-muted mt-0.5">{m.shortName} · {formatDate(e.createdAt)}</div>
-                    </td>
-                    <td className="py-3 text-right tabular-nums text-fg-muted">{formatDuration(e.durationSec)}</td>
-                    <td className="py-3 text-right tabular-nums text-fg-muted">${m.rate}/hr</td>
-                    <td className="py-3 text-right tabular-nums font-semibold">{formatMoneyCompact((m.rate * e.durationSec) / 3600)}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-
-          <div className="flex justify-end mt-6">
+          <div className="flex justify-end">
             <div className="w-72 space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-fg-muted">Subtotal</span>
-                <span className="tabular-nums">{formatMoneyCompact(invoice.subtotal)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-fg-muted">Tax</span>
-                <span className="tabular-nums">{formatMoneyCompact(invoice.tax)}</span>
+                <span className="tabular-nums">{formatMoneyCompact(total)}</span>
               </div>
               <div className="flex justify-between font-semibold text-xl border-t border-border pt-3">
                 <span>Total</span>
-                <span className="text-accent tabular-nums">{formatMoneyCompact(invoice.total)}</span>
+                <span className="text-accent tabular-nums">{formatMoneyCompact(total)}</span>
               </div>
             </div>
-          </div>
-
-          <div className="mt-10 pt-6 border-t border-border text-xs text-fg-muted">
-            Payment due within 30 days. Bennett &amp; Hayes LLP · EIN ••-•••6741 · invoices@bennetthayes.law
           </div>
         </div>
 
         {/* Payment side panel */}
         <aside className="sticky top-24">
           {step === 'success' ? (
-            <SuccessPanel total={invoice.total} number={invoice.number} onDone={() => router.push('/portal/invoices')} />
+            <SuccessPanel total={total} count={unpaid.length} onDone={() => router.push('/portal/invoices')} />
           ) : step === 'processing' ? (
-            <ProcessingPanel total={invoice.total} />
+            <ProcessingPanel total={total} count={unpaid.length} />
           ) : step === 'card' ? (
             <CardEntryPanel
-              total={invoice.total}
+              total={total}
               cardNumber={cardNumber}
               setCardNumber={setCardNumber}
               exp={exp}
@@ -194,16 +156,14 @@ export default function PortalInvoiceDetail() {
               setZip={setZip}
               cardholderName={cardholderName}
               setCardholderName={setCardholderName}
-              savingCard={savingCard}
-              setSavingCard={setSavingCard}
               canSubmit={cardValid}
               onBack={() => setStep('review')}
               onConfirm={confirmPayment}
             />
           ) : (
             <ReviewPanel
-              total={invoice.total}
-              dueAt={invoice.dueAt}
+              total={total}
+              count={unpaid.length}
               method={method}
               setMethod={setMethod}
               onPay={startPayment}
@@ -218,23 +178,15 @@ export default function PortalInvoiceDetail() {
 // ---------- Panels ----------
 
 function ReviewPanel({
-  total,
-  dueAt,
-  method,
-  setMethod,
-  onPay,
+  total, count, method, setMethod, onPay,
 }: {
-  total: number;
-  dueAt: number;
-  method: 'saved' | 'new';
-  setMethod: (m: 'saved' | 'new') => void;
-  onPay: () => void;
+  total: number; count: number; method: 'saved' | 'new'; setMethod: (m: 'saved' | 'new') => void; onPay: () => void;
 }) {
   return (
     <div className="bg-card border border-border rounded-2xl p-6">
-      <div className="text-xs uppercase tracking-wide text-fg-muted font-semibold mb-1">Amount due</div>
+      <div className="text-xs uppercase tracking-wide text-fg-muted font-semibold mb-1">Combined total</div>
       <div className="text-3xl font-semibold tabular-nums">{formatMoneyCompact(total)}</div>
-      <div className="text-xs text-fg-muted mt-1 mb-5">Due {formatDate(dueAt)}</div>
+      <div className="text-xs text-fg-muted mt-1 mb-5">{count} invoices · one charge to your card</div>
 
       <div className="text-xs uppercase tracking-wide text-fg-muted font-semibold mb-2">Payment method</div>
       <div className="space-y-2 mb-5">
@@ -254,9 +206,7 @@ function ReviewPanel({
         />
       </div>
 
-      <button
-        onClick={onPay}
-        className="w-full h-12 rounded-[10px] bg-accent hover:bg-accent-dim text-white font-semibold text-sm inline-flex items-center justify-center gap-2 transition">
+      <button onClick={onPay} className="w-full h-12 rounded-[10px] bg-accent hover:bg-accent-dim text-white font-semibold text-sm inline-flex items-center justify-center gap-2 transition">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
           <rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" strokeWidth="1.8" />
           <path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" strokeWidth="1.8" />
@@ -277,10 +227,7 @@ function CardEntryPanel({
   cvv, setCvv,
   zip, setZip,
   cardholderName, setCardholderName,
-  savingCard, setSavingCard,
-  canSubmit,
-  onBack,
-  onConfirm,
+  canSubmit, onBack, onConfirm,
 }: {
   total: number;
   cardNumber: string; setCardNumber: (v: string) => void;
@@ -288,10 +235,7 @@ function CardEntryPanel({
   cvv: string; setCvv: (v: string) => void;
   zip: string; setZip: (v: string) => void;
   cardholderName: string; setCardholderName: (v: string) => void;
-  savingCard: boolean; setSavingCard: (v: boolean) => void;
-  canSubmit: boolean;
-  onBack: () => void;
-  onConfirm: () => void;
+  canSubmit: boolean; onBack: () => void; onConfirm: () => void;
 }) {
   function fmtCardNumber(raw: string) {
     return raw.replace(/\D/g, '').slice(0, 19).replace(/(.{4})/g, '$1 ').trim();
@@ -312,93 +256,45 @@ function CardEntryPanel({
         </button>
         <div className="text-sm font-semibold">New card</div>
       </div>
-
       <div className="text-xs text-fg-muted mb-4">
         Paying <span className="font-semibold text-fg">{formatMoneyCompact(total)}</span>
       </div>
-
       <div className="space-y-3">
         <label className="block">
           <span className="text-xs font-semibold text-fg-muted">Card number</span>
           <div className="mt-1.5 relative">
-            <input
-              value={cardNumber}
-              onChange={(e) => setCardNumber(fmtCardNumber(e.target.value))}
-              placeholder="1234 1234 1234 1234"
-              inputMode="numeric"
-              className="w-full h-11 pl-3.5 pr-12 rounded-lg border border-border bg-card text-sm font-mono focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
-            />
+            <input value={cardNumber} onChange={(e) => setCardNumber(fmtCardNumber(e.target.value))} placeholder="1234 1234 1234 1234" inputMode="numeric" className="w-full h-11 pl-3.5 pr-12 rounded-lg border border-border bg-card text-sm font-mono focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent" />
             <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-fg-subtle">
-              <VisaMark />
-              <MastercardMark />
+              <VisaMark /><MastercardMark />
             </div>
           </div>
         </label>
-
         <div className="grid grid-cols-2 gap-3">
           <label className="block">
             <span className="text-xs font-semibold text-fg-muted">Expiry</span>
-            <input
-              value={exp}
-              onChange={(e) => setExp(fmtExp(e.target.value))}
-              placeholder="MM / YY"
-              inputMode="numeric"
-              className="mt-1.5 w-full h-11 px-3.5 rounded-lg border border-border bg-card text-sm font-mono focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
-            />
+            <input value={exp} onChange={(e) => setExp(fmtExp(e.target.value))} placeholder="MM / YY" inputMode="numeric" className="mt-1.5 w-full h-11 px-3.5 rounded-lg border border-border bg-card text-sm font-mono focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent" />
           </label>
           <label className="block">
             <span className="text-xs font-semibold text-fg-muted">CVC</span>
-            <input
-              value={cvv}
-              onChange={(e) => setCvv(e.target.value.replace(/\D/g, '').slice(0, 4))}
-              placeholder="123"
-              inputMode="numeric"
-              className="mt-1.5 w-full h-11 px-3.5 rounded-lg border border-border bg-card text-sm font-mono focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
-            />
+            <input value={cvv} onChange={(e) => setCvv(e.target.value.replace(/\D/g, '').slice(0, 4))} placeholder="123" inputMode="numeric" className="mt-1.5 w-full h-11 px-3.5 rounded-lg border border-border bg-card text-sm font-mono focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent" />
           </label>
         </div>
-
         <label className="block">
           <span className="text-xs font-semibold text-fg-muted">Cardholder name</span>
-          <input
-            value={cardholderName}
-            onChange={(e) => setCardholderName(e.target.value)}
-            className="mt-1.5 w-full h-11 px-3.5 rounded-lg border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
-          />
+          <input value={cardholderName} onChange={(e) => setCardholderName(e.target.value)} className="mt-1.5 w-full h-11 px-3.5 rounded-lg border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent" />
         </label>
-
         <label className="block">
           <span className="text-xs font-semibold text-fg-muted">ZIP / Postcode</span>
-          <input
-            value={zip}
-            onChange={(e) => setZip(e.target.value.replace(/[^A-Za-z0-9]/g, '').slice(0, 10))}
-            placeholder="94105"
-            className="mt-1.5 w-full h-11 px-3.5 rounded-lg border border-border bg-card text-sm font-mono focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
-          />
-        </label>
-
-        <label className="flex items-center gap-2 cursor-pointer select-none pt-1">
-          <input
-            type="checkbox"
-            checked={savingCard}
-            onChange={(e) => setSavingCard(e.target.checked)}
-            className="w-4 h-4 rounded border-border accent-[var(--color-accent)]"
-          />
-          <span className="text-sm">Save this card for future payments</span>
+          <input value={zip} onChange={(e) => setZip(e.target.value.replace(/[^A-Za-z0-9]/g, '').slice(0, 10))} placeholder="94105" className="mt-1.5 w-full h-11 px-3.5 rounded-lg border border-border bg-card text-sm font-mono focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent" />
         </label>
       </div>
-
-      <button
-        onClick={onConfirm}
-        disabled={!canSubmit}
-        className="w-full h-12 mt-5 rounded-[10px] bg-accent hover:bg-accent-dim text-white font-semibold text-sm inline-flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition">
+      <button onClick={onConfirm} disabled={!canSubmit} className="w-full h-12 mt-5 rounded-[10px] bg-accent hover:bg-accent-dim text-white font-semibold text-sm inline-flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
           <rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" strokeWidth="1.8" />
           <path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" strokeWidth="1.8" />
         </svg>
         Pay {formatMoneyCompact(total)}
       </button>
-
       <div className="text-[11px] text-fg-subtle text-center mt-3">
         Secured by Stripe · 256-bit encryption · PCI DSS compliant.
       </div>
@@ -406,7 +302,7 @@ function CardEntryPanel({
   );
 }
 
-function ProcessingPanel({ total }: { total: number }) {
+function ProcessingPanel({ total, count }: { total: number; count: number }) {
   return (
     <div className="bg-card border border-border rounded-2xl p-6 text-center">
       <div className="w-16 h-16 mx-auto mb-5">
@@ -416,12 +312,12 @@ function ProcessingPanel({ total }: { total: number }) {
         </svg>
       </div>
       <div className="text-base font-semibold mb-1">Processing payment…</div>
-      <div className="text-sm text-fg-muted">Charging {formatMoneyCompact(total)} · please don&apos;t close this tab.</div>
+      <div className="text-sm text-fg-muted">Charging {formatMoneyCompact(total)} across {count} invoices · please don&apos;t close this tab.</div>
     </div>
   );
 }
 
-function SuccessPanel({ total, number, onDone }: { total: number; number: string; onDone: () => void }) {
+function SuccessPanel({ total, count, onDone }: { total: number; count: number; onDone: () => void }) {
   return (
     <div className="bg-card border border-accent/40 rounded-2xl p-6 text-center">
       <div className="w-16 h-16 mx-auto bg-accent rounded-full flex items-center justify-center mb-4">
@@ -429,17 +325,16 @@ function SuccessPanel({ total, number, onDone }: { total: number; number: string
           <path d="M5 12l5 5L20 7" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </div>
-      <div className="text-lg font-semibold mb-1">Payment received</div>
+      <div className="text-lg font-semibold mb-1">{count} invoices paid</div>
       <div className="text-sm text-fg-muted">
         {formatMoneyCompact(total)} paid to Bennett &amp; Hayes LLP
       </div>
-      <div className="text-xs text-fg-subtle mt-2">Receipt for {number} sent to your email.</div>
-
+      <div className="text-xs text-fg-subtle mt-2">Receipts sent to your email.</div>
       <button className="w-full h-11 mt-5 rounded-[10px] border border-border bg-card hover:bg-bg text-sm font-semibold inline-flex items-center justify-center gap-2">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
           <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
-        Download receipt
+        Download receipts
       </button>
       <button onClick={onDone} className="w-full h-11 mt-2 rounded-[10px] bg-accent hover:bg-accent-dim text-white text-sm font-semibold">
         Back to invoices
@@ -450,11 +345,7 @@ function SuccessPanel({ total, number, onDone }: { total: number; number: string
 
 function PaymentMethodCard({ selected, onSelect, icon, label, sub }: { selected: boolean; onSelect: () => void; icon: React.ReactNode; label: string; sub: string }) {
   return (
-    <button
-      onClick={onSelect}
-      className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl border text-left transition ${
-        selected ? 'border-accent bg-accent-soft/40' : 'border-border bg-card hover:bg-bg'
-      }`}>
+    <button onClick={onSelect} className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl border text-left transition ${selected ? 'border-accent bg-accent-soft/40' : 'border-border bg-card hover:bg-bg'}`}>
       <span className="w-10 h-7 rounded-md bg-card border border-border flex items-center justify-center shrink-0">{icon}</span>
       <div className="flex-1 min-w-0">
         <div className="text-sm font-medium truncate">{label}</div>

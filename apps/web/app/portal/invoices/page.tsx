@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 
 import { PortalShell } from '@/components/PortalShell';
 import { formatDate, formatHours, formatMoneyCompact } from '@/lib/mock';
-import { markInvoicePaid, usePaidInvoiceIds } from '@/lib/portalState';
+import { usePaidInvoiceIds } from '@/lib/portalState';
 
 type Status = 'paid' | 'issued' | 'overdue' | 'partial';
 type Tab = 'all' | 'paid' | 'pending' | 'overdue';
@@ -30,7 +30,6 @@ export default function PortalInvoices() {
   const [tab, setTab] = useState<Tab>('all');
   const [showHero, setShowHero] = useState(false);
   const paidIds = usePaidInvoiceIds();
-  const [payingAll, setPayingAll] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => setShowHero(true), 1200);
@@ -61,14 +60,6 @@ export default function PortalInvoices() {
   const overdueAmount = all.filter((i) => i.status === 'overdue').reduce((a, i) => a + i.amount, 0);
   const outstandingInvoices = all.filter((i) => i.status !== 'paid');
 
-  function handlePayAll() {
-    setPayingAll(true);
-    setTimeout(() => {
-      outstandingInvoices.forEach((i) => markInvoicePaid(i.id));
-      setPayingAll(false);
-    }, 1100);
-  }
-
   return (
     <PortalShell>
       <div className="mb-6 flex items-start justify-between gap-6">
@@ -77,24 +68,14 @@ export default function PortalInvoices() {
           <p className="text-sm text-fg-muted mt-1">All invoices across your matters.</p>
         </div>
         {totalOutstanding > 0 && (
-          <button
-            onClick={handlePayAll}
-            disabled={payingAll}
-            className="h-11 px-5 rounded-[10px] bg-accent hover:bg-accent-dim text-white text-sm font-semibold transition inline-flex items-center gap-2 disabled:opacity-60">
-            {payingAll ? (
-              <>
-                <Spinner />
-                Processing…
-              </>
-            ) : (
-              <>
-                Pay all outstanding · {formatMoneyCompact(totalOutstanding)}
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                  <path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </>
-            )}
-          </button>
+          <Link
+            href="/portal/invoices/pay-all"
+            className="h-11 px-5 rounded-[10px] bg-accent hover:bg-accent-dim text-white text-sm font-semibold transition inline-flex items-center gap-2">
+            Pay all outstanding · {formatMoneyCompact(totalOutstanding)}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </Link>
         )}
       </div>
 
@@ -201,11 +182,12 @@ export default function PortalInvoices() {
               </span>
               <span className="flex justify-end gap-1">
                 {(inv.status === 'issued' || inv.status === 'overdue' || inv.status === 'partial') && (
-                  <button
-                    onClick={() => markInvoicePaid(inv.id)}
-                    className="h-8 px-3 rounded-lg bg-accent hover:bg-accent-dim text-white text-xs font-semibold transition">
+                  <Link
+                    href={`/portal/invoices/${inv.id}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="h-8 px-3 rounded-lg bg-accent hover:bg-accent-dim text-white text-xs font-semibold transition inline-flex items-center">
                     Pay
-                  </button>
+                  </Link>
                 )}
                 <button title="Download PDF" className="w-8 h-8 rounded-lg text-fg-muted hover:text-fg hover:bg-bg flex items-center justify-center">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
@@ -257,11 +239,3 @@ function BriefcaseSm() {
   );
 }
 
-function Spinner() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="animate-spin">
-      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeOpacity="0.3" strokeWidth="3" />
-      <path d="M12 2a10 10 0 0110 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-    </svg>
-  );
-}
