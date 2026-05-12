@@ -20,6 +20,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Avatar } from '@/components/Avatar';
 import { BHLogo } from '@/components/BHLogo';
+import { useUnreadCount } from '@/lib/chat';
 import {
   contactById,
   currentLawyer,
@@ -79,6 +80,8 @@ export default function Home() {
     () => buildDailyTotals(allEntries, 7, currentLawyer.id),
     [allEntries],
   );
+
+  const unread = useUnreadCount();
 
   // ---- animated counters ---------------------------------------------------
   const dollarAnim = useRef(new Animated.Value(0)).current;
@@ -158,6 +161,17 @@ export default function Home() {
             <Text style={styles.firmName}>{firm.name}</Text>
             <Text style={styles.firmLoc}>{firm.location}</Text>
           </View>
+          <Pressable
+            hitSlop={6}
+            onPress={() => router.push('/chat')}
+            style={styles.firmIconBtn}>
+            <Ionicons name="chatbubbles-outline" size={18} color={colors.textPrimary} />
+            {unread > 0 && (
+              <View style={styles.unreadDot}>
+                <Text style={styles.unreadDotText}>{unread > 9 ? '9+' : unread}</Text>
+              </View>
+            )}
+          </Pressable>
           <Pressable
             hitSlop={6}
             onPress={() => router.push('/(tabs)/profile')}
@@ -634,6 +648,31 @@ const styles = StyleSheet.create({
   },
   firmLoc: { color: colors.textTertiary, fontSize: 11, marginTop: 1 },
   firmAvatar: { padding: 2 },
+  firmIconBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: colors.bgSurface,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  unreadDot: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    minWidth: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: colors.danger,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+    borderWidth: 2,
+    borderColor: colors.bg,
+  },
+  unreadDotText: { color: '#fff', fontSize: 9, fontWeight: '800' },
 
   headerRow: {
     flexDirection: 'row',
