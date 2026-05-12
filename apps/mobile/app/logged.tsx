@@ -12,6 +12,7 @@ import * as Haptics from 'expo-haptics';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
+  Alert,
   Animated,
   Easing,
   KeyboardAvoidingView,
@@ -187,8 +188,25 @@ export default function Logged() {
   };
 
   const onDiscard = () => {
-    if (mode === 'start') stopTimer();
-    router.replace('/(tabs)');
+    const finalSec = mode === 'review' ? (lockedDuration ?? 0) : (confirmedSec ?? liveSec);
+    const minutes = Math.round(finalSec / 60);
+    Alert.alert(
+      'Discard entry?',
+      minutes > 0
+        ? `You'll lose ${minutes} minute${minutes === 1 ? '' : 's'} of tracked time. This can't be undone.`
+        : "This entry won't be saved.",
+      [
+        { text: 'Keep', style: 'cancel' },
+        {
+          text: 'Discard',
+          style: 'destructive',
+          onPress: () => {
+            if (mode === 'start') stopTimer();
+            router.replace('/(tabs)');
+          },
+        },
+      ],
+    );
   };
 
   // ── Render ──────────────────────────────────────────────────────────────

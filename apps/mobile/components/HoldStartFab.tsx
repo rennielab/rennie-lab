@@ -17,7 +17,7 @@ import { matters } from '@/lib/mock';
 import { startTimer, useActiveTimer } from '@/lib/timer';
 import { colors } from '@/lib/tokens';
 
-const HOLD_MS = 2500;
+const HOLD_MS = 3000;
 const SIZE = 56;
 const RING = 64;
 

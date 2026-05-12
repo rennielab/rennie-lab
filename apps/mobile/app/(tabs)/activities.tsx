@@ -46,10 +46,13 @@ export default function Activities() {
     [tab, all],
   );
 
+  const todayStart = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d.getTime();
+  }, []);
   const todayHours = formatHours(
-    all
-      .filter((e) => Date.now() - e.createdAt < 86400000)
-      .reduce((a, e) => a + e.durationSec, 0),
+    all.filter((e) => e.createdAt >= todayStart).reduce((a, e) => a + e.durationSec, 0),
   );
   const weekHours = formatHours(all.reduce((a, e) => a + e.durationSec, 0));
   const pendingCount = all.filter((e) => e.status === 'pending').length;

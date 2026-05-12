@@ -128,9 +128,11 @@ export default function Home() {
   // "Start" (quick action) — general time tracking, no matter yet. Sophia
   // can pick the matter when she stops the timer. The deliberate path (FAB
   // long-press) requires the matter up front.
+  // If a timer is already running we navigate to it instead of starting a
+  // new one (which would wipe the elapsed time).
   const onStartGeneral = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    startTimer({ source: 'manual' });
+    if (!active) startTimer({ source: 'manual' });
     router.push('/logged?mode=start');
   };
 
@@ -192,17 +194,36 @@ export default function Home() {
           </View>
         </View>
 
-        {/* ── Active timer pill (only when running) ─────────────────────── */}
+        {/* ── Active timer pill (running or paused) ─────────────────────── */}
         {active && (
           <Pressable
             onPress={() => router.push('/logged?mode=start')}
-            style={styles.timerPill}>
-            <View style={styles.timerDot} />
-            <Text style={styles.timerPillLabel}>Timer running</Text>
-            <Text style={styles.timerPillTime}>
+            style={[styles.timerPill, active.paused && styles.timerPillPaused]}>
+            <View
+              style={[
+                styles.timerDot,
+                active.paused && { backgroundColor: colors.warning },
+              ]}
+            />
+            <Text
+              style={[
+                styles.timerPillLabel,
+                active.paused && { color: colors.warning },
+              ]}>
+              {active.paused ? 'Timer paused' : 'Timer running'}
+            </Text>
+            <Text
+              style={[
+                styles.timerPillTime,
+                active.paused && { color: colors.warning },
+              ]}>
               {formatDuration(elapsedSec(active))}
             </Text>
-            <Ionicons name="chevron-forward" size={16} color={colors.accent} />
+            <Ionicons
+              name="chevron-forward"
+              size={16}
+              color={active.paused ? colors.warning : colors.accent}
+            />
           </Pressable>
         )}
 
@@ -700,6 +721,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.md,
     paddingVertical: 10,
     marginBottom: space.lg,
+  },
+  timerPillPaused: {
+    backgroundColor: colors.warningSoft,
+    borderColor: 'rgba(245, 158, 11, 0.4)',
   },
   timerDot: {
     width: 8,
