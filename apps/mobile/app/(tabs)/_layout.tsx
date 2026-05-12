@@ -5,6 +5,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HoldStartFab } from '@/components/HoldStartFab';
+import { recentCalls } from '@/lib/mock';
 import { colors, radii, space } from '@/lib/tokens';
 
 type IconName = keyof typeof Ionicons.glyphMap;
@@ -33,11 +34,16 @@ function ClockdTabBar({ state, navigation }: any) {
   const insets = useSafeAreaInsets();
   const currentRoute = state.routes[state.index].name;
 
+  // Missed-call count — shown as a tiny red badge on the Calls tab icon so
+  // Sophia can see at a glance she has a call to return.
+  const missedCount = recentCalls.filter((c) => c.direction === 'missed').length;
+
   return (
     <View style={[styles.wrap, { paddingBottom: insets.bottom + space.sm }]} pointerEvents="box-none">
       <View style={styles.pill}>
         {TABS.map((tab) => {
           const isActive = currentRoute === tab.name;
+          const showMissed = tab.name === 'calls' && missedCount > 0 && !isActive;
           return (
             <Pressable
               key={tab.name}
@@ -47,11 +53,18 @@ function ClockdTabBar({ state, navigation }: any) {
               }}
               style={[styles.tab, isActive && styles.tabActive]}
               hitSlop={8}>
-              <Ionicons
-                name={isActive ? (tab.icon.replace('-outline', '') as IconName) : tab.icon}
-                size={18}
-                color={isActive ? colors.textOnAccent : colors.textSecondary}
-              />
+              <View style={styles.tabIconWrap}>
+                <Ionicons
+                  name={isActive ? (tab.icon.replace('-outline', '') as IconName) : tab.icon}
+                  size={18}
+                  color={isActive ? colors.textOnAccent : colors.textSecondary}
+                />
+                {showMissed && (
+                  <View style={styles.tabBadge}>
+                    <Text style={styles.tabBadgeText}>{missedCount}</Text>
+                  </View>
+                )}
+              </View>
               {isActive ? (
                 <Text style={styles.tabLabel}>{tab.label}</Text>
               ) : (
@@ -104,4 +117,20 @@ const styles = StyleSheet.create({
   tabActive: { backgroundColor: colors.accent, flex: 1.4 },
   tabLabel: { color: colors.textOnAccent, fontSize: 13, fontWeight: '600' },
   tabLabelInactive: { color: colors.textSecondary, fontSize: 12, fontWeight: '500' },
+  tabIconWrap: { position: 'relative' },
+  tabBadge: {
+    position: 'absolute',
+    top: -5,
+    right: -7,
+    minWidth: 14,
+    height: 14,
+    borderRadius: 7,
+    backgroundColor: colors.danger,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 3,
+    borderWidth: 1.5,
+    borderColor: colors.bgElevated,
+  },
+  tabBadgeText: { color: '#fff', fontSize: 8, fontWeight: '800' },
 });

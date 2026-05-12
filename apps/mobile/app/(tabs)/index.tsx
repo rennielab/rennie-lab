@@ -11,6 +11,7 @@ import {
   Animated,
   Easing,
   Pressable,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -123,7 +124,40 @@ export default function Home() {
   });
 
   // ---- the "Next" item -----------------------------------------------------
-  const next = useMemo(() => pickNext(upcoming), []);
+  const [snoozedIds, setSnoozedIds] = useState<Set<string>>(new Set());
+  const visibleUpcoming = useMemo(
+    () => upcoming.filter((u) => !snoozedIds.has(u.id)),
+    [snoozedIds],
+  );
+  const next = useMemo(() => pickNext(visibleUpcoming), [visibleUpcoming]);
+  // Skip the hero item from the secondary "Up next" list so we don't show
+  // the same call twice on screen.
+  const upNextList = useMemo(
+    () => visibleUpcoming.filter((u) => u.id !== next?.id).slice(0, 4),
+    [visibleUpcoming, next],
+  );
+
+  const onSnoozeNext = async () => {
+    if (!next) return;
+    await Haptics.selectionAsync();
+    setSnoozedIds((prev) => new Set(prev).add(next.id));
+  };
+
+  // ---- pull to refresh -----------------------------------------------------
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    // Replay the counter + stagger animations so the screen feels reactive.
+    dollarAnim.setValue(0);
+    Animated.timing(dollarAnim, {
+      toValue: todayDollars,
+      duration: 900,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: false,
+    }).start();
+    setTimeout(() => setRefreshing(false), 700);
+  };
 
   // "Start" (quick action) — general time tracking, no matter yet. Sophia
   // can pick the matter when she stops the timer. The deliberate path (FAB
@@ -155,7 +189,16 @@ export default function Home() {
           paddingBottom: 140,
           paddingHorizontal: space.xxl,
         }}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.accent}
+            colors={[colors.accent]}
+            progressBackgroundColor={colors.bgElevated}
+          />
+        }>
         {/* ── Firm bar — Bennett & Hayes presence at the top ────────────── */}
         <View style={styles.firmBar}>
           <BHLogo size={28} />
@@ -250,7 +293,7 @@ export default function Home() {
         {/* ── NEXT: the one decisive card ───────────────────────────────── */}
         {next && (
           <Animated.View style={cardStyle(1)}>
-            <NextCard next={next} onPressCall={onTapCall} />
+            <NextCard next={next} onPressCall={onTapCall} onSnooze={onSnoozeNext} />
           </Animated.View>
         )}
 
@@ -282,14 +325,19 @@ export default function Home() {
         </Animated.View>
 
         {/* ── Up next list ──────────────────────────────────────────────── */}
-        <Animated.View style={cardStyle(3)}>
-          <SectionTitle title="Up next" hint={`${upcoming.length} today & this week`} />
-          <View style={styles.upNextList}>
-            {upcoming.slice(0, 4).map((u) => (
-              <UpNextRow key={u.id} item={u} />
-            ))}
-          </View>
-        </Animated.View>
+        {upNextList.length > 0 && (
+          <Animated.View style={cardStyle(3)}>
+            <SectionTitle
+              title="Up next"
+              hint={`${upNextList.length} ${upNextList.length === 1 ? 'item' : 'items'}`}
+            />
+            <View style={styles.upNextList}>
+              {upNextList.map((u) => (
+                <UpNextRow key={u.id} item={u} />
+              ))}
+            </View>
+          </Animated.View>
+        )}
 
         {/* ── This week ─────────────────────────────────────────────────── */}
         <Animated.View style={[{ marginTop: space.xl }, cardStyle(4)]}>
@@ -317,9 +365,11 @@ export default function Home() {
 function NextCard({
   next,
   onPressCall,
+  onSnooze,
 }: {
   next: Upcoming;
   onPressCall: (id: string) => void;
+  onSnooze: () => void;
 }) {
   const at = new Date(next.at);
   const timeStr = at.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
@@ -335,7 +385,12 @@ function NextCard({
             <View style={styles.nextLabelDot} />
             <Text style={styles.nextLabelText}>NEXT · {relStr.toUpperCase()}</Text>
           </View>
-          <Text style={styles.nextTime}>{timeStr}</Text>
+          <View style={styles.nextHeaderRight}>
+            <Text style={styles.nextTime}>{timeStr}</Text>
+            <Pressable hitSlop={8} onPress={onSnooze} style={styles.nextSnoozeBtn}>
+              <Ionicons name="close" size={14} color={colors.textTertiary} />
+            </Pressable>
+          </View>
         </View>
         <View style={styles.nextBody}>
           <Avatar size={56} initials={contact.initials} tone="green" />
@@ -393,7 +448,12 @@ function NextCard({
               {danger ? 'DUE' : 'UPCOMING'} · {relStr.toUpperCase()}
             </Text>
           </View>
-          <Text style={styles.nextTime}>{timeStr}</Text>
+          <View style={styles.nextHeaderRight}>
+            <Text style={styles.nextTime}>{timeStr}</Text>
+            <Pressable hitSlop={8} onPress={onSnooze} style={styles.nextSnoozeBtn}>
+              <Ionicons name="close" size={14} color={colors.textTertiary} />
+            </Pressable>
+          </View>
         </View>
         <View style={styles.nextBody}>
           <View style={[styles.deadlineIcon, danger && { backgroundColor: colors.warningSoft }]}>
@@ -423,7 +483,12 @@ function NextCard({
           <View style={styles.nextLabelDot} />
           <Text style={styles.nextLabelText}>MEETING · {relStr.toUpperCase()}</Text>
         </View>
-        <Text style={styles.nextTime}>{timeStr}</Text>
+        <View style={styles.nextHeaderRight}>
+          <Text style={styles.nextTime}>{timeStr}</Text>
+          <Pressable hitSlop={8} onPress={onSnooze} style={styles.nextSnoozeBtn}>
+            <Ionicons name="close" size={14} color={colors.textTertiary} />
+          </Pressable>
+        </View>
       </View>
       <View style={styles.nextBody}>
         <View style={styles.deadlineIcon}>
@@ -843,11 +908,20 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 0.6,
   },
+  nextHeaderRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   nextTime: {
     color: colors.textSecondary,
     fontSize: font.size.sm,
     fontWeight: '600',
     fontVariant: ['tabular-nums'],
+  },
+  nextSnoozeBtn: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: colors.bgSurface,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   nextBody: { flexDirection: 'row', alignItems: 'center', gap: space.md },
   nextTitle: { color: colors.textPrimary, fontSize: font.size.lg, fontWeight: '700' },
