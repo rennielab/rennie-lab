@@ -5,7 +5,11 @@ import { firm, lawyers } from '@/lib/mock';
 
 export default function PortalContact() {
   return (
-    <PortalShell title="Contact your firm" subtitle={firm.name}>
+    <PortalShell>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold">Contact your firm</h1>
+        <p className="text-sm text-fg-muted mt-1">{firm.name}</p>
+      </div>
       <div className="grid grid-cols-3 gap-4">
         {lawyers.map((l) => (
           <div key={l.id} className="bg-card border border-border rounded-2xl p-6 text-center">

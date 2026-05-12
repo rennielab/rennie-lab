@@ -52,7 +52,11 @@ export default function PortalInvoiceDetail() {
   };
 
   return (
-    <PortalShell title={invoice.number} subtitle={`From ${firm.name}`}>
+    <PortalShell>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold">{invoice.number}</h1>
+        <p className="text-sm text-fg-muted mt-1">From {firm.name}</p>
+      </div>
       <div className="grid grid-cols-3 gap-6">
         <div className="col-span-2">
           <div className="bg-card border border-border rounded-2xl p-10">
