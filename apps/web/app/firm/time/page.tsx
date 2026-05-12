@@ -109,8 +109,8 @@ export default function FirmTime() {
       {showDrafts && drafts.length > 0 && (
         <div className="bg-card border border-accent/40 rounded-2xl overflow-hidden mb-4">
           <div className="px-5 py-3 border-b border-border bg-accent-soft/30 flex items-center justify-between">
-            <div className="text-sm font-semibold">Drafts saved on your device</div>
-            <span className="text-xs text-fg-muted">Submit when you're ready — your partner will review.</span>
+            <div className="text-sm font-semibold">Your drafts</div>
+            <span className="text-xs text-fg-muted">Submit when you're ready for Marcus to review.</span>
           </div>
           {drafts.map((d) => {
             const m = matterById(d.matterId);

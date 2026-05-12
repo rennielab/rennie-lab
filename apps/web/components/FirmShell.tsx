@@ -8,6 +8,7 @@ import { Avatar } from '@/components/Avatar';
 import { BHBadge, BHLogo } from '@/components/BHLogo';
 import { ChatButton } from '@/components/ChatSlideOut';
 import { Logo } from '@/components/Logo';
+import { TimerPill } from '@/components/TimerPill';
 import { currentFirmUser, firm } from '@/lib/mock';
 import {
   formatRelativeFirm,
@@ -126,6 +127,7 @@ export function FirmShell({
             {subtitle && <p className="text-sm text-fg-muted mt-0.5">{subtitle}</p>}
           </div>
           <div className="flex items-center gap-3">
+            <TimerPill />
             <ChatButton me={{ side: 'firm', name: currentFirmUser.name, initials: currentFirmUser.initials, role: currentFirmUser.role }} />
             <FirmNotificationsBell />
             {action}

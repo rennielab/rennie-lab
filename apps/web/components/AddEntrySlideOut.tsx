@@ -9,10 +9,12 @@ export function AddEntrySlideOut({
   open,
   onClose,
   defaultMatterId,
+  prefillSec,
 }: {
   open: boolean;
   onClose: () => void;
   defaultMatterId?: string;
+  prefillSec?: number;
 }) {
   const [matterId, setMatterId] = useState(defaultMatterId ?? matters[0]?.id ?? '');
   const [hours, setHours] = useState('0');
@@ -24,13 +26,18 @@ export function AddEntrySlideOut({
   useEffect(() => {
     if (open) {
       setMatterId(defaultMatterId ?? matters[0]?.id ?? '');
-      setHours('0');
-      setMins('30');
+      if (prefillSec && prefillSec > 0) {
+        setHours(String(Math.floor(prefillSec / 3600)));
+        setMins(String(Math.floor((prefillSec % 3600) / 60)));
+      } else {
+        setHours('0');
+        setMins('30');
+      }
       setDescription('');
       setNonBillable(false);
       setSource('manual');
     }
-  }, [open, defaultMatterId]);
+  }, [open, defaultMatterId, prefillSec]);
 
   if (!open) return null;
 

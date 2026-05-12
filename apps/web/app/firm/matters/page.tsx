@@ -82,7 +82,7 @@ export default function FirmMatters() {
   return (
     <FirmShell
       title="Your matters"
-      subtitle={`${rows.length} ${rows.length === 1 ? 'matter' : 'matters'} assigned to you at ${currentFirmUser.name.split(' ')[0]}'s caseload.`}
+      subtitle={`${rows.length} ${rows.length === 1 ? 'matter' : 'matters'} on your caseload.`}
       action={
         <button
           onClick={() => setAddOpen(true)}
@@ -164,8 +164,8 @@ export default function FirmMatters() {
                   <div className="text-base font-semibold tabular-nums mt-0.5">${m.rate}/hr</div>
                 </div>
                 {row.pendingCount > 0 && (
-                  <div className="ml-auto">
-                    <div className="text-fg-muted">Pending</div>
+                  <div className="ml-auto" title="Your entries awaiting partner approval">
+                    <div className="text-fg-muted">Pending approval</div>
                     <div className="text-base font-semibold tabular-nums mt-0.5 text-warning">{row.pendingCount}</div>
                   </div>
                 )}
@@ -177,11 +177,20 @@ export default function FirmMatters() {
                   className="flex-1 h-9 px-3 rounded-lg border border-border text-center text-sm font-medium hover:bg-bg flex items-center justify-center">
                   Open matter
                 </Link>
-                <button
-                  onClick={() => openAddFor(m.id)}
-                  className="h-9 px-4 rounded-lg bg-accent hover:bg-accent-dim text-white text-sm font-semibold inline-flex items-center gap-1.5">
-                  <span className="text-base leading-none">+</span> Log time
-                </button>
+                {row.stage === 'Closed' ? (
+                  <button
+                    disabled
+                    title="This matter is closed — log time isn't available."
+                    className="h-9 px-4 rounded-lg border border-border text-fg-subtle text-sm font-semibold inline-flex items-center gap-1.5 cursor-not-allowed">
+                    Closed
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => openAddFor(m.id)}
+                    className="h-9 px-4 rounded-lg bg-accent hover:bg-accent-dim text-white text-sm font-semibold inline-flex items-center gap-1.5">
+                    <span className="text-base leading-none">+</span> Log time
+                  </button>
+                )}
               </div>
             </div>
           );

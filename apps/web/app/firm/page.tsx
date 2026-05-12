@@ -11,7 +11,7 @@ import {
   entryValue,
   formatHoursH,
   formatMoneyCompact,
-  matterById,
+  MATTER_STAGE,
   matters,
   seedEntries,
 } from '@/lib/mock';
@@ -69,7 +69,11 @@ export default function FirmDashboard() {
 
   // My pinned matters (scoped to ones Sophia has entries on too, in case data drifts)
   const myMatterIds = Array.from(new Set(myEntries.map((e) => e.matterId)));
-  const pinnedList = matters.filter((m) => pinned.has(m.id) || myMatterIds.includes(m.id));
+  // Dashboard "Your matters" is the quick-log shortcut — only show open
+  // matters here. Closed matters live on /firm/matters for reference.
+  const pinnedList = matters.filter(
+    (m) => (pinned.has(m.id) || myMatterIds.includes(m.id)) && MATTER_STAGE[m.id] !== 'Closed',
+  );
 
   // Last 7 days for Sophia
   const days: { label: string; sec: number }[] = [];
@@ -130,31 +134,28 @@ export default function FirmDashboard() {
 
       {/* Drafts / rejections strip */}
       {(drafts.length > 0 || rejectedCount > 0 || pendingCount > 0) && (
-        <div className="grid grid-cols-3 gap-3 mb-4">
-          <ActionCard
-            tone={drafts.length > 0 ? 'accent' : 'ok'}
+        <div className={`grid gap-3 mb-4 ${rejectedCount > 0 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+          <DraftsCard
             count={drafts.length}
-            label="Drafts saved"
-            sub={drafts.length === 0 ? 'Nothing waiting to submit' : 'Submit so partners can approve'}
-            cta={drafts.length > 0 ? 'Submit all →' : undefined}
-            onCta={() => submitAllDrafts()}
-            href="/firm/time?tab=drafts"
+            onSubmitAll={() => submitAllDrafts()}
           />
           <ActionCard
             tone={pendingCount > 0 ? 'warn' : 'ok'}
             count={pendingCount}
             label="Awaiting approval"
-            sub={pendingCount === 0 ? 'No entries pending review' : `Waiting on Marcus to confirm`}
+            sub={pendingCount === 0 ? 'No entries pending review' : `Waiting on Marcus to approve`}
             href="/firm/time?tab=pending"
           />
-          <ActionCard
-            tone={rejectedCount > 0 ? 'danger' : 'ok'}
-            count={rejectedCount}
-            label="Sent back to you"
-            sub={rejectedCount === 0 ? 'Nothing to fix' : 'Review comment, edit, resubmit'}
-            href="/firm/time?tab=rejected"
-            cta={rejectedCount > 0 ? 'Fix →' : undefined}
-          />
+          {rejectedCount > 0 && (
+            <ActionCard
+              tone="danger"
+              count={rejectedCount}
+              label="Sent back to you"
+              sub="Review comment, edit, resubmit"
+              href="/firm/time?tab=rejected"
+              cta="Fix →"
+            />
+          )}
         </div>
       )}
 
@@ -206,42 +207,15 @@ export default function FirmDashboard() {
         </div>
       </div>
 
-      {/* Hours chart + recent entries */}
-      <div className="grid grid-cols-3 gap-3">
-        <div className="col-span-2 bg-card border border-border rounded-2xl p-6">
-          <div className="flex items-start justify-between mb-5">
-            <div>
-              <div className="text-sm font-semibold">Your hours this week</div>
-              <div className="text-xs text-fg-muted mt-0.5">Total <span className="text-fg font-semibold">{formatHoursH(days.reduce((a, x) => a + x.sec, 0))}</span></div>
-            </div>
-          </div>
-          <AutoScaleBarChart series={days} />
-        </div>
-        <div className="bg-card border border-border rounded-2xl p-6">
-          <div className="text-sm font-semibold mb-1">Recent entries</div>
-          <div className="text-xs text-fg-muted mb-4">Your latest logged time</div>
-          <div className="space-y-3">
-            {[...myEntries].sort((a, b) => b.createdAt - a.createdAt).slice(0, 5).map((e) => {
-              const m = matterById(e.matterId);
-              return (
-                <div key={e.id} className="flex items-center gap-2.5">
-                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold ${
-                    e.source === 'call' ? 'bg-accent-soft text-accent-dark' : 'bg-bg text-fg-muted'
-                  }`}>
-                    {e.source === 'call' ? <Phone /> : <ClockSm />}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-fg truncate">{m?.shortName}</div>
-                    <div className="text-xs text-fg-muted">{formatHoursH(e.durationSec)} · <StatusInline status={e.status} /></div>
-                  </div>
-                </div>
-              );
-            })}
-            {myEntries.length === 0 && (
-              <div className="text-sm text-fg-muted text-center py-4">No entries yet. Hit + Add Entry.</div>
-            )}
+      {/* Hours chart — full width, Recent entries lives on /firm/time */}
+      <div className="bg-card border border-border rounded-2xl p-6">
+        <div className="flex items-start justify-between mb-5">
+          <div>
+            <div className="text-sm font-semibold">Your hours this week</div>
+            <div className="text-xs text-fg-muted mt-0.5">Total <span className="text-fg font-semibold">{formatHoursH(days.reduce((a, x) => a + x.sec, 0))}</span></div>
           </div>
         </div>
+        <AutoScaleBarChart series={days} />
       </div>
 
       <AddEntrySlideOut open={addOpen} onClose={() => setAddOpen(false)} defaultMatterId={addDefault} />
@@ -315,20 +289,27 @@ function AutoScaleBarChart({ series }: { series: { label: string; sec: number }[
   );
 }
 
-function StatusInline({ status }: { status: string }) {
-  const map: Record<string, { cls: string; label: string }> = {
-    approved: { cls: 'text-accent-dark', label: 'Approved' },
-    pending: { cls: 'text-warning', label: 'Pending' },
-    draft: { cls: 'text-fg-muted', label: 'Draft' },
-    rejected: { cls: 'text-danger', label: 'Sent back' },
-  };
-  const s = map[status] ?? map.draft;
-  return <span className={`font-medium ${s.cls}`}>{s.label}</span>;
-}
-
-function Phone() {
-  return <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.37 1.9.72 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.35 1.85.59 2.81.72A2 2 0 0122 16.92z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>;
-}
-function ClockSm() {
-  return <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" /><path d="M12 7v5l3 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>;
+function DraftsCard({ count, onSubmitAll }: { count: number; onSubmitAll: () => void }) {
+  const hasDrafts = count > 0;
+  return (
+    <div className={`bg-card border rounded-2xl p-4 flex items-center gap-4 ${hasDrafts ? 'border-accent/40' : 'border-border'}`}>
+      <div className="flex-1 min-w-0">
+        <div className="text-2xl font-semibold tabular-nums tracking-tight">{count}</div>
+        <div className="text-sm font-medium text-fg">Drafts saved</div>
+        <div className="text-xs text-fg-muted mt-0.5 truncate">
+          {hasDrafts ? 'Submit so partners can approve' : 'Nothing waiting to submit'}
+        </div>
+      </div>
+      {hasDrafts && (
+        <button
+          onClick={onSubmitAll}
+          className="shrink-0 h-9 px-4 rounded-lg bg-accent hover:bg-accent-dim text-white text-sm font-semibold inline-flex items-center gap-1.5">
+          Submit all
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+            <path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+      )}
+    </div>
+  );
 }
