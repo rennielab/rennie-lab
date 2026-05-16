@@ -1,7 +1,10 @@
-// HoldStartFab — the center bottom-bar action. The deliberate path: press
-// and hold for ~2.5s, a ring fills around the button, haptic ramps up, then
-// the matter picker opens. Pick a matter → timer starts pre-bound to that
-// matter and client. Cancel by releasing early.
+// HoldStartFab — the center bottom-bar action. Press and hold for ~3s, a
+// ring fills around the button while a setTimeout counts down, then the
+// matter picker opens. Release early to cancel.
+//
+// Completion is driven by setTimeout (not the animation callback) because
+// on mobile web the Animated.timing callback gets cancelled by scrolls,
+// browser long-press menus, etc. The animation here is *purely visual*.
 //
 // This is the "I'm starting work on something specific" gesture. The home
 // quick-action "Start" is the looser path (general time, pick matter later).
@@ -9,7 +12,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Animated, Easing, Pressable, StyleSheet, View } from 'react-native';
 
 import { MatterSheet } from '@/components/MatterSheet';
@@ -26,36 +29,62 @@ export function HoldStartFab() {
   const active = useActiveTimer();
   const [pickerOpen, setPickerOpen] = useState(false);
 
-  // 0 → 1 as the user holds; resets on release / cancel.
   const progress = useRef(new Animated.Value(0)).current;
-  const cancelRef = useRef<() => void>(() => {});
+  const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const fireHaptic = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // If a timer is already running, the FAB becomes a "go back to timer" tap.
   const isRunning = !!active;
 
-  const beginHold = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    const anim = Animated.timing(progress, {
+  const clearAllTimers = () => {
+    if (holdTimer.current) {
+      clearTimeout(holdTimer.current);
+      holdTimer.current = null;
+    }
+    if (fireHaptic.current) {
+      clearTimeout(fireHaptic.current);
+      fireHaptic.current = null;
+    }
+  };
+
+  const beginHold = () => {
+    // Don't block on awaiting haptics — fire and forget so the timer
+    // starts on the first frame. Native devices haptic; web no-ops.
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+
+    // Visual ring fill.
+    Animated.timing(progress, {
       toValue: 1,
       duration: HOLD_MS,
       easing: Easing.out(Easing.cubic),
       useNativeDriver: false,
-    });
-    anim.start(async ({ finished }) => {
-      if (!finished) return;
-      // Held all the way through → open the matter picker.
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }).start();
+
+    // Mid-hold haptic tap to confirm the gesture is registering.
+    fireHaptic.current = setTimeout(() => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+    }, HOLD_MS / 2);
+
+    // Completion — independent of the animation, fires reliably on web.
+    holdTimer.current = setTimeout(() => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(
+        () => {},
+      );
       progress.setValue(0);
       setPickerOpen(true);
-    });
-    cancelRef.current = () => {
-      anim.stop();
-      Animated.timing(progress, { toValue: 0, duration: 180, useNativeDriver: false }).start();
-    };
+      holdTimer.current = null;
+    }, HOLD_MS);
   };
 
   const endHold = () => {
-    cancelRef.current?.();
+    if (holdTimer.current) {
+      // Released early — cancel everything and snap the ring back.
+      clearAllTimers();
+      Animated.timing(progress, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: false,
+      }).start();
+    }
   };
 
   const onTapWhileRunning = () => {
@@ -67,9 +96,6 @@ export function HoldStartFab() {
     router.push({ pathname: '/logged', params: { mode: 'start', matterId } });
   };
 
-  // Stroke length-style animation: rotate a partial ring to "fill" 0 → 360°.
-  // Simpler approach: opacity + scale of the outer ring as a "charge" cue,
-  // plus a small inner pulse on the button.
   const ringOpacity = progress.interpolate({
     inputRange: [0, 0.05, 1],
     outputRange: [0, 0.4, 1],
@@ -83,14 +109,21 @@ export function HoldStartFab() {
     outputRange: [1, 0.94],
   });
 
-  // Pulse the icon size up subtly as the hold completes.
   return (
     <>
       <Pressable
         onPress={isRunning ? onTapWhileRunning : undefined}
         onPressIn={isRunning ? undefined : beginHold}
         onPressOut={isRunning ? undefined : endHold}
-        hitSlop={8}
+        // 800ms delayLongPress + onLongPress is a belt-and-braces fallback
+        // for any platform where onPressIn/Out flakes — gives us a second
+        // path to start the hold timer.
+        delayLongPress={150}
+        onLongPress={isRunning ? undefined : undefined}
+        hitSlop={12}
+        // Disable browser long-press context menu on mobile web.
+        // @ts-expect-error — web-only prop, ignored on native
+        onContextMenu={(e: any) => e.preventDefault?.()}
         style={styles.wrap}>
         <Animated.View
           pointerEvents="none"
@@ -126,6 +159,9 @@ const styles = StyleSheet.create({
     height: RING,
     alignItems: 'center',
     justifyContent: 'center',
+    // Disable text-select / iOS long-press callout on mobile web.
+    userSelect: 'none',
+    ...({ WebkitTouchCallout: 'none', WebkitUserSelect: 'none' } as object),
   },
   chargeRing: {
     position: 'absolute',
