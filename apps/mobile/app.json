@@ -3,6 +3,7 @@
     "name": "Clockd",
     "slug": "clockd",
     "version": "1.0.0",
+    "privacy": "unlisted",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "clockd",
