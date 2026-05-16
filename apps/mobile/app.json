@@ -29,7 +29,14 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "name": "Clockd",
+      "shortName": "Clockd",
+      "themeColor": "#0E2A1E",
+      "backgroundColor": "#0E2A1E",
+      "display": "standalone",
+      "orientation": "portrait",
+      "description": "Time tracking and billing for legal teams"
     },
     "plugins": [
       "expo-router",
