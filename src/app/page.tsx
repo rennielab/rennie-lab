@@ -35,7 +35,7 @@ export default function HomePage() {
       <section style={{ padding: "16px 0 80px", position: "relative" }}>
         <h1
           className="h-display rise"
-          style={{ margin: 0, maxWidth: "14ch", fontFamily: "var(--sans)", fontWeight: 900 }}
+          style={{ margin: 0, maxWidth: "14ch", fontFamily: "var(--sans)", fontWeight: 700 }}
         >
           Creative Work
           <br />

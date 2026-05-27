@@ -43,7 +43,7 @@ export default function OpengraphImage() {
             flexDirection: "column",
             fontSize: 76,
             lineHeight: 1.04,
-            fontWeight: 900,
+            fontWeight: 700,
             letterSpacing: "-0.035em",
             color: "#fbfbf7",
             width: 1040,

@@ -91,7 +91,7 @@ export default function ImpactPage() {
             margin: 0,
             maxWidth: "20ch",
             fontFamily: "var(--sans)",
-            fontWeight: 900,
+            fontWeight: 700,
             letterSpacing: "-0.025em",
             lineHeight: 1.05,
           }}
@@ -163,7 +163,7 @@ export default function ImpactPage() {
         </div>
         <h2
           className="h-2"
-          style={{ margin: "0 0 56px", maxWidth: "26ch", fontWeight: 900 }}
+          style={{ margin: "0 0 56px", maxWidth: "26ch", fontWeight: 700 }}
         >
           The world is past the threshold and the design phase is where the future
           gets locked in.
@@ -238,7 +238,7 @@ export default function ImpactPage() {
                       margin: 0,
                       maxWidth: "12ch",
                       fontFamily: "var(--sans)",
-                      fontWeight: 900,
+                      fontWeight: 700,
                     }}
                   >
                     {pillar.title}
@@ -275,7 +275,7 @@ export default function ImpactPage() {
               margin: 0,
               maxWidth: "20ch",
               fontFamily: "var(--sans)",
-              fontWeight: 900,
+              fontWeight: 700,
               fontSize: "clamp(48px, 6vw, 96px)",
               letterSpacing: "-0.025em",
               lineHeight: 1.02,

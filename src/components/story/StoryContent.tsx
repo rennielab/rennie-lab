@@ -193,7 +193,7 @@ export function StoryContent() {
             style={{
               margin: 0,
               fontFamily: "var(--sans)",
-              fontWeight: 900,
+              fontWeight: 700,
               fontSize: "clamp(40px, 5.4vw, 88px)",
               lineHeight: 1.02,
               letterSpacing: "-0.025em",
@@ -415,7 +415,7 @@ export function StoryContent() {
                 <div
                   style={{
                     fontFamily: "var(--sans)",
-                    fontWeight: 900,
+                    fontWeight: 700,
                     fontSize: 18,
                     lineHeight: 1.2,
                     letterSpacing: "-0.015em",
@@ -450,7 +450,7 @@ export function StoryContent() {
               style={{
                 margin: 0,
                 fontFamily: "var(--sans)",
-                fontWeight: 900,
+                fontWeight: 700,
                 fontSize: "clamp(40px, 5vw, 64px)",
                 letterSpacing: "-0.03em",
                 lineHeight: 0.95,

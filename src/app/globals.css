@@ -106,8 +106,7 @@ img { max-width: 100%; display: block; }
   font-weight: 700;
   font-size: clamp(26px, 3.6vw, 48px);
   line-height: 1.08;
-  letter-spacing: -0.008em;
-  text-transform: uppercase;
+  letter-spacing: -0.022em;
   color: var(--ink);
 }
 .h-3 {
@@ -115,8 +114,7 @@ img { max-width: 100%; display: block; }
   font-weight: 700;
   font-size: clamp(20px, 2vw, 28px);
   line-height: 1.2;
-  letter-spacing: 0;
-  text-transform: uppercase;
+  letter-spacing: -0.012em;
   color: var(--ink);
 }
 .body-lg {

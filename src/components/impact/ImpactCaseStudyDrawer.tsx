@@ -140,7 +140,7 @@ export function ImpactCaseStudyDrawer() {
                     <div
                       style={{
                         fontFamily: "var(--sans)",
-                        fontWeight: 900,
+                        fontWeight: 700,
                         fontSize: 28,
                         marginTop: 8,
                         letterSpacing: "-0.02em",
