@@ -107,9 +107,19 @@ export function SiteFooter() {
         </p>
       </div>
 
-      {/* Bottom strip — copyright + trust statements */}
+      {/* Bottom strip — copyright + sister-project link + trust statements */}
       <div className="foot-bottom">
-        <span>© 2009—2026 · Rennie Lab Pty Ltd</span>
+        <span>
+          © 2009—2026 · Rennie Lab Pty Ltd ·{" "}
+          <a
+            href="https://97percent.co"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "inherit", textDecoration: "none" }}
+          >
+            Sister: 97 Percent ↗
+          </a>
+        </span>
         <span style={{ display: "flex", gap: 24 }}>
           <span>Privacy</span>
           <span>Terms</span>

@@ -8,9 +8,10 @@ import { useTheme } from "./ThemeProvider";
 
 type Channel = { label: string; href: string; external: boolean };
 const CHANNELS: Channel[] = [
-  { label: "INSTAGRAM",  href: "https://instagram.com/benrennie",      external: true  },
-  { label: "LINKEDIN",   href: "https://linkedin.com/in/benrennie",    external: true  },
-  { label: "SUBSTACK",   href: "https://benrennie.substack.com",       external: true  },
+  { label: "97 PERCENT",  href: "https://97percent.co",                external: true  },
+  { label: "INSTAGRAM",   href: "https://instagram.com/benrennie",     external: true  },
+  { label: "LINKEDIN",    href: "https://linkedin.com/in/benrennie",   external: true  },
+  { label: "SUBSTACK",    href: "https://benrennie.substack.com",      external: true  },
   { label: "OFF CLIMATE", href: "/journal",                            external: false },
 ];
 

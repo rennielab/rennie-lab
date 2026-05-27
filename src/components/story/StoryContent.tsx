@@ -193,7 +193,7 @@ export function StoryContent() {
             style={{
               margin: 0,
               fontFamily: "var(--sans)",
-              fontWeight: 600,
+              fontWeight: 900,
               fontSize: "clamp(40px, 5.4vw, 88px)",
               lineHeight: 1.02,
               letterSpacing: "-0.025em",
@@ -415,7 +415,7 @@ export function StoryContent() {
                 <div
                   style={{
                     fontFamily: "var(--sans)",
-                    fontWeight: 600,
+                    fontWeight: 900,
                     fontSize: 18,
                     lineHeight: 1.2,
                     letterSpacing: "-0.015em",
@@ -427,6 +427,55 @@ export function StoryContent() {
               </div>
             </article>
           ))}
+        </div>
+
+        {/* Sister project — 97 Percent */}
+        <div
+          style={{
+            marginTop: 64,
+            padding: "40px 40px 36px",
+            background: "var(--bg-card)",
+            borderRadius: "var(--radius)",
+            display: "grid",
+            gridTemplateColumns: "1fr 2fr",
+            gap: 48,
+            alignItems: "end",
+          }}
+        >
+          <div>
+            <div className="mono" style={{ marginBottom: 14, color: "var(--accent)" }}>
+              Sister project · also operated by Rennie Lab
+            </div>
+            <h3
+              style={{
+                margin: 0,
+                fontFamily: "var(--sans)",
+                fontWeight: 900,
+                fontSize: "clamp(40px, 5vw, 64px)",
+                letterSpacing: "-0.03em",
+                lineHeight: 0.95,
+              }}
+            >
+              97%
+            </h3>
+          </div>
+          <div>
+            <p className="body-lg" style={{ margin: "0 0 20px", maxWidth: "52ch" }}>
+              <strong>97 Percent</strong> is a $97/year membership for creative
+              professionals — founded by Ben Rennie and operated by Rennie Lab.
+              A practice, a field guide, a creative-confidence platform built on
+              two decades of studio work. The science behind creative confidence,
+              the practices that rebuild it, and the tools that turn it into output.
+            </p>
+            <a
+              href="https://97percent.co"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-ghost"
+            >
+              Visit 97percent.co <span className="arrow">↗</span>
+            </a>
+          </div>
         </div>
 
         {/* Credit roll — the wider studio */}

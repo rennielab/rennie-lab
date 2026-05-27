@@ -153,7 +153,7 @@ export function ServicesContent() {
         </div>
         <h1
           className="h-display rise delay-1"
-          style={{ margin: 0, maxWidth: "14ch", fontFamily: "var(--sans)", fontWeight: 600 }}
+          style={{ margin: 0, maxWidth: "14ch", fontFamily: "var(--sans)", fontWeight: 900 }}
         >
           What we make,
           <br />
@@ -308,7 +308,7 @@ export function ServicesContent() {
           <div>
             <h2
               className="h-1"
-              style={{ margin: 0, maxWidth: "14ch", fontFamily: "var(--sans)", fontWeight: 600 }}
+              style={{ margin: 0, maxWidth: "14ch", fontFamily: "var(--sans)", fontWeight: 900 }}
             >
               Orbital
               <br />
@@ -335,7 +335,7 @@ export function ServicesContent() {
           </div>
           <h3
             className="h-2"
-            style={{ margin: "0 0 48px", maxWidth: "28ch", fontFamily: "var(--sans)", fontWeight: 600 }}
+            style={{ margin: "0 0 48px", maxWidth: "28ch", fontFamily: "var(--sans)", fontWeight: 900 }}
           >
             Three pillars that orbit and recalibrate with each other. We call them SHE.
           </h3>
@@ -377,7 +377,7 @@ export function ServicesContent() {
                   style={{
                     margin: 0,
                     fontFamily: "var(--sans)",
-                    fontWeight: 600,
+                    fontWeight: 900,
                     fontSize: 22,
                     letterSpacing: "-0.015em",
                   }}
@@ -397,7 +397,7 @@ export function ServicesContent() {
           </div>
           <h3
             className="h-2"
-            style={{ margin: "0 0 16px", maxWidth: "26ch", fontFamily: "var(--sans)", fontWeight: 600 }}
+            style={{ margin: "0 0 16px", maxWidth: "26ch", fontFamily: "var(--sans)", fontWeight: 900 }}
           >
             You don&apos;t go 1 to 6 and call it done. You move between them based on what the work needs.
           </h3>
@@ -444,7 +444,7 @@ export function ServicesContent() {
           </div>
           <h3
             className="h-2"
-            style={{ margin: "0 0 16px", maxWidth: "24ch", fontFamily: "var(--sans)", fontWeight: 600 }}
+            style={{ margin: "0 0 16px", maxWidth: "24ch", fontFamily: "var(--sans)", fontWeight: 900 }}
           >
             80% of environmental impact gets locked in during the design phase.
           </h3>
@@ -506,7 +506,7 @@ export function ServicesContent() {
             <div className="mono" style={{ marginBottom: 24 }}>Who it&apos;s for</div>
             <h3
               className="h-3"
-              style={{ margin: "0 0 16px", fontFamily: "var(--sans)", fontWeight: 600 }}
+              style={{ margin: "0 0 16px", fontFamily: "var(--sans)", fontWeight: 900 }}
             >
               Anyone creating solutions.
             </h3>
@@ -525,7 +525,7 @@ export function ServicesContent() {
             <div className="mono" style={{ marginBottom: 24 }}>How you use it</div>
             <h3
               className="h-3"
-              style={{ margin: "0 0 16px", fontFamily: "var(--sans)", fontWeight: 600 }}
+              style={{ margin: "0 0 16px", fontFamily: "var(--sans)", fontWeight: 900 }}
             >
               Start with the challenge. Then ask which pillar needs attention first.
             </h3>
@@ -546,7 +546,7 @@ export function ServicesContent() {
       <section className="svc-cta">
         <h2
           className="h-display"
-          style={{ margin: 0, maxWidth: "16ch", fontFamily: "var(--sans)", fontWeight: 600 }}
+          style={{ margin: 0, maxWidth: "16ch", fontFamily: "var(--sans)", fontWeight: 900 }}
         >
           Have a brief, or just a question?
         </h2>
