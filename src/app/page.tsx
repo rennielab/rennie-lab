@@ -1,10 +1,7 @@
 import Link from "next/link";
-import { ContactButton } from "@/components/chrome/ContactButton";
 import { LogoStrip } from "@/components/home/LogoStrip";
 import { WhatWeDo } from "@/components/home/WhatWeDo";
-import { FeedCard } from "@/components/home/FeedCard";
 import { HeroTiles } from "@/components/home/HeroTiles";
-import { FEED_ITEMS } from "@/data/journalFeed";
 
 export const metadata = {
   title: "Rennie Lab — A Creative Advisory Studio",
@@ -13,12 +10,10 @@ export const metadata = {
 };
 
 export default function HomePage() {
-  const recent = FEED_ITEMS.slice(0, 3);
-
   return (
     <div className="container">
-      {/* Eyebrow only — the work does the talking */}
-      <section style={{ padding: "24px 0 0", position: "relative" }}>
+      {/* Eyebrow */}
+      <section style={{ padding: "32px 0 0", position: "relative" }}>
         <div className="mono rise">
           <span
             className="dot dot-pulse"
@@ -28,14 +23,14 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Featured work — 4 tiles, image-led fold */}
+      {/* Featured work — image-led fold */}
       <HeroTiles />
 
-      {/* Headline + body + CTAs below the tiles */}
-      <section style={{ padding: "16px 0 80px", position: "relative" }}>
+      {/* Headline + body + one CTA */}
+      <section style={{ padding: "32px 0 160px", position: "relative" }}>
         <h1
           className="h-display rise"
-          style={{ margin: 0, maxWidth: "14ch", fontFamily: "var(--sans)", fontWeight: 700 }}
+          style={{ margin: 0, maxWidth: "14ch" }}
         >
           Creative Work
           <br />
@@ -45,8 +40,8 @@ export default function HomePage() {
           style={{
             display: "grid",
             gridTemplateColumns: "1.4fr 1fr",
-            gap: 48,
-            marginTop: 56,
+            gap: 64,
+            marginTop: 72,
             alignItems: "end",
           }}
         >
@@ -57,133 +52,22 @@ export default function HomePage() {
           </p>
           <div
             className="rise delay-2"
-            style={{ display: "flex", gap: 12, justifyContent: "flex-end" }}
+            style={{ display: "flex", justifyContent: "flex-end" }}
           >
             <Link className="btn btn-primary" href="/projects">
               See the work <span className="arrow">→</span>
             </Link>
-            <Link className="btn btn-ghost" href="/story">
-              Our story
-            </Link>
           </div>
         </div>
       </section>
 
-      {/* Logo strip — single row, rotating */}
-      <section style={{ padding: "24px 0 64px" }}>
+      {/* Clients — quiet trust strip */}
+      <section style={{ padding: "0 0 160px" }}>
         <LogoStrip />
       </section>
 
-      {/* What we do — Driftime-style stacked sections */}
+      {/* What we do — the five disciplines */}
       <WhatWeDo />
-
-      {/* Climate strip */}
-      <section style={{ padding: "56px 0 80px", borderTop: "1px solid var(--line)" }}>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 64,
-            alignItems: "center",
-          }}
-        >
-          <div>
-            <div className="mono" style={{ marginBottom: 24 }}>Carbon · Always on</div>
-            <h2 className="h-2" style={{ margin: 0, maxWidth: "18ch" }}>
-              Every page carries its weight.
-            </h2>
-            <p className="body-lg" style={{ marginTop: 24, maxWidth: "44ch" }}>
-              The little leaf in the corner is a live count of the CO₂e your visit has
-              produced. Measured per scroll, per asset, per request. Most pages on this
-              site come in under <span style={{ color: "var(--ink)" }}>0.4 grams</span>.
-              The internet is a heavier place than people realise. We try not to add to
-              it.
-            </p>
-          </div>
-          <div
-            style={{
-              background: "var(--bg-card)",
-              borderRadius: "var(--radius)",
-              padding: 32,
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: 24,
-            }}
-          >
-            {[
-              { v: "0.21g", l: "per page load" },
-              { v: "100%", l: "green-hosted" },
-              { v: "91%", l: "cleaner than the average web page" },
-              { v: "0", l: "third-party trackers" },
-            ].map((s, i) => (
-              <div key={i}>
-                <div className="serif" style={{ fontSize: 56, lineHeight: 1 }}>{s.v}</div>
-                <div className="mono" style={{ marginTop: 8 }}>{s.l}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Closer */}
-      <section style={{ padding: "64px 0 80px", borderTop: "1px solid var(--line)" }}>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 64,
-            alignItems: "center",
-          }}
-        >
-          <h2 className="h-1" style={{ margin: 0, maxWidth: "14ch" }}>
-            Tell us what you&apos;re trying to move.
-          </h2>
-          <div>
-            <p className="body-lg" style={{ margin: "0 0 24px", maxWidth: "44ch" }}>
-              Climate work, brand work, the project that&apos;s been on the whiteboard
-              for two years. Start anywhere.
-            </p>
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-              <ContactButton>
-                Open the brief <span className="arrow">→</span>
-              </ContactButton>
-              <a
-                href="https://cal.com/benrennie/30min"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-ghost"
-              >
-                Book a call
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Recent feed teaser */}
-      <section style={{ padding: "32px 0 80px", borderTop: "1px solid var(--line)" }}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "baseline",
-            marginBottom: 32,
-            marginTop: 32,
-          }}
-        >
-          <h2 className="h-2" style={{ margin: 0 }}>
-            Latest from Off Climate
-          </h2>
-          <Link className="btn btn-ghost" href="/journal">
-            All entries →
-          </Link>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr 1fr", gap: 24 }}>
-          {recent.slice(0, 3).map((it, i) => (
-            <FeedCard item={it} key={it.id} large={i === 0} />
-          ))}
-        </div>
-      </section>
     </div>
   );
 }

@@ -2,34 +2,24 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const STORAGE_KEY = "rl-aoc-shown";
-
 const COPY =
   "Rennie Lab acknowledge the Traditional Owners of Country throughout Australia and pay our respects to Elders past, present and emerging. We honour their enduring connection to land, waters, skies and culture. As the first storytellers of these lands, we give thanks for their care and share our respect and friendship with all First Nations peoples.";
-
-function todayKey(): string {
-  return new Date().toISOString().slice(0, 10);
-}
 
 export function WelcomeAcknowledgement() {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // Mount-only effect: gate the modal on a localStorage flag (per-day).
+  // Mount-only effect: mark mounted so the overlay can render. We deliberately
+  // DO NOT auto-open the modal — interrupting every visit with a modal feels
+  // loud. The Acknowledgement of Country band at the bottom of the footer is
+  // always visible, and the footer's ↑ link triggers this modal on demand.
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
-    try {
-      const lastShown = localStorage.getItem(STORAGE_KEY);
-      if (lastShown !== todayKey()) {
-        const t = setTimeout(() => setOpen(true), 700);
-        return () => clearTimeout(t);
-      }
-    } catch {}
   }, []);
 
-  // External trigger — footer "Acknowledgement of Country ↑" link reopens it.
+  // External trigger — footer "Acknowledgement of Country ↑" link opens it.
   useEffect(() => {
     const handler = () => setOpen(true);
     window.addEventListener("open-acknowledgement", handler);
@@ -51,9 +41,6 @@ export function WelcomeAcknowledgement() {
   }, [open]);
 
   function close() {
-    try {
-      localStorage.setItem(STORAGE_KEY, todayKey());
-    } catch {}
     setOpen(false);
   }
 
