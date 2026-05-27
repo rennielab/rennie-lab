@@ -145,8 +145,6 @@ export function StoryContent() {
       <section
         style={{
           padding: "96px 0 96px",
-          borderTop: "1px solid var(--line)",
-          borderBottom: "1px solid var(--line)",
           margin: "32px 0 64px",
         }}
       >
@@ -238,7 +236,7 @@ export function StoryContent() {
       </section>
 
       {/* PRINCIPLES */}
-      <section style={{ padding: "96px 0", borderTop: "1px solid var(--line)" }}>
+      <section style={{ padding: "96px 0" }}>
         <div
           style={{
             display: "grid",
@@ -287,7 +285,7 @@ export function StoryContent() {
       </section>
 
       {/* TIMELINE */}
-      <section style={{ padding: "96px 0", borderTop: "1px solid var(--line)" }}>
+      <section style={{ padding: "96px 0" }}>
         <div className="mono" style={{ marginBottom: 32 }}>
           A short history · 2009 → today
         </div>
@@ -327,7 +325,7 @@ export function StoryContent() {
       </section>
 
       {/* TWO STUDIOS */}
-      <section style={{ padding: "96px 0", borderTop: "1px solid var(--line)" }}>
+      <section style={{ padding: "96px 0" }}>
         <div className="mono" style={{ marginBottom: 32 }}>Two studios · one weather front</div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32 }}>
           {STUDIOS.map((s, i) => (
@@ -365,7 +363,7 @@ export function StoryContent() {
       </section>
 
       {/* TEAM — partners + film-poster credit roll */}
-      <section style={{ padding: "96px 0", borderTop: "1px solid var(--line)" }}>
+      <section style={{ padding: "96px 0" }}>
         <div
           style={{
             display: "grid",
@@ -521,7 +519,7 @@ export function StoryContent() {
       </section>
 
       {/* PRESS / RECOGNITION */}
-      <section style={{ padding: "96px 0", borderTop: "1px solid var(--line)" }}>
+      <section style={{ padding: "96px 0" }}>
         <div className="mono" style={{ marginBottom: 32 }}>
           Partners &amp; collaborators · selected
         </div>

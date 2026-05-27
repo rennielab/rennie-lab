@@ -329,7 +329,7 @@ export function ServicesContent() {
         </div>
 
         {/* SHE — three pillars */}
-        <div style={{ marginTop: 96, paddingTop: 56, borderTop: "1px solid var(--line)" }}>
+        <div style={{ marginTop: 96, paddingTop: 56 }}>
           <div className="mono" style={{ marginBottom: 32 }}>
             What is Orbital Design · 03 pillars
           </div>
@@ -351,7 +351,7 @@ export function ServicesContent() {
                 key={p.letter}
                 style={{
                   padding: "32px 28px",
-                  border: "1px solid var(--line)",
+                  background: "var(--bg-soft)",
                   borderRadius: "var(--radius)",
                   display: "flex",
                   flexDirection: "column",
@@ -391,7 +391,7 @@ export function ServicesContent() {
         </div>
 
         {/* Six phases */}
-        <div style={{ marginTop: 96, paddingTop: 56, borderTop: "1px solid var(--line)" }}>
+        <div style={{ marginTop: 96, paddingTop: 56 }}>
           <div className="mono" style={{ marginBottom: 32 }}>
             The six phases · you orbit, you don&apos;t march
           </div>
@@ -438,7 +438,7 @@ export function ServicesContent() {
         </div>
 
         {/* Why it matters — stats */}
-        <div style={{ marginTop: 96, paddingTop: 56, borderTop: "1px solid var(--line)" }}>
+        <div style={{ marginTop: 96, paddingTop: 56 }}>
           <div className="mono" style={{ marginBottom: 32 }}>
             Why it matters
           </div>
@@ -466,7 +466,6 @@ export function ServicesContent() {
                 key={s.tag}
                 style={{
                   padding: "28px 24px",
-                  borderTop: "1px solid var(--line)",
                   display: "flex",
                   flexDirection: "column",
                   gap: 14,
@@ -496,7 +495,6 @@ export function ServicesContent() {
           style={{
             marginTop: 96,
             paddingTop: 56,
-            borderTop: "1px solid var(--line)",
             display: "grid",
             gridTemplateColumns: "1fr 1fr",
             gap: 64,

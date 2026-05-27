@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NAV_ITEMS, routeIdFromPath } from "./navigation";
@@ -15,11 +15,70 @@ const CHANNELS: Channel[] = [
   { label: "OFF CLIMATE", href: "/journal",                            external: false },
 ];
 
+/* ── Subscribe to a localStorage toggle with cross-tab + same-tab sync.
+   Same pattern the old RightMenu used; lifted here so the toggles can
+   live inside the LeftMenu after the right pill was retired.            */
+function subscribeToggle(storageKey: string) {
+  return (cb: () => void) => {
+    const handler = (e: Event) => {
+      if ((e as CustomEvent).type === `rl-toggle-${storageKey}`) cb();
+      else if ((e as StorageEvent).key === storageKey) cb();
+    };
+    window.addEventListener("storage", handler);
+    window.addEventListener(`rl-toggle-${storageKey}`, handler);
+    return () => {
+      window.removeEventListener("storage", handler);
+      window.removeEventListener(`rl-toggle-${storageKey}`, handler);
+    };
+  };
+}
+
+function ToggleSwitch({
+  storageKey,
+  defaultOn = false,
+}: {
+  storageKey: string;
+  defaultOn?: boolean;
+}) {
+  const on = useSyncExternalStore(
+    subscribeToggle(storageKey),
+    () => {
+      try {
+        const v = localStorage.getItem(storageKey);
+        if (v == null) return defaultOn;
+        return v === "1";
+      } catch {
+        return defaultOn;
+      }
+    },
+    () => defaultOn,
+  );
+
+  const set = (next: boolean) => {
+    try {
+      localStorage.setItem(storageKey, next ? "1" : "0");
+    } catch {}
+    window.dispatchEvent(new CustomEvent(`rl-toggle-${storageKey}`));
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={() => set(!on)}
+      className="lm-toggle"
+      data-on={on}
+      aria-pressed={on}
+    >
+      <span className="lm-toggle-dot" />
+    </button>
+  );
+}
+
 export function LeftMenu() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const route = routeIdFromPath(pathname);
-  const { theme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const logoSrc = theme === "dark" ? "/brand-logo-light.png" : "/brand-logo-dark.png";
 
   const close = () => setOpen(false);
@@ -63,6 +122,7 @@ export function LeftMenu() {
 
       <div className="left-menu-body">
         <div>
+          {/* Primary nav */}
           <div className="nav-list">
             {NAV_ITEMS.map((it) => (
               <Link
@@ -88,7 +148,10 @@ export function LeftMenu() {
               <span className="nav-num">06</span>
             </div>
           </div>
+
           <div className="nav-divider"></div>
+
+          {/* Channels */}
           <div className="nav-meta">
             <div className="nav-meta-title">Channels</div>
             {CHANNELS.map((c) =>
@@ -116,6 +179,76 @@ export function LeftMenu() {
                 </Link>
               ),
             )}
+          </div>
+
+          <div className="nav-divider"></div>
+
+          {/* Settings — moved here from the old right dot-panel */}
+          <div className="nav-meta">
+            <div className="nav-meta-title">Settings</div>
+
+            <div className="nav-setting-row">
+              <span className="nav-setting-label">Theme</span>
+              <div className="lm-theme-toggle">
+                <button
+                  type="button"
+                  data-active={theme === "light"}
+                  onClick={() => setTheme("light")}
+                >
+                  Day
+                </button>
+                <button
+                  type="button"
+                  data-active={theme === "dark"}
+                  onClick={() => setTheme("dark")}
+                >
+                  Night
+                </button>
+              </div>
+            </div>
+
+            <div className="nav-setting-row">
+              <span className="nav-setting-label">Reduce motion</span>
+              <ToggleSwitch storageKey="rl-rm" />
+            </div>
+
+            <div className="nav-setting-row">
+              <span className="nav-setting-label">Low-carbon mode</span>
+              <ToggleSwitch storageKey="rl-lc" />
+            </div>
+          </div>
+
+          <div className="nav-divider"></div>
+
+          {/* Downloads — press kit + capabilities deck */}
+          <div className="nav-meta">
+            <div className="nav-meta-title">Download</div>
+            <button
+              type="button"
+              className="nav-channel nav-channel-action"
+              onClick={() => {
+                close();
+                window.dispatchEvent(
+                  new CustomEvent("open-download", { detail: { kind: "press" } }),
+                );
+              }}
+            >
+              <span>PRESS KIT</span>
+              <span style={{ opacity: 0.5 }}>↓</span>
+            </button>
+            <button
+              type="button"
+              className="nav-channel nav-channel-action"
+              onClick={() => {
+                close();
+                window.dispatchEvent(
+                  new CustomEvent("open-download", { detail: { kind: "deck" } }),
+                );
+              }}
+            >
+              <span>CAPABILITIES DECK</span>
+              <span style={{ opacity: 0.5 }}>↓</span>
+            </button>
           </div>
         </div>
       </div>

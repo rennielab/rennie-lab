@@ -77,8 +77,6 @@ export default function ImpactPage() {
       <section
         style={{
           padding: "96px 0",
-          borderTop: "1px solid var(--line)",
-          borderBottom: "1px solid var(--line)",
           marginBottom: 80,
         }}
       >
@@ -126,8 +124,6 @@ export default function ImpactPage() {
       <section
         style={{
           padding: "48px 0",
-          borderTop: "1px solid var(--line)",
-          borderBottom: "1px solid var(--line)",
           marginBottom: 80,
         }}
       >
