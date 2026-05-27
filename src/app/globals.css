@@ -1,13 +1,13 @@
 /* ──────────────────────────────────────────────────────────────
    Rennie Lab — design tokens + base
-   Brand: Red FF3B30 / Cream FFFDEC / Carbon 151517
+   Brand: Red E84D4D / Cream FFFDEC / Carbon 151517
    Display: Inter (900/700) · Mono: Roboto Mono (400/500)
    Aligned with the canonical Ben Rennie brand system — same stack
    used on benrennie.com and 97percent.co for sister-brand cohesion.
    ────────────────────────────────────────────────────────────── */
 
 :root {
-  --red: #FF3B30;
+  --red: #e84d4d;
   --red-tint: #f7a5a4;
   --cream: #fffdec;
   --cream-2: #f4f1de;
@@ -86,7 +86,8 @@ img { max-width: 100%; display: block; }
   font-weight: 900;
   font-size: clamp(44px, 8vw, 132px);
   line-height: 1.02;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.015em;
+  text-transform: uppercase;
   padding-bottom: 0.04em;
   color: var(--ink);
 }
@@ -95,7 +96,8 @@ img { max-width: 100%; display: block; }
   font-weight: 900;
   font-size: clamp(34px, 5.4vw, 76px);
   line-height: 1.05;
-  letter-spacing: -0.028em;
+  letter-spacing: -0.012em;
+  text-transform: uppercase;
   padding-bottom: 0.02em;
   color: var(--ink);
 }
@@ -104,7 +106,8 @@ img { max-width: 100%; display: block; }
   font-weight: 700;
   font-size: clamp(26px, 3.6vw, 48px);
   line-height: 1.08;
-  letter-spacing: -0.022em;
+  letter-spacing: -0.008em;
+  text-transform: uppercase;
   color: var(--ink);
 }
 .h-3 {
@@ -112,7 +115,8 @@ img { max-width: 100%; display: block; }
   font-weight: 700;
   font-size: clamp(20px, 2vw, 28px);
   line-height: 1.2;
-  letter-spacing: -0.012em;
+  letter-spacing: 0;
+  text-transform: uppercase;
   color: var(--ink);
 }
 .body-lg {
@@ -627,7 +631,7 @@ em, i, .italic { font-style: normal; color: inherit !important; }
   bottom: 18px;
   right: 18px;
   z-index: 50;
-  background: rgba(255, 59, 48, 0.82);
+  background: rgba(232, 77, 77, 0.82);
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 4px;
   padding: 10px 14px;
@@ -650,7 +654,7 @@ em, i, .italic { font-style: normal; color: inherit !important; }
     box-shadow 300ms var(--easing);
 }
 .carbon-tracker:hover {
-  background: rgba(255, 59, 48, 0.95);
+  background: rgba(232, 77, 77, 0.95);
   transform: translateY(-1px);
   box-shadow:
     inset 0 0.5px 0 rgba(255, 255, 255, 0.30),
@@ -1149,7 +1153,7 @@ main {
   position: relative;
   width: 100%;
   background:
-    radial-gradient(120% 80% at 30% 20%, rgba(255, 59, 48, 0.18), transparent 60%),
+    radial-gradient(120% 80% at 30% 20%, rgba(232, 77, 77, 0.18), transparent 60%),
     radial-gradient(120% 80% at 70% 80%, rgba(21, 21, 23, 0.12), transparent 60%),
     var(--bg-soft);
   overflow: hidden;
@@ -1168,7 +1172,7 @@ main {
 }
 .ph[data-tone="cream"] {
   background:
-    radial-gradient(120% 90% at 30% 20%, rgba(255, 59, 48, 0.08), transparent 60%),
+    radial-gradient(120% 90% at 30% 20%, rgba(232, 77, 77, 0.08), transparent 60%),
     var(--cream-2);
 }
 .ph[data-tone="moss"] {
@@ -1390,7 +1394,7 @@ footer.site-foot {
   content: "";
   position: absolute;
   inset: -40px;
-  background-image: linear-gradient(135deg, rgba(255, 59, 48, 0.18), rgba(20, 20, 20, 1) 60%);
+  background-image: linear-gradient(135deg, rgba(232, 77, 77, 0.18), rgba(20, 20, 20, 1) 60%);
   filter: blur(40px);
 }
 .jp-close {
@@ -1591,7 +1595,7 @@ footer.site-foot {
 .contact-panel.is-journal-post,
 .contact-panel.is-journal-post[data-theme="dark"],
 .contact-panel.is-journal-post[data-theme="light"] {
-  background: #FF3B30;
+  background: #e84d4d;
   color: var(--cream);
 }
 .contact-panel.is-journal-post .jp-head {
@@ -1611,7 +1615,7 @@ footer.site-foot {
 }
 .contact-panel.is-journal-post .jp-cta:hover {
   background: var(--cream);
-  color: #FF3B30;
+  color: #e84d4d;
 }
 .contact-panel.is-journal-post .jp-foot { border-top-color: rgba(244, 241, 222, 0.18); }
 .contact-panel.is-journal-post .jp-foot .btn {
@@ -1620,7 +1624,7 @@ footer.site-foot {
 }
 .contact-panel.is-journal-post .jp-foot .btn-primary {
   background: var(--cream);
-  color: #FF3B30;
+  color: #e84d4d;
 }
 .contact-panel.is-journal-post .jp-foot .btn-primary:hover {
   background: var(--carbon) !important;
@@ -2010,13 +2014,13 @@ footer.site-foot {
   letter-spacing: 0.02em;
   cursor: pointer;
   transition: background 200ms, transform 200ms, box-shadow 200ms;
-  box-shadow: 0 8px 24px -8px rgba(255, 59, 48, 0.55);
+  box-shadow: 0 8px 24px -8px rgba(232, 77, 77, 0.55);
   margin-top: 8px;
 }
 .aoc-continue:hover {
-  background: #ff5c52;
+  background: #f15c5c;
   transform: translateY(-1px);
-  box-shadow: 0 12px 28px -8px rgba(255, 59, 48, 0.70);
+  box-shadow: 0 12px 28px -8px rgba(232, 77, 77, 0.70);
 }
 .aoc-continue .arrow {
   display: inline-block;
@@ -2643,7 +2647,7 @@ footer.site-foot {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: radial-gradient(120% 80% at 50% -10%, rgba(255, 59, 48, 0.18), transparent 60%);
+  background: radial-gradient(120% 80% at 50% -10%, rgba(232, 77, 77, 0.18), transparent 60%);
   opacity: 0;
   pointer-events: none;
   transition: opacity 350ms var(--easing);
@@ -2654,8 +2658,8 @@ footer.site-foot {
   background: rgba(255, 255, 255, 0.85);
   box-shadow:
     inset 0 0.5px 0 rgba(255, 255, 255, 0.85),
-    inset 0 0 0 0.5px rgba(255, 59, 48, 0.5),
-    0 24px 48px -18px rgba(255, 59, 48, 0.28);
+    inset 0 0 0 0.5px rgba(232, 77, 77, 0.5),
+    0 24px 48px -18px rgba(232, 77, 77, 0.28);
 }
 .svc-phase:hover::after { opacity: 1; }
 
@@ -2670,8 +2674,8 @@ footer.site-foot {
   background: rgba(255, 255, 255, 0.08);
   box-shadow:
     inset 0 0.5px 0 rgba(255, 255, 255, 0.14),
-    inset 0 0 0 0.5px rgba(255, 59, 48, 0.5),
-    0 24px 48px -18px rgba(255, 59, 48, 0.45);
+    inset 0 0 0 0.5px rgba(232, 77, 77, 0.5),
+    0 24px 48px -18px rgba(232, 77, 77, 0.45);
 }
 
 .svc-phase-meta {
