@@ -279,7 +279,7 @@ export function CarbonTracker() {
           <div>
             <div className="mono carbon-panel-eyebrow">Carbon · your session</div>
             <h2 className="carbon-panel-title">
-              The footprint of <span style={{ color: "var(--accent)" }}>your visit</span>.
+              The footprint of your visit.
             </h2>
           </div>
           <button

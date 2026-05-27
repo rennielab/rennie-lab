@@ -15,7 +15,7 @@ export default function JournalPage() {
           Off Climate · the Rennie Lab journal · {FEED_ITEMS.length} entries
         </div>
         <h1 className="h-1 rise delay-1" style={{ margin: 0, maxWidth: "14ch" }}>
-          Off <span style={{ color: "var(--accent)" }}>Climate</span>.
+          Off Climate.
         </h1>
         <p className="body-lg rise delay-2" style={{ marginTop: 24, maxWidth: "52ch" }}>
           Essays, field guides, case studies and impact projects — everything the

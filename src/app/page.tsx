@@ -39,7 +39,7 @@ export default function HomePage() {
         >
           Creative Work
           <br />
-          for a <span style={{ color: "var(--accent)" }}>Liveable Planet</span>.
+          for a Liveable Planet.
         </h1>
         <div
           style={{

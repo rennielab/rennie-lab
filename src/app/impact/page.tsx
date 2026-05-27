@@ -61,7 +61,7 @@ export default function ImpactPage() {
           className="h-display rise delay-1"
           style={{ margin: 0, maxWidth: "16ch" }}
         >
-          Work for the <span style={{ color: "var(--accent)" }}>commons.</span>
+          Work for the commons.
         </h1>
         <p
           className="body-lg rise delay-2"
@@ -96,9 +96,7 @@ export default function ImpactPage() {
             lineHeight: 1.05,
           }}
         >
-          Most studios call this their{" "}
-          <span style={{ color: "var(--accent)" }}>charity work</span>. We call it
-          the spine.
+          Most studios call this their charity work. We call it the spine.
         </h2>
         <p
           className="body-lg"
