@@ -2208,6 +2208,28 @@ footer.site-foot {
   .impact-featured-cta { justify-content: flex-start; }
 }
 
+/* ── Impact: proof stat row ─────────────────────────── */
+.impact-stats-section { padding: 8px 0 64px; }
+.impact-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px 32px;
+  border-top: 1px solid var(--line);
+  padding-top: 44px;
+}
+.impact-stat-figure {
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: clamp(44px, 5.4vw, 84px);
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+.impact-stat-label { margin-top: 14px; color: var(--ink-3); }
+@media (max-width: 760px) {
+  .impact-stats { grid-template-columns: 1fr 1fr; gap: 32px 24px; }
+}
+
 /* ── Impact: Apply for support · full-bleed red panel ── */
 .impact-apply {
   position: relative;
