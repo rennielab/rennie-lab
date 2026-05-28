@@ -34,10 +34,10 @@ export default function HomePage() {
             flexWrap: "wrap",
           }}
         >
-          <h1 className="h-display rise" style={{ margin: 0, maxWidth: "14ch" }}>
-            Creative Work
+          <h1 className="h-display rise" style={{ margin: 0, maxWidth: "20ch" }}>
+            Creative Work for
             <br />
-            for a Liveable Planet.
+            a Liveable Planet.
           </h1>
           <div
             className="rise delay-1"
