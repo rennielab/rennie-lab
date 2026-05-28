@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTheme } from "@/components/chrome/ThemeProvider";
 import { CLIENT_LOGOS_DARK_THEME, CLIENT_LOGOS_LIGHT_THEME } from "@/data/clientLogos";
 
-const SLOTS = 24; // 6 columns × 4 rows
+const SLOTS = 18; // 6 columns × 3 rows
 const CYCLE_MS = 11000;
 const FADE_MS = 850;
 
