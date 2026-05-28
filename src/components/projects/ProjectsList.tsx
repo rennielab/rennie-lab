@@ -1,19 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { ContactButton } from "@/components/chrome/ContactButton";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { ImpactTag, Project } from "@/data/types";
 import { PROJECT_HERO } from "@/data/projectImages";
-
-function summary(p: Project): string {
-  return (
-    p.sections.challenge ??
-    p.sections.background ??
-    p.sections.description ??
-    p.sections.solution ??
-    ""
-  );
-}
 
 const FILTERS: { id: ImpactTag | "all"; label: string }[] = [
   { id: "all", label: "All" },
@@ -22,8 +11,119 @@ const FILTERS: { id: ImpactTag | "all"; label: string }[] = [
   { id: "Community", label: "Community" },
 ];
 
+/* Deterministic aspect-ratio rhythm so the masonry packs with variety
+   instead of a flat uniform grid. Portrait-leaning with the odd square
+   and tall tile for cadence — same density feel as the reference. */
+const ASPECTS = [
+  "3 / 4",
+  "4 / 5",
+  "9 / 16",
+  "3 / 4",
+  "1 / 1",
+  "4 / 5",
+  "3 / 4",
+  "9 / 16",
+  "4 / 5",
+  "3 / 4",
+];
+function aspectFor(slug: string, i: number): string {
+  return ASPECTS[i % ASPECTS.length];
+}
+
+function openCase(project: Project, index: number) {
+  window.dispatchEvent(
+    new CustomEvent("open-case", { detail: { project, index } }),
+  );
+}
+
+function ProjectTile({
+  project,
+  index,
+  isNew,
+}: {
+  project: Project;
+  index: number;
+  isNew: boolean;
+}) {
+  const ref = useRef<HTMLButtonElement>(null);
+  const [shown, setShown] = useState(false);
+  const hero = PROJECT_HERO[project.slug];
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShown(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "0px 0px -8% 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  const cat = (project.categories[0] ?? "design").toLowerCase();
+
+  return (
+    <button
+      ref={ref}
+      type="button"
+      className="proj-tile"
+      data-shown={shown}
+      data-tone={project.tone || "ink"}
+      style={{
+        aspectRatio: aspectFor(project.slug, index),
+        transitionDelay: `${(index % 5) * 60}ms`,
+      }}
+      onClick={() => openCase(project, index)}
+      aria-label={`Open case study — ${project.name}`}
+    >
+      {hero && (
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img
+          src={hero}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          width={1200}
+          height={880}
+          className="proj-tile-img"
+        />
+      )}
+
+      {isNew && <span className="proj-tile-new">✷ New</span>}
+
+      <div className="proj-tile-overlay">
+        <div className="proj-tile-tags">
+          {(project.impactTags?.length
+            ? project.impactTags
+            : [project.categories[0] ?? "Design"]
+          )
+            .slice(0, 2)
+            .map((t) => (
+              <span key={t} className="proj-tile-tag">
+                {t}
+              </span>
+            ))}
+        </div>
+        <div className="proj-tile-title">
+          {project.name}
+          <span className="proj-tile-arrow"> ↗</span>
+        </div>
+      </div>
+
+      {/* Always-visible quiet caption (fades out on hover as overlay rises) */}
+      <div className="proj-tile-caption">{cat}</div>
+    </button>
+  );
+}
+
 export function ProjectsList({ projects }: { projects: Project[] }) {
   const [filter, setFilter] = useState<ImpactTag | "all">("all");
+
   const filtered = useMemo(
     () =>
       filter === "all"
@@ -31,29 +131,23 @@ export function ProjectsList({ projects }: { projects: Project[] }) {
         : projects.filter((p) => p.impactTags?.includes(filter)),
     [projects, filter],
   );
+
+  // First three published projects carry the "New" badge.
+  const newSlugs = useMemo(
+    () => new Set(projects.slice(0, 3).map((p) => p.slug)),
+    [projects],
+  );
+
   return (
     <section style={{ padding: "0 0 96px" }}>
-      <div
-        style={{
-          margin: "0 0 32px",
-          padding: "10px 16px",
-          background: "var(--bg-soft)",
-          borderRadius: "var(--radius)",
-          display: "flex",
-          gap: 16,
-          alignItems: "center",
-          flexWrap: "wrap",
-        }}
-      >
-        <span className="mono" style={{ color: "var(--ink-4)" }}>
-          Filter
-        </span>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+      {/* Quiet filter row */}
+      <div className="proj-filter">
+        <div className="proj-filter-chips">
           {FILTERS.map((f) => (
             <button
               key={f.id}
               type="button"
-              className="tag"
+              className="proj-filter-chip"
               data-active={filter === f.id}
               onClick={() => setFilter(f.id)}
             >
@@ -61,128 +155,22 @@ export function ProjectsList({ projects }: { projects: Project[] }) {
             </button>
           ))}
         </div>
-        <div style={{ flex: 1 }}></div>
         <span className="mono" style={{ color: "var(--ink-3)" }}>
-          {filtered.length} of {projects.length}
+          {filtered.length} / {projects.length}
         </span>
       </div>
-      {filtered.map((p, i) => (
-        <article
-          key={p.slug}
-          onClick={() =>
-            window.dispatchEvent(
-              new CustomEvent("open-case", { detail: { project: p, index: i } }),
-            )
-          }
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1.1fr",
-            gap: 56,
-            padding: "48px 0",
-            borderTop: "1px solid var(--line)",
-            alignItems: "center",
-            cursor: "pointer",
-          }}
-        >
-          <div>
-            <div className="mono" style={{ marginBottom: 18 }}>
-              {p.source === "reny-studio" ? "case study" : "project"} ·{" "}
-              {(p.categories[0] ?? "design").toLowerCase()}
-            </div>
-            <h2
-              className="h-1"
-              style={{ margin: "0 0 24px", fontSize: "clamp(32px, 4.5vw, 64px)" }}
-            >
-              {p.tagline ?? p.name}
-            </h2>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: 24,
-                padding: "20px 0",
-                borderTop: "1px solid var(--line)",
-                borderBottom: "1px solid var(--line)",
-              }}
-            >
-              <div>
-                <div className="mono">Partner</div>
-                <div className="serif" style={{ fontSize: 22, marginTop: 6 }}>
-                  {p.client}
-                </div>
-              </div>
-              <div>
-                <div className="mono">Tags</div>
-                {p.impactTags && p.impactTags.length > 0 ? (
-                  <div
-                    style={{
-                      marginTop: 8,
-                      display: "flex",
-                      flexWrap: "wrap",
-                      gap: 6,
-                    }}
-                  >
-                    {p.impactTags.map((t) => (
-                      <span
-                        key={t}
-                        className="mono"
-                        style={{
-                          padding: "4px 10px",
-                          border: "1px solid var(--line)",
-                          borderRadius: 999,
-                          fontSize: 11,
-                        }}
-                      >
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="serif" style={{ fontSize: 22, marginTop: 6 }}>
-                    —
-                  </div>
-                )}
-              </div>
-            </div>
-            <p
-              className="body"
-              style={{ marginTop: 24, maxWidth: "46ch" }}
-            >
-              {summary(p).slice(0, 320)}
-              {summary(p).length > 320 ? "…" : ""}
-            </p>
-            <div style={{ marginTop: 24, display: "flex", gap: 12 }}>
-              <button type="button" className="btn btn-primary">
-                Open case study <span className="arrow">→</span>
-              </button>
-              <span onClick={(e) => e.stopPropagation()}>
-                <ContactButton className="btn btn-ghost">
-                  Start a project <span className="arrow">→</span>
-                </ContactButton>
-              </span>
-            </div>
-          </div>
-          <div
-            className="ph"
-            data-tone={p.tone || "ink"}
-            style={{
-              aspectRatio: "4/3",
-              borderRadius: "var(--radius)",
-              ...(PROJECT_HERO[p.slug]
-                ? {
-                    backgroundImage: `url(${PROJECT_HERO[p.slug]})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                  }
-                : {}),
-            }}
-          >
-            <span className="ph-tag">
-              {String(i + 1).padStart(2, "0")} · {(p.categories[0] ?? "design").toLowerCase()}
-            </span>
-          </div>
-        </article>
-      ))}
+
+      {/* Masonry wall */}
+      <div className="proj-masonry">
+        {filtered.map((p, i) => (
+          <ProjectTile
+            key={p.slug}
+            project={p}
+            index={i}
+            isNew={newSlugs.has(p.slug)}
+          />
+        ))}
+      </div>
     </section>
   );
 }
