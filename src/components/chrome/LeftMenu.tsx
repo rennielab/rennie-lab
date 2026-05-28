@@ -12,7 +12,9 @@ const CHANNELS: Channel[] = [
   { label: "INSTAGRAM",   href: "https://instagram.com/benrennie",     external: true  },
   { label: "LINKEDIN",    href: "https://linkedin.com/in/benrennie",   external: true  },
   { label: "SUBSTACK",    href: "https://benrennie.substack.com",      external: true  },
-  { label: "OFF CLIMATE", href: "/journal",                            external: false },
+  // "OFF CLIMATE" (the journal) hidden for now — needs work. Restore this
+  // line (plus navigation.ts and sitemap.ts) to switch it back on.
+  // { label: "OFF CLIMATE", href: "/journal",                            external: false },
 ];
 
 /* ── Subscribe to a localStorage toggle with cross-tab + same-tab sync.
@@ -145,7 +147,7 @@ export function LeftMenu() {
               }}
             >
               <span>Contact</span>
-              <span className="nav-num">06</span>
+              <span className="nav-num">05</span>
             </div>
           </div>
 

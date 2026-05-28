@@ -11,7 +11,9 @@ export const NAV_ITEMS: NavItem[] = [
   { id: "services", label: "Services", num: "02", href: "/services" },
   { id: "projects", label: "Projects", num: "03", href: "/projects" },
   { id: "impact", label: "Impact", num: "04", href: "/impact" },
-  { id: "journal", label: "Off Climate", num: "05", href: "/journal" },
+  // "Off Climate" (the journal) is hidden for now — needs work. Re-add here
+  // (plus LeftMenu CHANNELS and sitemap.ts) to switch it back on.
+  // { id: "journal", label: "Off Climate", num: "05", href: "/journal" },
 ];
 
 export function routeIdFromPath(pathname: string): string {
