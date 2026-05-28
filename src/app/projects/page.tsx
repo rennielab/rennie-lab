@@ -1,5 +1,6 @@
 import { PROJECTS } from "@/data/projects";
 import { ProjectsList } from "@/components/projects/ProjectsList";
+import { LogoStrip } from "@/components/home/LogoStrip";
 
 export const metadata = {
   title: "Projects",
@@ -33,6 +34,14 @@ export default function ProjectsPage() {
       </section>
 
       <ProjectsList projects={published} />
+
+      {/* Client roster — rotating logo wall */}
+      <section style={{ padding: "96px 0 32px" }}>
+        <div className="mono" style={{ marginBottom: 28, color: "var(--ink-3)" }}>
+          Selected clients · partners · alliances
+        </div>
+        <LogoStrip />
+      </section>
     </div>
   );
 }

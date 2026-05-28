@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTheme } from "@/components/chrome/ThemeProvider";
 import { CLIENT_LOGOS_DARK_THEME, CLIENT_LOGOS_LIGHT_THEME } from "@/data/clientLogos";
 
-const SLOTS = 6;
+const SLOTS = 24; // 6 columns × 4 rows
 const CYCLE_MS = 11000;
 const FADE_MS = 850;
 
@@ -18,8 +18,15 @@ export function LogoStrip() {
 
 function LogoStripInner({ theme }: { theme: "light" | "dark" }) {
   const all = theme === "dark" ? CLIENT_LOGOS_DARK_THEME : CLIENT_LOGOS_LIGHT_THEME;
+  // Cycle through the logo set so SLOTS can exceed the number of logos
+  // (24 slots, ~13 logos) — duplicates land non-adjacently and diverge
+  // as the rotation runs.
   const [slots, setSlots] = useState<Slot[]>(() =>
-    all.slice(0, SLOTS).map((src, i) => ({ src, phase: 1, idx: i })),
+    Array.from({ length: SLOTS }, (_, i) => ({
+      src: all[i % all.length]!,
+      phase: 1 as const,
+      idx: i,
+    })),
   );
   const cursor = useRef(SLOTS);
 

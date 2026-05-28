@@ -18,7 +18,7 @@ export function SiteFooter() {
           matters.
         </div>
         <div className="foot-contact-card">
-          <div className="mono" style={{ color: "rgba(244,241,222,0.5)" }}>
+          <div className="mono" style={{ color: "rgba(255,255,255,0.5)" }}>
             Start a project
           </div>
           <div
@@ -27,7 +27,7 @@ export function SiteFooter() {
           >
             hello@rennielab.com
           </div>
-          <div className="hairline" style={{ background: "rgba(244,241,222,0.12)" }}></div>
+          <div className="hairline" style={{ background: "rgba(255,255,255,0.12)" }}></div>
           <div style={{ display: "flex", gap: 12 }}>
             <button
               className="btn btn-primary"
@@ -39,7 +39,7 @@ export function SiteFooter() {
             </button>
             <a
               className="btn btn-ghost"
-              style={{ borderColor: "rgba(244,241,222,0.2)", color: "var(--cream)" }}
+              style={{ borderColor: "rgba(255,255,255,0.2)", color: "var(--cream)" }}
               href="https://cal.com/benrennie/30min"
               target="_blank"
               rel="noopener noreferrer"
@@ -80,7 +80,7 @@ export function SiteFooter() {
         >
           <div
             className="mono"
-            style={{ color: "rgba(244, 241, 222, 0.5)" }}
+            style={{ color: "rgba(255, 255, 255, 0.5)" }}
           >
             Accountability · alliances
           </div>

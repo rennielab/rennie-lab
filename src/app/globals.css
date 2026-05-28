@@ -9,13 +9,14 @@
 :root {
   --red: #e84d4d;
   --red-tint: #f7a5a4;
-  --cream: #fffdec;
+  --cream: #ffffff;        /* crisp white — type on dark, white surfaces */
+  --cream-warm: #fffdec;   /* warm ground — kept for light-mode page bg */
   --cream-2: #f4f1de;
   --carbon: #151517;
   --carbon-2: #1d1d20;
   --carbon-3: #26262a;
 
-  --bg: var(--cream);
+  --bg: var(--cream-warm);  /* light-mode page ground stays warm */
   --bg-soft: #f4f1de;
   --bg-card: #ede9d2;
   --bg-elev: #f8f4dc;
@@ -41,10 +42,10 @@
   --bg-soft: #161618;
   --bg-card: #1c1c1f;
   --bg-elev: #232327;
-  --ink: #fbfbf7;
-  --ink-2: #fbfbf7;
-  --ink-3: rgba(251, 251, 247, 0.72);
-  --ink-4: rgba(251, 251, 247, 0.46);
+  --ink: #ffffff;
+  --ink-2: #ffffff;
+  --ink-3: rgba(255, 255, 255, 0.72);
+  --ink-4: rgba(255, 255, 255, 0.46);
   --line: rgba(255, 255, 255, 0.08);
   --line-2: rgba(255, 255, 255, 0.16);
 }
@@ -967,7 +968,7 @@ main {
   line-height: 1.12;
   letter-spacing: -0.024em;
   color: var(--ink);
-  max-width: 70%; /* run wide so it stings */
+  max-width: 75%; /* run wide so it stings */
 }
 @media (max-width: 900px) { .proj-statement-text { max-width: 100%; } }
 .proj-statement-text p {
@@ -1212,7 +1213,7 @@ main {
 }
 .ph[data-tone="dark"] {
   background:
-    radial-gradient(120% 90% at 30% 20%, rgba(244, 241, 222, 0.06), transparent 60%),
+    radial-gradient(120% 90% at 30% 20%, rgba(255, 255, 255, 0.06), transparent 60%),
     var(--carbon);
 }
 .ph[data-tone="cream"] {
@@ -1275,7 +1276,7 @@ footer.site-foot {
   grid-template-columns: 1fr 1fr;
   gap: 80px 56px;
   padding-bottom: 56px;
-  border-bottom: 1px solid rgba(244, 241, 222, 0.12);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   align-items: end;
 }
 .foot-grid > *:nth-child(2) { justify-self: end; max-width: 480px; width: 100%; }
@@ -1289,8 +1290,8 @@ footer.site-foot {
 }
 .foot-contact-card {
   align-self: end;
-  background: rgba(244, 241, 222, 0.04);
-  border: 1px solid rgba(244, 241, 222, 0.10);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
   border-radius: var(--radius);
   padding: 22px;
   display: flex;
@@ -1310,8 +1311,8 @@ footer.site-foot {
    reactivity is handled imperatively in FooterDots.tsx.                  */
 .foot-dots {
   padding: 56px 0 56px;
-  border-top: 1px solid rgba(244, 241, 222, 0.10);
-  border-bottom: 1px solid rgba(244, 241, 222, 0.10);
+  border-top: 1px solid rgba(255, 255, 255, 0.10);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
   margin-top: 48px;
   display: flex;
   justify-content: center;
@@ -1326,7 +1327,7 @@ footer.site-foot {
   width: 18.6875px;
   height: 18.6875px;
   border-radius: 50%;
-  background: #fbfbf7; /* cream on dark footer (Fourmula uses near-black on cream) */
+  background: #ffffff; /* crisp white dots on the dark footer */
   opacity: 0.15;
   transition: opacity 200ms cubic-bezier(0.22, 1, 0.36, 1);
   will-change: opacity;
@@ -1336,14 +1337,14 @@ footer.site-foot {
 .foot-ack-band {
   margin-top: 56px;
   padding-top: 32px;
-  border-top: 1px solid rgba(244, 241, 222, 0.10);
+  border-top: 1px solid rgba(255, 255, 255, 0.10);
 }
 .foot-ack-band-body {
   font-family: var(--sans);
   font-size: 13px;
   line-height: 1.65;
   letter-spacing: -0.005em;
-  color: rgba(244, 241, 222, 0.6);
+  color: rgba(255, 255, 255, 0.6);
   margin: 16px 0 0;
   max-width: none;
 }
@@ -1352,7 +1353,7 @@ footer.site-foot {
   font-size: 13px;
   line-height: 1.65;
   letter-spacing: -0.005em;
-  color: rgba(244, 241, 222, 0.6);
+  color: rgba(255, 255, 255, 0.6);
   margin: 0;
   max-width: 38ch;
 }
@@ -1366,7 +1367,7 @@ footer.site-foot {
   font-size: 10px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(244, 241, 222, 0.5);
+  color: rgba(255, 255, 255, 0.5);
   margin-bottom: 18px;
 }
 .foot-col ul { list-style: none; padding: 0; margin: 0; }
@@ -1376,7 +1377,7 @@ footer.site-foot {
   font-size: 18px;
   line-height: 1.5;
   letter-spacing: -0.01em;
-  color: rgba(244, 241, 222, 0.9);
+  color: rgba(255, 255, 255, 0.9);
   cursor: pointer;
   transition: color 200ms;
 }
@@ -1387,19 +1388,19 @@ footer.site-foot {
   letter-spacing: 0.06em;
   line-height: 1.9;
   text-transform: uppercase;
-  color: rgba(244, 241, 222, 0.7);
+  color: rgba(255, 255, 255, 0.7);
 }
 .foot-bottom {
   display: flex;
   justify-content: space-between;
   align-items: end;
   padding-top: 32px;
-  border-top: 1px solid rgba(244, 241, 222, 0.12);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
   font-family: var(--mono);
   font-size: 10px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(244, 241, 222, 0.5);
+  color: rgba(255, 255, 255, 0.5);
   flex-wrap: wrap;
   gap: 24px;
 }
@@ -1644,27 +1645,27 @@ footer.site-foot {
   color: var(--cream);
 }
 .contact-panel.is-journal-post .jp-head {
-  border-bottom-color: rgba(244, 241, 222, 0.18);
+  border-bottom-color: rgba(255, 255, 255, 0.18);
 }
 .contact-panel.is-journal-post .jp-title { color: var(--cream); }
 .contact-panel.is-journal-post .jp-body p,
 .contact-panel.is-journal-post .jp-lede {
   color: var(--cream);
 }
-.contact-panel.is-journal-post .mono { color: rgba(244, 241, 222, 0.7); }
+.contact-panel.is-journal-post .mono { color: rgba(255, 255, 255, 0.7); }
 .contact-panel.is-journal-post .jp-chip-t { color: var(--cream); }
-.contact-panel.is-journal-post .jp-chip-d { color: rgba(244, 241, 222, 0.7); }
+.contact-panel.is-journal-post .jp-chip-d { color: rgba(255, 255, 255, 0.7); }
 .contact-panel.is-journal-post .jp-cta {
-  border-color: rgba(244, 241, 222, 0.4);
+  border-color: rgba(255, 255, 255, 0.4);
   color: var(--cream);
 }
 .contact-panel.is-journal-post .jp-cta:hover {
   background: var(--cream);
   color: #e84d4d;
 }
-.contact-panel.is-journal-post .jp-foot { border-top-color: rgba(244, 241, 222, 0.18); }
+.contact-panel.is-journal-post .jp-foot { border-top-color: rgba(255, 255, 255, 0.18); }
 .contact-panel.is-journal-post .jp-foot .btn {
-  border-color: rgba(244, 241, 222, 0.4);
+  border-color: rgba(255, 255, 255, 0.4);
   color: var(--cream);
 }
 .contact-panel.is-journal-post .jp-foot .btn-primary {
@@ -2143,7 +2144,7 @@ footer.site-foot {
   font-size: clamp(18px, 1.5vw, 22px);
   line-height: 1.4;
   letter-spacing: -0.005em;
-  color: rgba(244, 241, 222, 0.85);
+  color: rgba(255, 255, 255, 0.85);
   max-width: 48ch;
 }
 .impact-featured-body {
@@ -2220,14 +2221,14 @@ footer.site-foot {
   max-width: 1280px;
   margin: 0 auto;
 }
-.impact-apply .mono { color: rgba(244, 241, 222, 0.6); }
+.impact-apply .mono { color: rgba(255, 255, 255, 0.6); }
 .impact-apply-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 48px;
   margin-top: clamp(48px, 6vw, 80px);
   padding-top: clamp(32px, 4vw, 56px);
-  border-top: 1px solid rgba(244, 241, 222, 0.18);
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
 }
 .impact-apply-body {
   font-family: var(--sans);
@@ -2472,12 +2473,12 @@ footer.site-foot {
   gap: 8px;
 }
 .logo-cell {
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 3 / 2;
   background: var(--bg-soft);
   border-radius: 2px;
   display: grid;
   place-items: center;
-  padding: 16px 24px;
+  padding: 14px 20px;
   overflow: hidden;
 }
 .logo-mark {
