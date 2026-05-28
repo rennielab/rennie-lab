@@ -2263,7 +2263,7 @@ footer.site-foot {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 12px;
-  margin: clamp(160px, 24vw, 320px) 0 clamp(80px, 10vw, 144px);
+  margin: clamp(16px, 3vw, 40px) 0 clamp(80px, 10vw, 144px);
 }
 .hero-tile {
   position: relative;
@@ -2382,13 +2382,13 @@ footer.site-foot {
 @media (max-width: 1100px) {
   .hero-tiles {
     grid-template-columns: repeat(2, 1fr);
-    margin-top: clamp(120px, 18vw, 200px);
+    margin-top: clamp(16px, 3vw, 36px);
   }
 }
 @media (max-width: 600px) {
   .hero-tiles {
     grid-template-columns: 1fr;
-    margin-top: clamp(72px, 12vw, 120px);
+    margin-top: clamp(12px, 3vw, 28px);
     gap: 8px;
   }
   .hero-tile { aspect-ratio: 16 / 11; }

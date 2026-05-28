@@ -23,36 +23,25 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Featured work — image-led fold */}
-      <HeroTiles />
-
-      {/* Headline + body + one CTA */}
-      <section style={{ padding: "32px 0 160px", position: "relative" }}>
-        <h1
-          className="h-display rise"
-          style={{ margin: 0, maxWidth: "14ch" }}
-        >
-          Creative Work
-          <br />
-          for a Liveable Planet.
-        </h1>
+      {/* Headline — page lead, above the work */}
+      <section style={{ padding: "40px 0 56px", position: "relative" }}>
         <div
           style={{
-            display: "grid",
-            gridTemplateColumns: "1.4fr 1fr",
-            gap: 64,
-            marginTop: 72,
-            alignItems: "end",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-end",
+            gap: 48,
+            flexWrap: "wrap",
           }}
         >
-          <p className="body-lg rise delay-1" style={{ maxWidth: "44ch", margin: 0 }}>
-            A small studio of strategists, designers and writers working out of Sydney
-            and Los Angeles. We partner with bolder brands on climate, digital, and the
-            work of moving people somewhere worth going.
-          </p>
+          <h1 className="h-display rise" style={{ margin: 0, maxWidth: "14ch" }}>
+            Creative Work
+            <br />
+            for a Liveable Planet.
+          </h1>
           <div
-            className="rise delay-2"
-            style={{ display: "flex", justifyContent: "flex-end" }}
+            className="rise delay-1"
+            style={{ display: "flex", justifyContent: "flex-end", paddingBottom: "0.4em" }}
           >
             <Link className="btn btn-primary" href="/projects">
               See the work <span className="arrow">→</span>
@@ -61,8 +50,11 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Clients — quiet trust strip */}
-      <section style={{ padding: "0 0 160px" }}>
+      {/* Featured work — image-led fold */}
+      <HeroTiles />
+
+      {/* Clients — quiet trust strip, sitting directly on the work */}
+      <section style={{ padding: "64px 0 160px" }}>
         <LogoStrip />
       </section>
 
