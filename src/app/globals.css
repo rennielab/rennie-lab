@@ -2260,7 +2260,7 @@ footer.site-foot {
 /* ── Home · 4-tile image fold (matches WhatWeDo cards) ── */
 .hero-tiles {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 12px;
   margin: clamp(160px, 24vw, 320px) 0 clamp(80px, 10vw, 144px);
 }
@@ -2273,22 +2273,29 @@ footer.site-foot {
   isolation: isolate;
   background: var(--ink);
   outline: 0;
+  padding: 0;
+  border: 0;
   transition: transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
 }
-.hero-tile:hover { transform: translateY(-6px); }
-.hero-tile:focus-visible { transform: translateY(-6px); }
+.hero-tile:hover,
+.hero-tile:focus-visible { transform: translateY(-4px); }
+/* Image overscans the frame vertically so the parallax translate never
+   reveals the tile background at the top/bottom edge. */
 .hero-tile-img {
   position: absolute;
-  inset: 0;
+  inset: -16% 0;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  transition: transform 1400ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: scale 900ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 500ms cubic-bezier(0.22, 1, 0.36, 1);
   z-index: 1;
+  will-change: transform;
 }
 .hero-tile:hover .hero-tile-img,
 .hero-tile:focus-visible .hero-tile-img {
-  transform: scale(1.05);
+  scale: 1.05;
+  filter: brightness(0.62);
 }
 .hero-tile-shade {
   position: absolute;
@@ -2298,43 +2305,78 @@ footer.site-foot {
     to bottom,
     rgba(0, 0, 0, 0.12) 0%,
     rgba(0, 0, 0, 0.02) 40%,
-    rgba(0, 0, 0, 0.55) 100%
+    rgba(0, 0, 0, 0.45) 100%
   );
 }
-.hero-tile-content {
+
+/* Quiet caption at rest — fades out on hover (matches .proj-tile-caption) */
+.hero-tile-caption {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: clamp(16px, 1.8vw, 24px);
+  left: 14px;
+  bottom: 14px;
+  z-index: 3;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cream);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+  opacity: 0.85;
+  transition: opacity 300ms var(--easing);
+}
+.hero-tile:hover .hero-tile-caption,
+.hero-tile:focus-visible .hero-tile-caption { opacity: 0; }
+
+/* Hover overlay — tags + name → tagline rise up (matches .proj-tile-overlay) */
+.hero-tile-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  z-index: 3;
-  color: var(--cream);
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px;
+  text-align: left;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 300ms var(--easing), transform 300ms var(--easing);
 }
-.hero-tile-eyebrow {
-  color: rgba(244, 241, 222, 0.72);
-  font-size: 10px;
-  letter-spacing: 0.14em;
+.hero-tile:hover .hero-tile-overlay,
+.hero-tile:focus-visible .hero-tile-overlay {
+  opacity: 1;
+  transform: translateY(0);
+}
+.hero-tile-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.hero-tile-tag {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cream);
+  background: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 4px 9px;
+  border-radius: 999px;
 }
 .hero-tile-title {
-  margin: 0;
   font-family: var(--sans);
-  font-weight: 600;
-  font-size: clamp(20px, 1.8vw, 28px);
+  font-size: clamp(16px, 1.15vw, 20px);
+  line-height: 1.2;
   letter-spacing: -0.015em;
-  line-height: 1.05;
   color: var(--cream);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
 }
-.hero-tile-tagline {
-  margin: 0;
-  font-family: var(--sans);
-  font-size: clamp(12px, 0.95vw, 14px);
-  line-height: 1.4;
-  letter-spacing: -0.005em;
-  color: rgba(244, 241, 222, 0.85);
-  max-width: 28ch;
+.hero-tile-name { font-weight: 700; }
+.hero-tile-sub { font-weight: 500; color: rgba(251, 251, 247, 0.62); }
+
+@media (max-width: 1280px) {
+  .hero-tiles { grid-template-columns: repeat(3, 1fr); }
 }
 @media (max-width: 1100px) {
   .hero-tiles {
