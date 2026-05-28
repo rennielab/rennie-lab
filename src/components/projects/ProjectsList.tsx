@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ImpactTag, Project } from "@/data/types";
+import type { ImpactCaseStudy, ImpactCategory } from "@/data/impactProjects";
 import { PROJECT_HERO } from "@/data/projectImages";
 
 const FILTERS: { id: ImpactTag | "all"; label: string }[] = [
@@ -26,7 +27,7 @@ const ASPECTS = [
   "4 / 5",
   "3 / 4",
 ];
-function aspectFor(slug: string, i: number): string {
+function aspectFor(i: number): string {
   return ASPECTS[i % ASPECTS.length];
 }
 
@@ -38,24 +39,31 @@ function riseFor(i: number): number {
   return RISE[i % RISE.length];
 }
 
-function openCase(project: Project, index: number) {
+function catToTag(c: ImpactCategory): ImpactTag {
+  return c === "climate" ? "Climate" : c === "community" ? "Community" : "Movement";
+}
+
+function openProjectCase(project: Project, index: number) {
   window.dispatchEvent(
     new CustomEvent("open-case", { detail: { project, index } }),
   );
 }
 
-function ProjectTile({
-  project,
-  index,
-  isNew,
-}: {
-  project: Project;
-  index: number;
-  isNew: boolean;
-}) {
+function openImpactCase(caseStudy: ImpactCaseStudy) {
+  window.dispatchEvent(
+    new CustomEvent("open-impact-case", { detail: { caseStudy } }),
+  );
+}
+
+/* One unified work item — a studio project or an impact case study.
+   Both render as identical tiles; only the click target differs. */
+type WallItem =
+  | { kind: "project"; key: string; project: Project; tags: ImpactTag[]; isNew: boolean }
+  | { kind: "impact"; key: string; caseStudy: ImpactCaseStudy; tags: ImpactTag[] };
+
+function WallTile({ item, index }: { item: WallItem; index: number }) {
   const ref = useRef<HTMLButtonElement>(null);
   const [shown, setShown] = useState(false);
-  const hero = PROJECT_HERO[project.slug];
 
   useEffect(() => {
     const el = ref.current;
@@ -73,7 +81,42 @@ function ProjectTile({
     return () => io.disconnect();
   }, []);
 
-  const cat = (project.categories[0] ?? "design").toLowerCase();
+  // Resolve display fields from whichever kind of work this is.
+  let hero: string | undefined;
+  let name: string;
+  let sub: string | undefined;
+  let tone: string;
+  let caption: string;
+  let overlayTags: string[];
+  let isNew = false;
+  let onOpen: () => void;
+  let ariaLabel: string;
+
+  if (item.kind === "project") {
+    const p = item.project;
+    hero = PROJECT_HERO[p.slug];
+    name = p.name;
+    sub = p.tagline;
+    tone = p.tone || "ink";
+    caption = (p.categories[0] ?? "design").toLowerCase();
+    overlayTags = (p.impactTags?.length
+      ? p.impactTags
+      : [p.categories[0] ?? "Design"]
+    ).slice(0, 2);
+    isNew = item.isNew;
+    onOpen = () => openProjectCase(p, index);
+    ariaLabel = `Open case study — ${p.name}`;
+  } else {
+    const c = item.caseStudy;
+    hero = c.hero;
+    name = c.name;
+    sub = undefined;
+    tone = c.tone || "ink";
+    caption = c.category;
+    overlayTags = [c.category];
+    onOpen = () => openImpactCase(c);
+    ariaLabel = `Open case study — ${c.name}`;
+  }
 
   return (
     <button
@@ -81,16 +124,16 @@ function ProjectTile({
       type="button"
       className="proj-tile"
       data-shown={shown}
-      data-tone={project.tone || "ink"}
+      data-tone={tone}
       style={
         {
-          aspectRatio: aspectFor(project.slug, index),
+          aspectRatio: aspectFor(index),
           transitionDelay: `${(index % 5) * 50}ms`,
           "--rise": `${riseFor(index)}px`,
         } as React.CSSProperties
       }
-      onClick={() => openCase(project, index)}
-      aria-label={`Open case study — ${project.name}`}
+      onClick={onOpen}
+      aria-label={ariaLabel}
     >
       {hero && (
         /* eslint-disable-next-line @next/next/no-img-element */
@@ -109,21 +152,16 @@ function ProjectTile({
 
       <div className="proj-tile-overlay">
         <div className="proj-tile-tags">
-          {(project.impactTags?.length
-            ? project.impactTags
-            : [project.categories[0] ?? "Design"]
-          )
-            .slice(0, 2)
-            .map((t) => (
-              <span key={t} className="proj-tile-tag">
-                {t}
-              </span>
-            ))}
+          {overlayTags.map((t) => (
+            <span key={t} className="proj-tile-tag">
+              {t}
+            </span>
+          ))}
         </div>
         <div className="proj-tile-title">
-          <span className="proj-tile-name">{project.name}</span>
-          {project.tagline ? (
-            <span className="proj-tile-sub"> → {project.tagline}</span>
+          <span className="proj-tile-name">{name}</span>
+          {sub ? (
+            <span className="proj-tile-sub"> → {sub}</span>
           ) : (
             <span className="proj-tile-arrow"> ↗</span>
           )}
@@ -131,26 +169,49 @@ function ProjectTile({
       </div>
 
       {/* Always-visible quiet caption (fades out on hover as overlay rises) */}
-      <div className="proj-tile-caption">{cat}</div>
+      <div className="proj-tile-caption">{caption}</div>
     </button>
   );
 }
 
-export function ProjectsList({ projects }: { projects: Project[] }) {
+export function ProjectsList({
+  projects,
+  impact = [],
+}: {
+  projects: Project[];
+  impact?: ImpactCaseStudy[];
+}) {
   const [filter, setFilter] = useState<ImpactTag | "all">("all");
 
-  const filtered = useMemo(
-    () =>
-      filter === "all"
-        ? projects
-        : projects.filter((p) => p.impactTags?.includes(filter)),
-    [projects, filter],
-  );
+  // Merge studio projects and impact case studies into one wall, interleaved
+  // round-robin so the two bodies of work mix instead of sitting in blocks.
+  const items = useMemo<WallItem[]>(() => {
+    const newSlugs = new Set(projects.slice(0, 3).map((p) => p.slug));
+    const proj: WallItem[] = projects.map((p) => ({
+      kind: "project",
+      key: `p-${p.slug}`,
+      project: p,
+      tags: p.impactTags ?? [],
+      isNew: newSlugs.has(p.slug),
+    }));
+    const imp: WallItem[] = impact.map((c) => ({
+      kind: "impact",
+      key: `i-${c.slug}`,
+      caseStudy: c,
+      tags: [catToTag(c.category)],
+    }));
+    const merged: WallItem[] = [];
+    const max = Math.max(proj.length, imp.length);
+    for (let i = 0; i < max; i++) {
+      if (proj[i]) merged.push(proj[i]);
+      if (imp[i]) merged.push(imp[i]);
+    }
+    return merged;
+  }, [projects, impact]);
 
-  // First three published projects carry the "New" badge.
-  const newSlugs = useMemo(
-    () => new Set(projects.slice(0, 3).map((p) => p.slug)),
-    [projects],
+  const filtered = useMemo(
+    () => (filter === "all" ? items : items.filter((it) => it.tags.includes(filter))),
+    [items, filter],
   );
 
   return (
@@ -171,19 +232,14 @@ export function ProjectsList({ projects }: { projects: Project[] }) {
           ))}
         </div>
         <span className="mono" style={{ color: "var(--ink-3)" }}>
-          {filtered.length} / {projects.length}
+          {filtered.length} / {items.length}
         </span>
       </div>
 
       {/* Masonry wall */}
       <div className="proj-masonry">
-        {filtered.map((p, i) => (
-          <ProjectTile
-            key={p.slug}
-            project={p}
-            index={i}
-            isNew={newSlugs.has(p.slug)}
-          />
+        {filtered.map((it, i) => (
+          <WallTile key={it.key} item={it} index={i} />
         ))}
       </div>
     </section>

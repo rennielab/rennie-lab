@@ -1,21 +1,34 @@
 import { PROJECTS } from "@/data/projects";
+import { IMPACT_CASE_STUDIES } from "@/data/impactProjects";
+import { PROJECT_HERO } from "@/data/projectImages";
 import { ProjectsList } from "@/components/projects/ProjectsList";
 import { LogoStrip } from "@/components/home/LogoStrip";
 
 export const metadata = {
   title: "Projects",
   description:
-    "A short list of recent partnerships across brand, UX, climate and impact work.",
+    "Recent partnerships across brand, UX, environments and impact — studio work and pro-bono case studies in one wall.",
 };
 
 export default function ProjectsPage() {
   const published = PROJECTS.filter((p) => p.status === "published");
 
+  // Impact case studies flow into the wall too — it's all the work. Drop the
+  // few that reuse a published project's hero image so we never show the same
+  // picture twice (those clients are already represented by their project tile).
+  const usedHeroes = new Set(
+    published.map((p) => PROJECT_HERO[p.slug]).filter(Boolean),
+  );
+  const impactWork = IMPACT_CASE_STUDIES.filter(
+    (c) => !c.hero || !usedHeroes.has(c.hero),
+  );
+  const totalWork = published.length + impactWork.length;
+
   return (
     <div className="container">
       <section className="proj-statement">
         <div className="mono rise" style={{ marginBottom: 28 }}>
-          Projects · {published.length} selected · 2022 → 2026
+          Projects · {totalWork} selected · 2022 → 2026
         </div>
         <div className="proj-statement-text rise delay-1">
           <p>
@@ -33,7 +46,7 @@ export default function ProjectsPage() {
         </div>
       </section>
 
-      <ProjectsList projects={published} />
+      <ProjectsList projects={published} impact={impactWork} />
 
       {/* Client roster — rotating logo wall */}
       <section style={{ padding: "96px 0 32px" }}>
