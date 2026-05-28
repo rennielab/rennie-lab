@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { PROJECTS } from "@/data/projects";
 import { IMPACT_CASE_STUDIES } from "@/data/impactProjects";
 import { PROJECT_HERO } from "@/data/projectImages";
@@ -38,21 +39,6 @@ const TILES: Tile[] = [
   },
 ];
 
-function open(tile: Tile) {
-  if (typeof window === "undefined") return;
-  if (tile.source === "project") {
-    const project = PROJECTS.find((p) => p.slug === tile.slug);
-    if (project) {
-      window.dispatchEvent(new CustomEvent("open-case", { detail: { project } }));
-    }
-  } else {
-    const caseStudy = IMPACT_CASE_STUDIES.find((c) => c.slug === tile.slug);
-    if (caseStudy) {
-      window.dispatchEvent(new CustomEvent("open-impact-case", { detail: { caseStudy } }));
-    }
-  }
-}
-
 function imageFor(tile: Tile): string {
   if (tile.source === "project") {
     return PROJECT_HERO[tile.slug] ?? "";
@@ -79,6 +65,8 @@ function nameFor(tile: Tile): string {
 }
 
 export function HeroTiles() {
+  const router = useRouter();
+  const go = () => router.push("/projects");
   return (
     <section className="hero-tiles" aria-label="Featured work">
       {TILES.map((tile, i) => (
@@ -86,11 +74,11 @@ export function HeroTiles() {
           key={tile.slug}
           className="hero-tile"
           data-lead={i === 0}
-          onClick={() => open(tile)}
+          onClick={go}
           role="button"
           tabIndex={0}
           onKeyDown={(e) => {
-            if (e.key === "Enter") open(tile);
+            if (e.key === "Enter") go();
           }}
         >
           <div

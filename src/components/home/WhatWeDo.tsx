@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import type { Project } from "@/data/types";
 import { PROJECTS } from "@/data/projects";
 import { PROJECT_HERO } from "@/data/projectImages";
@@ -144,10 +145,8 @@ type ProjectStackCardProps = {
 };
 
 function ProjectStackCard({ project, fallbackTone, eyebrow }: ProjectStackCardProps) {
-  const onClick = () => {
-    if (typeof window === "undefined") return;
-    window.dispatchEvent(new CustomEvent("open-case", { detail: { project } }));
-  };
+  const router = useRouter();
+  const onClick = () => router.push("/projects");
   const heroSrc = PROJECT_HERO[project.slug];
   return (
     <div

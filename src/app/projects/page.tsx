@@ -12,20 +12,19 @@ export default function ProjectsPage() {
 
   return (
     <div className="container">
-      <section style={{ padding: "40px 0 96px" }}>
-        <div className="mono rise" style={{ marginBottom: 32 }}>
+      <section className="proj-statement">
+        <div className="mono rise" style={{ marginBottom: 28 }}>
           Projects · {published.length} selected · 2022 → 2026
         </div>
-        <h1
-          className="h-display rise delay-1"
-          style={{ margin: 0, maxWidth: "14ch" }}
-        >
-          Projects &amp; Partnerships
+        <h1 className="proj-statement-text rise delay-1">
+          <span className="proj-statement-name">
+            Rennie<sup className="proj-statement-reg">®</sup>
+          </span>{" "}
+          is an independent design studio with two decades of experience providing
+          brand strategy, design systems, placemaking and user experience design for
+          the world&apos;s coolest and most important companies and visionary brands
+          who prolong and protect access to nature and human potential.
         </h1>
-        <p className="body-lg rise delay-2" style={{ marginTop: 24, maxWidth: "48ch" }}>
-          A short list of recent partnerships. Most projects run two to five years; we
-          share the bits we&apos;re allowed to share.
-        </p>
       </section>
 
       <ProjectsList projects={published} />
