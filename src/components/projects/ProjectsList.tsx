@@ -30,6 +30,14 @@ function aspectFor(slug: string, i: number): string {
   return ASPECTS[i % ASPECTS.length];
 }
 
+/* Per-tile initial drop distance — tiles start scattered at varied
+   heights and settle into the grid as they reveal on scroll, so the
+   wall "falls together" rather than fading in flat. */
+const RISE = [120, 64, 168, 88, 200, 110, 56, 144, 96, 176];
+function riseFor(i: number): number {
+  return RISE[i % RISE.length];
+}
+
 function openCase(project: Project, index: number) {
   window.dispatchEvent(
     new CustomEvent("open-case", { detail: { project, index } }),
@@ -74,10 +82,13 @@ function ProjectTile({
       className="proj-tile"
       data-shown={shown}
       data-tone={project.tone || "ink"}
-      style={{
-        aspectRatio: aspectFor(project.slug, index),
-        transitionDelay: `${(index % 5) * 60}ms`,
-      }}
+      style={
+        {
+          aspectRatio: aspectFor(project.slug, index),
+          transitionDelay: `${(index % 5) * 50}ms`,
+          "--rise": `${riseFor(index)}px`,
+        } as React.CSSProperties
+      }
       onClick={() => openCase(project, index)}
       aria-label={`Open case study — ${project.name}`}
     >
@@ -110,8 +121,12 @@ function ProjectTile({
             ))}
         </div>
         <div className="proj-tile-title">
-          {project.name}
-          <span className="proj-tile-arrow"> ↗</span>
+          <span className="proj-tile-name">{project.name}</span>
+          {project.tagline ? (
+            <span className="proj-tile-sub"> → {project.tagline}</span>
+          ) : (
+            <span className="proj-tile-arrow"> ↗</span>
+          )}
         </div>
       </div>
 

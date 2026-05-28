@@ -957,21 +957,26 @@ main {
    Big white statement above the wall. Studio name heavy, sentence flows
    at a lighter weight. No italics (brand rule), no red — all cream.      */
 .proj-statement {
-  padding: 32px 0 64px;
-  max-width: 24ch;
+  padding: 32px 0 72px;
 }
-@media (min-width: 900px) { .proj-statement { max-width: none; } }
 .proj-statement-text {
   margin: 0;
   font-family: var(--sans);
   font-weight: 500;
-  font-size: clamp(26px, 3.2vw, 52px);
-  line-height: 1.14;
-  letter-spacing: -0.022em;
+  font-size: clamp(26px, 3.4vw, 54px);
+  line-height: 1.12;
+  letter-spacing: -0.024em;
   color: var(--ink);
-  max-width: 30ch;
+  max-width: 70%; /* run wide so it stings */
 }
-@media (min-width: 1100px) { .proj-statement-text { max-width: 24ch; } }
+@media (max-width: 900px) { .proj-statement-text { max-width: 100%; } }
+.proj-statement-text p {
+  margin: 0;
+}
+.proj-statement-text p + p {
+  margin-top: 0.6em;
+  color: var(--ink-3);
+}
 .proj-statement-name {
   font-weight: 900;
   letter-spacing: -0.03em;
@@ -1022,18 +1027,18 @@ main {
 
 .proj-masonry {
   column-count: 5;
-  column-gap: 10px;
+  column-gap: 30px;
 }
-@media (min-width: 1600px) { .proj-masonry { column-count: 6; } }
 @media (max-width: 1280px) { .proj-masonry { column-count: 4; } }
 @media (max-width: 980px)  { .proj-masonry { column-count: 3; } }
-@media (max-width: 640px)  { .proj-masonry { column-count: 2; column-gap: 8px; } }
+@media (max-width: 768px)  { .proj-masonry { column-count: 2; } }
+@media (max-width: 560px)  { .proj-masonry { column-count: 1; } }
 
 .proj-tile {
   display: block;
   width: 100%;
   break-inside: avoid;
-  margin-bottom: 10px;
+  margin-bottom: 30px;
   position: relative;
   overflow: hidden;
   border-radius: var(--radius-sm);
@@ -1041,12 +1046,12 @@ main {
   border: 0;
   cursor: pointer;
   background: var(--bg-soft);
-  /* scroll-reveal */
+  /* staggered scroll-reveal — tiles start scattered at varied heights
+     (--rise) and fall together into the grid as they enter view. */
   opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 700ms var(--easing), transform 700ms var(--easing);
+  transform: translateY(var(--rise, 80px));
+  transition: opacity 600ms var(--easing), transform 850ms var(--easing);
 }
-@media (max-width: 640px) { .proj-tile { margin-bottom: 8px; } }
 .proj-tile[data-shown="true"] {
   opacity: 1;
   transform: translateY(0);
@@ -1137,12 +1142,16 @@ main {
 }
 .proj-tile-title {
   font-family: var(--sans);
-  font-weight: 700;
-  font-size: clamp(15px, 1.1vw, 19px);
-  line-height: 1.15;
+  font-size: clamp(16px, 1.15vw, 20px);
+  line-height: 1.2;
   letter-spacing: -0.015em;
   color: var(--cream);
-  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.4);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
+}
+.proj-tile-name { font-weight: 700; }
+.proj-tile-sub {
+  font-weight: 500;
+  color: rgba(251, 251, 247, 0.62);
 }
 .proj-tile-arrow { opacity: 0.7; }
 

@@ -16,15 +16,20 @@ export default function ProjectsPage() {
         <div className="mono rise" style={{ marginBottom: 28 }}>
           Projects · {published.length} selected · 2022 → 2026
         </div>
-        <h1 className="proj-statement-text rise delay-1">
-          <span className="proj-statement-name">
-            Rennie<sup className="proj-statement-reg">®</sup>
-          </span>{" "}
-          is an independent design studio with two decades of experience providing
-          brand strategy, design systems, placemaking and user experience design for
-          the world&apos;s coolest and most important companies and visionary brands
-          who prolong and protect access to nature and human potential.
-        </h1>
+        <div className="proj-statement-text rise delay-1">
+          <p>
+            <span className="proj-statement-name">
+              Rennie<sup className="proj-statement-reg">®</sup>
+            </span>{" "}
+            is an independent design studio with two decades of experience providing
+            brand strategy, design systems, placemaking and user experience design for
+            the world&apos;s most important companies.
+          </p>
+          <p>
+            Our clients are visionary brands and charities who protect access to
+            nature, humanity + human potential. We call this impact.
+          </p>
+        </div>
       </section>
 
       <ProjectsList projects={published} />
