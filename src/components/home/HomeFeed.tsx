@@ -125,7 +125,7 @@ function FeedTile({ item, index }: { item: FeedItem; index: number }) {
   );
 }
 
-export function HomeFeed({ limit = 18 }: { limit?: number }) {
+export function HomeFeed({ limit }: { limit?: number } = {}) {
   const items = useMemo<FeedItem[]>(() => {
     const published = PROJECTS.filter((p) => p.status === "published");
     const usedHeroes = new Set(
@@ -160,7 +160,7 @@ export function HomeFeed({ limit = 18 }: { limit?: number }) {
       if (projects[i]) merged.push(projects[i]);
       if (impact[i]) merged.push(impact[i]);
     }
-    return merged.slice(0, limit);
+    return limit ? merged.slice(0, limit) : merged;
   }, [limit]);
 
   return (

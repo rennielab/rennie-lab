@@ -31,13 +31,17 @@ export default function HomePage() {
       {/* Rennie Lab, live — the timeline feed (work now, events + places next) */}
       <HomeFeed />
 
-      {/* Clients — quiet trust strip */}
-      <section style={{ padding: "72px 0 160px" }}>
-        <LogoStrip />
-      </section>
-
       {/* What we do — the five disciplines */}
       <WhatWeDo />
+
+      {/* Clients — logo wall, sitting at the bottom of the page before the
+          footer CTA */}
+      <section style={{ padding: "112px 0 32px" }}>
+        <div className="mono" style={{ marginBottom: 28, color: "var(--ink-3)" }}>
+          Selected clients · partners · alliances
+        </div>
+        <LogoStrip />
+      </section>
     </div>
   );
 }
