@@ -2416,6 +2416,145 @@ footer.site-foot {
   .hero-tile { aspect-ratio: 16 / 11; }
 }
 
+/* ── Home feed · "Rennie Lab, live" timeline ──────────────
+   this.design-style staggered masonry of tall portrait tiles with
+   glass pills top-left. Column masonry so varied-height tiles pack. */
+.home-feed {
+  column-count: 6;
+  column-gap: 14px;
+  margin-top: 8px;
+}
+.feed-tile {
+  display: block;
+  width: 100%;
+  margin: 0 0 14px;
+  break-inside: avoid;
+  position: relative;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  isolation: isolate;
+  background: var(--ink);
+  border: 0;
+  padding: 0;
+  text-align: left;
+  opacity: 0;
+  transform: translateY(var(--rise, 80px));
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.feed-tile[data-shown="true"] {
+  opacity: 1;
+  transform: none;
+}
+.feed-tile-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition:
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.6s ease;
+}
+.feed-tile:hover .feed-tile-img,
+.feed-tile:focus-visible .feed-tile-img {
+  transform: scale(1.045);
+  filter: brightness(0.62);
+}
+
+/* Glass pills — top-left, always visible */
+.feed-pills {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-width: calc(100% - 20px);
+}
+.feed-pill {
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 6px 9px;
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(18, 18, 20, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  -webkit-backdrop-filter: blur(9px) saturate(1.25);
+  backdrop-filter: blur(9px) saturate(1.25);
+  white-space: nowrap;
+}
+.feed-pill-type {
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--carbon, #111);
+  border-color: rgba(255, 255, 255, 0.9);
+}
+.feed-pill-new {
+  background: rgba(232, 77, 77, 0.62);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+/* Title + go, revealed on hover */
+.feed-tile-cap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  padding: 16px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: #fff;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.72));
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.feed-tile:hover .feed-tile-cap,
+.feed-tile:focus-visible .feed-tile-cap {
+  opacity: 1;
+  transform: none;
+}
+.feed-tile-name {
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+.feed-tile-go {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+}
+@media (max-width: 1280px) {
+  .home-feed { column-count: 4; }
+}
+@media (max-width: 900px) {
+  .home-feed { column-count: 3; }
+}
+@media (max-width: 640px) {
+  .home-feed { column-count: 2; column-gap: 10px; }
+  .feed-tile { margin-bottom: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .feed-tile {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
 /* ── Story · parallax atmosphere band ─────────────────── */
 .story-parallax {
   position: relative;
