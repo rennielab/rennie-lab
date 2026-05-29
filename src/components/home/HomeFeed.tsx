@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { PROJECTS } from "@/data/projects";
-import { IMPACT_CASE_STUDIES } from "@/data/impactProjects";
+import { IMPACT_CASE_STUDIES, type ImpactCaseStudy } from "@/data/impactProjects";
 import { PROJECT_HERO } from "@/data/projectImages";
 import type { Project } from "@/data/types";
 
@@ -15,7 +14,7 @@ import type { Project } from "@/data/types";
 
 type FeedType = "Project" | "Event" | "Places";
 
-type FeedItem = {
+type FeedItemBase = {
   key: string;
   hero: string;
   name: string;
@@ -23,6 +22,24 @@ type FeedItem = {
   category: string;
   isNew: boolean;
 };
+
+// Each item carries its source so a click can open the right drawer in place
+// rather than bouncing to the projects index.
+type FeedItem =
+  | (FeedItemBase & { kind: "project"; project: Project })
+  | (FeedItemBase & { kind: "impact"; caseStudy: ImpactCaseStudy });
+
+function openCase(item: FeedItem, index: number) {
+  if (item.kind === "project") {
+    window.dispatchEvent(
+      new CustomEvent("open-case", { detail: { project: item.project, index } }),
+    );
+  } else {
+    window.dispatchEvent(
+      new CustomEvent("open-impact-case", { detail: { caseStudy: item.caseStudy } }),
+    );
+  }
+}
 
 // Tall-leaning aspect rhythm — portrait first, with the odd square so the
 // masonry packs with cadence rather than a flat grid. Switches to a single
@@ -58,7 +75,6 @@ function cap(s: string): string {
 }
 
 function FeedTile({ item, index }: { item: FeedItem; index: number }) {
-  const router = useRouter();
   const ref = useRef<HTMLButtonElement>(null);
   const [shown, setShown] = useState(false);
 
@@ -91,8 +107,8 @@ function FeedTile({ item, index }: { item: FeedItem; index: number }) {
           transitionDelay: `${(index % 6) * 45}ms`,
         } as React.CSSProperties
       }
-      onClick={() => router.push("/projects")}
-      aria-label={`${item.name} — see the work`}
+      onClick={() => openCase(item, index)}
+      aria-label={`Open case study — ${item.name}`}
     >
       {item.hero && (
         /* eslint-disable-next-line @next/next/no-img-element */
@@ -134,6 +150,8 @@ export function HomeFeed({ limit }: { limit?: number } = {}) {
     const newSlugs = new Set(published.slice(0, 3).map((p) => p.slug));
 
     const projects: FeedItem[] = published.map((p) => ({
+      kind: "project",
+      project: p,
       key: `p-${p.slug}`,
       hero: PROJECT_HERO[p.slug] ?? "",
       name: p.name,
@@ -145,6 +163,8 @@ export function HomeFeed({ limit }: { limit?: number } = {}) {
     const impact: FeedItem[] = IMPACT_CASE_STUDIES.filter(
       (c) => !c.hero || !usedHeroes.has(c.hero),
     ).map((c) => ({
+      kind: "impact",
+      caseStudy: c,
       key: `i-${c.slug}`,
       hero: c.hero ?? "",
       name: c.name,

@@ -2547,6 +2547,15 @@ footer.site-foot {
   .home-feed { column-count: 2; column-gap: 10px; }
   .feed-tile { margin-bottom: 10px; }
 }
+/* Touch / no-hover devices can't reveal titles on hover — keep the caption
+   visible so every tile is identifiable, and lean on the scrim for legibility. */
+@media (hover: none) {
+  .feed-tile-cap {
+    opacity: 1;
+    transform: none;
+    background: linear-gradient(transparent 40%, rgba(0, 0, 0, 0.82));
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .feed-tile {
     opacity: 1;
