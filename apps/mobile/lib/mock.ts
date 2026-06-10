@@ -30,6 +30,8 @@ export type TimeEntry = {
   status: 'draft' | 'pending' | 'approved';
   nonBillable: boolean;
   source: 'manual' | 'call';
+  // Dana 2026-05-26: manual entries are categorized by activity type
+  activity?: 'call' | 'email' | 'document' | 'text';
   contactId?: string;
 };
 export type Invoice = {

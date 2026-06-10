@@ -147,8 +147,8 @@ export default function Matters() {
           <div>Matter</div>
           <div>Client</div>
           <div>Lead</div>
-          <div className="text-right">Hours</div>
-          <div className="text-right">Billed</div>
+          <div className="text-right">Hours (this month)</div>
+          <div className="text-right">Billed (this month)</div>
           <div className="text-right">Unbilled</div>
           <div className="text-right">Outstanding</div>
           <div>Team</div>

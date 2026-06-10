@@ -152,11 +152,11 @@ export default function FirmMatters() {
 
               <div className="flex items-center gap-5 text-xs mb-4">
                 <div>
-                  <div className="text-fg-muted">Your hours</div>
+                  <div className="text-fg-muted">Your hours (this month)</div>
                   <div className="text-base font-semibold tabular-nums mt-0.5">{formatHoursH(row.myHours)}</div>
                 </div>
                 <div>
-                  <div className="text-fg-muted">Billed</div>
+                  <div className="text-fg-muted">Billed (this month)</div>
                   <div className="text-base font-semibold tabular-nums mt-0.5">{formatMoneyCompact(row.myBilled)}</div>
                 </div>
                 <div>

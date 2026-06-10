@@ -89,11 +89,26 @@ export default function AdminInvoicesList() {
       title="Invoices"
       subtitle="Send invoices, chase overdue balances, and reconcile payments."
       action={
-        <button
-          onClick={() => setWizardOpen(true)}
-          className="bg-accent hover:bg-accent-dim text-white font-semibold text-sm px-4 h-10 rounded-lg inline-flex items-center gap-1.5">
-          <span className="text-base leading-none">+</span> New Invoice
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Dana 2026-05-26: outstanding / unpaid status as loud pills */}
+          {totalOutstanding > 0 && (
+            <span className="inline-flex items-center gap-1.5 px-3 h-8 rounded-full bg-warning-soft border border-warning/40 text-warning text-xs font-bold">
+              <span className="w-1.5 h-1.5 rounded-full bg-warning" />
+              {formatMoneyCompact(totalOutstanding)} outstanding · {counts.open + counts.overdue} unpaid
+            </span>
+          )}
+          {overdueAmount > 0 && (
+            <span className="inline-flex items-center gap-1.5 px-3 h-8 rounded-full bg-danger-soft border border-danger/40 text-danger text-xs font-bold">
+              <span className="w-1.5 h-1.5 rounded-full bg-danger" />
+              {formatMoneyCompact(overdueAmount)} overdue
+            </span>
+          )}
+          <button
+            onClick={() => setWizardOpen(true)}
+            className="bg-accent hover:bg-accent-dim text-white font-semibold text-sm px-4 h-10 rounded-lg inline-flex items-center gap-1.5">
+            <span className="text-base leading-none">+</span> New Invoice
+          </button>
+        </div>
       }>
       {/* KPIs — only show buckets that have value */}
       <div className={`grid gap-3 mb-4 ${overdueAmount > 0 ? 'grid-cols-4' : 'grid-cols-3'}`}>

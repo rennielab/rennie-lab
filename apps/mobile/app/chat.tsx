@@ -95,7 +95,7 @@ export default function Chat() {
           <Ionicons name="chevron-back" size={22} color={colors.textPrimary} />
         </Pressable>
         <View style={{ flex: 1 }}>
-          <Text style={styles.title}>Campfire</Text>
+          <Text style={styles.title}>Message Center</Text>
           <Text style={styles.subtitle}>{firm.name} · Reyes v. Horizon</Text>
         </View>
         <View style={styles.presenceWrap}>

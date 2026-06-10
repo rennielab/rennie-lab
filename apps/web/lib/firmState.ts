@@ -4,7 +4,7 @@
 
 import { useSyncExternalStore } from 'react';
 
-import type { TimeEntry } from '@/lib/mock';
+import { currentFirmUser, type TimeEntry } from '@/lib/mock';
 import { useEntryOverrides } from '@/lib/adminState';
 
 export type FirmNotification = {
@@ -24,12 +24,18 @@ export type DraftEntry = {
   description: string;
   nonBillable: boolean;
   source: 'manual' | 'call';
+  // Dana 2026-05-26: activity categories on manual entries
+  activity?: 'call' | 'email' | 'document' | 'text';
   createdAt: number;
 };
 
 type State = {
   notifications: FirmNotification[];
   drafts: DraftEntry[];
+  // Drafts that were submitted for approval become real pending TimeEntries
+  // here, so the dashboard and time pages count them immediately
+  // (Dana 2026-05-26: submitted drafts must populate the user dashboard).
+  submitted: TimeEntry[];
   pinnedMatterIds: Set<string>;
 };
 
@@ -70,8 +76,25 @@ const initial: State = {
       createdAt: now - 2 * hr,
     },
   ],
+  submitted: [],
   pinnedMatterIds: new Set(['mat_acme_1', 'mat_north_1']),
 };
+
+// Convert a draft into the pending TimeEntry it becomes on submission.
+function draftToEntry(d: DraftEntry): TimeEntry {
+  return {
+    id: `te_${d.id}`,
+    matterId: d.matterId,
+    lawyerId: currentFirmUser.id,
+    durationSec: d.durationSec,
+    description: d.description,
+    createdAt: Date.now(),
+    status: 'pending',
+    nonBillable: d.nonBillable,
+    source: d.source,
+    activity: d.activity,
+  };
+}
 
 let state: State = initial;
 const listeners = new Set<() => void>();
@@ -123,9 +146,15 @@ export function deleteDraft(id: string) {
   emit();
 }
 
+export function useSubmittedFirmEntries() {
+  return useSyncExternalStore(subscribe, getSnapshot, getSnapshot).submitted;
+}
+
 export function submitDraft(id: string) {
   // In production this would POST to /timeEntries with status: 'pending'.
-  // For the demo we just remove it from drafts and pretend.
+  // The draft becomes a pending entry so dashboards reflect it immediately.
+  const draft = state.drafts.find((d) => d.id === id);
+  if (draft) state.submitted = [draftToEntry(draft), ...state.submitted];
   state.drafts = state.drafts.filter((d) => d.id !== id);
   state.notifications = [
     {
@@ -144,6 +173,7 @@ export function submitDraft(id: string) {
 
 export function submitAllDrafts() {
   const n = state.drafts.length;
+  state.submitted = [...state.drafts.map(draftToEntry), ...state.submitted];
   state.drafts = [];
   state.notifications = [
     {

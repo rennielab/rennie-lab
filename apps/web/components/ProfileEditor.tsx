@@ -72,7 +72,7 @@ export function ProfileEditor({ person, signOutHref = '/' }: { person: ProfilePe
       <div className="bg-card border border-border rounded-2xl p-6 mb-4">
         <div className="text-sm font-semibold mb-4">Preferences</div>
         <Pref label="Notify me by email" sub="Daily digest at 8 AM PT" defaultOn />
-        <Pref label="Show me in the campfire room" sub="Other users see your online status" defaultOn />
+        <Pref label="Show me as Available in Message Center" sub="Other users see your online status" defaultOn />
         <Pref label="Use my photo on invoices" sub="Where applicable" />
       </div>
 

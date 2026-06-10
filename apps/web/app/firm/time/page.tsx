@@ -14,7 +14,7 @@ import {
   seedEntries,
 } from '@/lib/mock';
 import { useEntryOverrides } from '@/lib/adminState';
-import { deleteDraft, submitDraft, useFirmDrafts } from '@/lib/firmState';
+import { deleteDraft, submitDraft, useFirmDrafts, useSubmittedFirmEntries } from '@/lib/firmState';
 
 type Tab = 'all' | 'drafts' | 'pending' | 'approved' | 'rejected';
 
@@ -31,15 +31,17 @@ export default function FirmTime() {
     if (t === 'drafts' || t === 'pending' || t === 'approved' || t === 'rejected' || t === 'all') setTab(t);
   }, []);
 
-  // Sophia-only entries enriched with admin overrides
-  const myEntries = useMemo(() => seedEntries
+  // Sophia-only entries enriched with admin overrides. Submitted drafts are
+  // merged in so they appear under Pending the moment she submits.
+  const submitted = useSubmittedFirmEntries();
+  const myEntries = useMemo(() => [...submitted, ...seedEntries]
     .filter((e) => e.lawyerId === currentFirmUser.id)
     .map((e) => ({
       ...e,
       status: (overrides[e.id]?.status as typeof e.status) ?? e.status,
       nonBillable: overrides[e.id]?.nonBillable ?? e.nonBillable,
       rejectReason: overrides[e.id]?.rejectReason,
-    })), [overrides]);
+    })), [overrides, submitted]);
 
   const counts = {
     all: myEntries.length + drafts.length,
@@ -97,7 +99,7 @@ export default function FirmTime() {
             className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 -mb-px ${
               tab === k ? 'border-accent text-accent' : 'border-transparent text-fg-muted hover:text-fg'
             }`}>
-            {k === 'all' ? 'All' : k[0].toUpperCase() + k.slice(1)}
+            {k === 'all' ? 'All' : k === 'rejected' ? 'Do not bill' : k[0].toUpperCase() + k.slice(1)}
             <span className={`px-1.5 py-0.5 text-xs rounded-full ${tab === k ? 'bg-accent text-white' : 'bg-bg text-fg-muted'}`}>
               {counts[k]}
             </span>
@@ -151,7 +153,7 @@ export default function FirmTime() {
               {tab === 'rejected' ? 'Nothing has been sent back to you. Nice.' :
                 tab === 'pending' ? 'No entries awaiting approval.' :
                 tab === 'approved' ? 'No approved entries yet.' :
-                'No entries logged yet — hit Add Entry to start.'}
+                'No entries logged yet — hit Manual Time Entry to start.'}
             </div>
           ) : (
             groups.map((group) => (

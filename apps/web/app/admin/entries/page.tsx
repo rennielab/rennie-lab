@@ -26,6 +26,9 @@ import {
 } from '@/lib/adminState';
 
 type Tab = 'all' | 'pending' | 'approved' | 'rejected';
+// Dana 2026-05-26: sortable columns on the entries table
+type SortKey = 'client' | 'matter' | 'lawyer' | 'duration' | 'value' | 'status';
+type SortDir = 'asc' | 'desc';
 
 const AVATAR_TINTS: Record<string, { bg: string; fg: string }> = {
   A: { bg: '#FEE2E2', fg: '#B91C1C' },
@@ -66,6 +69,19 @@ export default function Entries() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [tab, setTab] = useState<Tab>('all');
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [sortKey, setSortKey] = useState<SortKey | null>(null);
+  const [sortDir, setSortDir] = useState<SortDir>('asc');
+
+  function toggleSort(k: SortKey) {
+    if (sortKey !== k) {
+      setSortKey(k);
+      setSortDir('asc');
+    } else if (sortDir === 'asc') {
+      setSortDir('desc');
+    } else {
+      setSortKey(null); // third click clears, back to date grouping
+    }
+  }
 
   useEffect(() => {
     const t = setTimeout(() => {
@@ -107,6 +123,29 @@ export default function Entries() {
     return true;
   });
 
+  // Sorted flat list when a column sort is active; otherwise date-grouped.
+  const sortedFlat = useMemo(() => {
+    if (!sortKey) return null;
+    const sortVal = (e: (typeof filtered)[number]): string | number => {
+      const m = matterById(e.matterId);
+      switch (sortKey) {
+        case 'client': return (m ? clientById(m.clientId)?.name : '') ?? '';
+        case 'matter': return m?.shortName ?? '';
+        case 'lawyer': return lawyerById(e.lawyerId)?.name ?? '';
+        case 'duration': return e.durationSec;
+        case 'value': return e.nonBillable ? -1 : entryValue(e);
+        case 'status': return e.status as string;
+      }
+    };
+    const dir = sortDir === 'asc' ? 1 : -1;
+    return [...filtered].sort((a, b) => {
+      const va = sortVal(a);
+      const vb = sortVal(b);
+      if (typeof va === 'number' && typeof vb === 'number') return (va - vb) * dir;
+      return String(va).localeCompare(String(vb)) * dir;
+    });
+  }, [filtered, sortKey, sortDir]);
+
   const groups = useMemo(() => {
     const buckets = new Map<string, typeof filtered>();
     for (const e of filtered) {
@@ -146,7 +185,7 @@ export default function Entries() {
       subtitle="Review and approve time submitted by your team."
       action={
         <button className="bg-accent hover:bg-accent-dim text-white font-semibold text-sm px-4 h-10 rounded-lg flex items-center gap-2">
-          <span className="text-base leading-none">+</span> New Entry
+          <span className="text-base leading-none">+</span> Manual Time Entry
         </button>
       }>
       {/* Tabs */}
@@ -158,7 +197,7 @@ export default function Entries() {
             className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 -mb-px ${
               tab === k ? 'border-accent text-accent' : 'border-transparent text-fg-muted hover:text-fg'
             }`}>
-            {k === 'all' ? 'All' : k[0].toUpperCase() + k.slice(1)}
+            {k === 'all' ? 'All' : k === 'rejected' ? 'Do not bill' : k[0].toUpperCase() + k.slice(1)}
             <span className={`px-1.5 py-0.5 text-xs rounded-full ${tab === k ? 'bg-accent text-white' : 'bg-bg text-fg-muted'}`}>
               {counts[k]}
             </span>
@@ -222,24 +261,29 @@ export default function Entries() {
               onChange={toggleAll}
             />
           </div>
-          <div>Client</div>
-          <div>Matter</div>
+          <SortHeader label="Client" k="client" active={sortKey} dir={sortDir} onSort={toggleSort} />
+          <SortHeader label="Matter" k="matter" active={sortKey} dir={sortDir} onSort={toggleSort} />
           <div>Description</div>
-          <div>Lawyer</div>
-          <div className="text-right">Duration</div>
-          <div className="text-right">Value</div>
-          <div className="text-right">Status</div>
+          <SortHeader label="Lawyer" k="lawyer" active={sortKey} dir={sortDir} onSort={toggleSort} />
+          <SortHeader label="Duration" k="duration" active={sortKey} dir={sortDir} onSort={toggleSort} right />
+          <SortHeader label="Value" k="value" active={sortKey} dir={sortDir} onSort={toggleSort} right />
+          <SortHeader label="Status" k="status" active={sortKey} dir={sortDir} onSort={toggleSort} right />
         </div>
 
         {groups.length === 0 && (
           <div className="px-5 py-12 text-center text-sm text-fg-muted">No entries in this view.</div>
         )}
 
-        {groups.map((group) => (
-          <div key={group.label}>
-            <div className="bg-bg px-5 py-2 text-xs font-semibold text-fg-muted border-b border-border">
-              {group.label}
-            </div>
+        {(sortedFlat
+          ? [{ label: null as string | null, list: sortedFlat }]
+          : groups.map((g) => ({ label: g.label as string | null, list: g.list }))
+        ).map((group, gi) => (
+          <div key={group.label ?? `sorted_${gi}`}>
+            {group.label && (
+              <div className="bg-bg px-5 py-2 text-xs font-semibold text-fg-muted border-b border-border">
+                {group.label}
+              </div>
+            )}
             {group.list.map((e) => {
               const m = matterById(e.matterId);
               const client = m ? clientById(m.clientId) : undefined;
@@ -347,12 +391,49 @@ export default function Entries() {
   );
 }
 
+function SortHeader({
+  label,
+  k,
+  active,
+  dir,
+  onSort,
+  right,
+}: {
+  label: string;
+  k: SortKey;
+  active: SortKey | null;
+  dir: SortDir;
+  onSort: (k: SortKey) => void;
+  right?: boolean;
+}) {
+  const isActive = active === k;
+  return (
+    <button
+      onClick={() => onSort(k)}
+      className={`flex items-center gap-1 uppercase tracking-wide text-xs font-semibold transition ${
+        right ? 'justify-end text-right' : 'justify-start text-left'
+      } ${isActive ? 'text-accent' : 'text-fg-muted hover:text-fg'}`}>
+      {label}
+      <svg
+        width="10"
+        height="10"
+        viewBox="0 0 24 24"
+        fill="none"
+        className={`shrink-0 transition ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-40'} ${
+          isActive && dir === 'desc' ? 'rotate-180' : ''
+        }`}>
+        <path d="M12 5v14M5 12l7-7 7 7" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </button>
+  );
+}
+
 function StatusBadge({ status }: { status: 'approved' | 'pending' | 'draft' | 'rejected' }) {
   const map: Record<string, { cls: string; label: string }> = {
     approved: { cls: 'bg-accent-soft text-accent-dark', label: 'Approved' },
     pending: { cls: 'bg-warning-soft text-warning', label: 'Pending' },
     draft: { cls: 'bg-bg text-fg-muted', label: 'Draft' },
-    rejected: { cls: 'bg-danger-soft text-danger', label: 'Rejected' },
+    rejected: { cls: 'bg-danger-soft text-danger', label: 'Do not bill' },
   };
   const s = map[status] ?? map.draft;
   return <span className={`inline-flex px-2.5 py-0.5 text-xs rounded-full font-semibold ${s.cls}`}>{s.label}</span>;

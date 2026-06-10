@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import { AdminShell } from '@/components/AdminShell';
 import { clients, contacts, formatHoursH, formatMoneyCompact, matters, seedEntries } from '@/lib/mock';
 
@@ -72,7 +74,10 @@ export default function Clients() {
           const initial = r.client.name[0];
           const tint = CLIENT_TINTS[initial] ?? { bg: '#F3F4F6', fg: '#4B5563' };
           return (
-            <div key={r.client.id} className="grid grid-cols-[1.6fr_1.4fr_110px_60px_70px_110px_110px_120px_110px] gap-3 items-center px-6 py-3.5 border-b border-border last:border-0 hover:bg-bg/50">
+            <Link
+              key={r.client.id}
+              href={`/admin/clients/${r.client.id}`}
+              className="grid grid-cols-[1.6fr_1.4fr_110px_60px_70px_110px_110px_120px_110px] gap-3 items-center px-6 py-3.5 border-b border-border last:border-0 hover:bg-bg/50 cursor-pointer">
               <div className="flex items-center gap-3 min-w-0">
                 <span style={{ background: tint.bg, color: tint.fg }} className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs shrink-0">
                   {initial}
@@ -115,7 +120,7 @@ export default function Clients() {
                   {r.status}
                 </span>
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>

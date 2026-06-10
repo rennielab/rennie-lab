@@ -52,7 +52,7 @@ export function ChatButton({ me, className = '' }: { me: ChatAuthor; className?:
     <>
       <button
         onClick={handleOpen}
-        title="Open campfire chat"
+        title="Open Message Center"
         className={`w-10 h-10 rounded-full border border-border bg-card hover:bg-bg flex items-center justify-center relative ${className}`}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
           <path
@@ -278,7 +278,7 @@ function ChatSlideOut({ open, onClose, me }: { open: boolean; onClose: () => voi
           </span>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <div className="text-base font-semibold text-fg truncate">Campfire</div>
+              <div className="text-base font-semibold text-fg truncate">Message Center</div>
               <span className="text-xs px-2 py-0.5 rounded-full bg-accent-soft text-accent-dark font-semibold">
                 Bennett &amp; Hayes ↔ {otherSideLabel}
               </span>
@@ -286,7 +286,7 @@ function ChatSlideOut({ open, onClose, me }: { open: boolean; onClose: () => voi
             <div className="text-xs text-fg-muted flex items-center gap-3 mt-1">
               <span className="inline-flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-accent" />
-                {onlineMembers.length + 1} in the room
+                {onlineMembers.length + 1} available
               </span>
               <span>·</span>
               <span>Posting as <span className="text-fg font-medium">{me.name}</span></span>
@@ -320,8 +320,8 @@ function ChatSlideOut({ open, onClose, me }: { open: boolean; onClose: () => voi
           {decoratedGroups.length === 0 ? (
             <div className="h-full flex items-center justify-center text-sm text-fg-muted text-center">
               <div>
-                <div className="text-3xl mb-2">🔥</div>
-                <div className="font-medium text-fg mb-1">Light the campfire</div>
+                <div className="text-3xl mb-2">💬</div>
+                <div className="font-medium text-fg mb-1">Start the conversation</div>
                 <div className="text-xs">Say hi to kick off the conversation.</div>
               </div>
             </div>

@@ -21,10 +21,16 @@ import {
   toggleMatterPin,
   useFirmDrafts,
   usePinnedMatterIds,
+  useSubmittedFirmEntries,
 } from '@/lib/firmState';
 
 const dayMs = 24 * 60 * 60 * 1000;
 const WEEKLY_TARGET_HOURS = 35;
+// Dana 2026-05-26: This Year view tracks progress against the annual goal.
+const ANNUAL_TARGET_HOURS = 1500;
+// Demo YTD baseline — what Sophia banked Jan→now before this month's entries.
+const YTD_BASE_SEC = 512 * 3600;
+const YTD_BASE_BILLED = 214600;
 
 function startOf(d: Date) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime(); }
 function startOfWeek() {
@@ -40,9 +46,12 @@ export default function FirmDashboard() {
   const pinned = usePinnedMatterIds();
   const [addOpen, setAddOpen] = useState(false);
   const [addDefault, setAddDefault] = useState<string | undefined>(undefined);
+  const [timeframe, setTimeframe] = useState<'month' | 'year'>('month');
 
-  // Scope everything to Sophia
-  const myEntries = seedEntries
+  // Scope everything to Sophia. Submitted drafts count immediately —
+  // that's the "draft populates the dashboard" fix from Dana's feedback.
+  const submitted = useSubmittedFirmEntries();
+  const myEntries = [...submitted, ...seedEntries]
     .filter((e) => e.lawyerId === currentFirmUser.id)
     .map((e) => ({
       ...e,
@@ -98,7 +107,7 @@ export default function FirmDashboard() {
         <button
           onClick={() => openAddFor()}
           className="bg-accent hover:bg-accent-dim text-white font-semibold text-sm px-4 h-10 rounded-lg inline-flex items-center gap-1.5">
-          <span className="text-base leading-none">+</span> Add Entry
+          <span className="text-base leading-none">+</span> Manual Time Entry
         </button>
       }>
       {/* Hero: this week + utilization */}
@@ -123,12 +132,52 @@ export default function FirmDashboard() {
           </div>
         </div>
         <div className="bg-card border border-border rounded-2xl p-5">
-          <div className="text-xs text-fg-muted">This month</div>
-          <div className="text-3xl font-semibold tabular-nums tracking-tight mt-1">{formatHoursH(monthSec)}</div>
-          <div className="text-xs text-fg-muted mt-2">
-            <span className="text-accent-dark font-semibold">{formatMoneyCompact(monthBilled)}</span> billable
-            <span className="ml-2">· {formatHoursH(monthBillableSec)}</span>
+          <div className="flex items-center justify-between">
+            <div className="text-xs text-fg-muted">{timeframe === 'year' ? 'This year' : 'This month'}</div>
+            <div className="flex items-center gap-0.5 bg-bg border border-border rounded-md p-0.5">
+              {(
+                [
+                  ['month', 'M'],
+                  ['year', 'Y'],
+                ] as const
+              ).map(([key, label]) => (
+                <button
+                  key={key}
+                  onClick={() => setTimeframe(key)}
+                  title={key === 'month' ? 'This month' : 'This year'}
+                  className={`w-6 h-5 rounded text-[10px] font-bold transition ${
+                    timeframe === key ? 'bg-accent text-white' : 'text-fg-muted hover:text-fg'
+                  }`}>
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
+          {timeframe === 'month' ? (
+            <>
+              <div className="text-3xl font-semibold tabular-nums tracking-tight mt-1">{formatHoursH(monthSec)}</div>
+              <div className="text-xs text-fg-muted mt-2">
+                <span className="text-accent-dark font-semibold">{formatMoneyCompact(monthBilled)}</span> billable
+                <span className="ml-2">· {formatHoursH(monthBillableSec)}</span>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="text-3xl font-semibold tabular-nums tracking-tight mt-1">
+                {formatHoursH(YTD_BASE_SEC + monthSec)}
+              </div>
+              <div className="mt-2 h-1.5 bg-bg rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-accent rounded-full transition-all"
+                  style={{ width: `${Math.min(100, ((YTD_BASE_SEC + monthSec) / 3600 / ANNUAL_TARGET_HOURS) * 100)}%` }}
+                />
+              </div>
+              <div className="text-xs text-fg-muted mt-1.5 flex items-center justify-between">
+                <span>{Math.round(((YTD_BASE_SEC + monthSec) / 3600 / ANNUAL_TARGET_HOURS) * 100)}% of {ANNUAL_TARGET_HOURS}h goal</span>
+                <span className="text-accent-dark font-semibold">{formatMoneyCompact(YTD_BASE_BILLED + monthBilled)}</span>
+              </div>
+            </>
+          )}
         </div>
       </div>
 

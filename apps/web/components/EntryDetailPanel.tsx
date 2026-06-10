@@ -223,7 +223,7 @@ export function EntryDetailPanel({
         {/* Reject form */}
         {rejecting && (
           <div className="mt-6 bg-danger-soft border border-danger/30 rounded-xl p-4">
-            <div className="text-sm font-semibold text-danger mb-2">Reject this entry</div>
+            <div className="text-sm font-semibold text-danger mb-2">Do not bill this entry</div>
             <textarea
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
@@ -301,7 +301,7 @@ export function EntryDetailPanel({
               <button
                 onClick={() => setRejecting(true)}
                 className="px-4 py-3 rounded-lg border border-danger/30 bg-card hover:bg-danger-soft text-danger text-sm font-semibold">
-                Reject
+                Do Not Bill
               </button>
             )}
           </>

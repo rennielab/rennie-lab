@@ -36,6 +36,7 @@ export default function LogEntry() {
   const params = useLocalSearchParams<{ matterId?: string; durationSec?: string }>();
 
   const [matterId, setMatterId] = useState(params.matterId ?? matters[0].id);
+  const [activity, setActivity] = useState<'call' | 'email' | 'document' | 'text'>('call');
   const [hours, setHours] = useState(
     params.durationSec ? String(Math.floor(Number(params.durationSec) / 3600)) : '0',
   );
@@ -76,7 +77,8 @@ export default function LogEntry() {
       createdAt: Date.now(),
       status: 'pending',
       nonBillable: nonBill,
-      source: 'manual',
+      source: activity === 'call' ? 'call' : 'manual',
+      activity,
     };
     submitEntry(entry);
     router.replace('/(tabs)/activities');
@@ -90,7 +92,7 @@ export default function LogEntry() {
         <Pressable onPress={() => router.back()} hitSlop={10} style={styles.iconBtn}>
           <Ionicons name="close" size={22} color={colors.textPrimary} />
         </Pressable>
-        <Text style={styles.title}>Log time</Text>
+        <Text style={styles.title}>Manual time entry</Text>
         <View style={{ width: 36 }} />
       </View>
 
@@ -98,6 +100,37 @@ export default function LogEntry() {
         contentContainerStyle={{ paddingHorizontal: space.xxl, paddingBottom: 120 }}
         keyboardShouldPersistTaps="handled">
         <Text style={styles.help}>For time you&apos;ve already worked.</Text>
+
+        {/* Activity — Dana 2026-05-26: categorize manual entries */}
+        <Text style={styles.section}>Activity</Text>
+        <View style={styles.activityRow}>
+          {(
+            [
+              ['call', 'call', 'Call'],
+              ['email', 'mail', 'Email'],
+              ['document', 'document-text', 'Document'],
+              ['text', 'chatbubble', 'Text'],
+            ] as const
+          ).map(([key, icon, label]) => (
+            <Pressable
+              key={key}
+              onPress={() => setActivity(key)}
+              style={[styles.activityChip, activity === key && styles.activityChipActive]}>
+              <Ionicons
+                name={icon}
+                size={15}
+                color={activity === key ? colors.accent : colors.textSecondary}
+              />
+              <Text
+                style={[
+                  styles.activityLabel,
+                  activity === key && { color: colors.accent, fontWeight: '700' },
+                ]}>
+                {label}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
 
         {/* Matter */}
         <Text style={styles.section}>Matter</Text>
@@ -251,6 +284,24 @@ const styles = StyleSheet.create({
     marginTop: space.lg,
     marginBottom: space.sm,
   },
+
+  activityRow: { flexDirection: 'row', gap: 8 },
+  activityChip: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: colors.bgElevated,
+    borderRadius: radii.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingVertical: 10,
+  },
+  activityChipActive: {
+    backgroundColor: colors.accentSoft,
+    borderColor: 'rgba(34, 197, 94, 0.45)',
+  },
+  activityLabel: { color: colors.textSecondary, fontSize: 11, fontWeight: '600' },
 
   field: {
     flexDirection: 'row',

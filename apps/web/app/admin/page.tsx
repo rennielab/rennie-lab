@@ -76,14 +76,18 @@ function useDashboardData() {
     .filter((i) => invStatus(i.id, i.defaultStatus) === 'paid')
     .reduce((a, i) => a + i.amount, 0);
 
-  // Hours per day, last 7
-  const days: { label: string; sec: number }[] = [];
+  // Hours per day, last 7 — broken down per lawyer so the chart can stack
+  // each member's contribution (Dana 2026-05-26: show whose hours they are).
+  const days: { label: string; sec: number; perLawyer: Record<string, number> }[] = [];
   for (let i = 6; i >= 0; i--) {
     const end = Date.now() - i * dayMs + dayMs;
     const start = end - dayMs;
-    const sec = enriched.filter((e) => e.createdAt >= start && e.createdAt < end).reduce((a, e) => a + e.durationSec, 0);
+    const inDay = enriched.filter((e) => e.createdAt >= start && e.createdAt < end);
+    const sec = inDay.reduce((a, e) => a + e.durationSec, 0);
+    const perLawyer: Record<string, number> = {};
+    for (const e of inDay) perLawyer[e.lawyerId] = (perLawyer[e.lawyerId] ?? 0) + e.durationSec;
     const d = new Date(start);
-    days.push({ label: `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`, sec });
+    days.push({ label: `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`, sec, perLawyer });
   }
 
   const avgPerMember = totalSec / Math.max(lawyers.length, 1);
@@ -104,8 +108,24 @@ function useDashboardData() {
 
 // ---------- Dashboard ----------
 
+// Demo YTD baselines — what the firm accumulated Jan→now before this month's
+// live mock entries. Keeps "This year" reading like real annual progress.
+const YTD_BASE = {
+  billableSec: 1184 * 3600,
+  revenue: 712400,
+  cash: 583200,
+};
+
 export default function Dashboard() {
   const d = useDashboardData();
+  // Dana 2026-05-26: KPIs viewable as This Month or This Year
+  const [timeframe, setTimeframe] = useState<'month' | 'year'>('month');
+  const year = timeframe === 'year';
+
+  const kpiBillableSec = d.billableSec + (year ? YTD_BASE.billableSec : 0);
+  const kpiRevenue = d.approvedUnbilledValue + d.cashCollected + (year ? YTD_BASE.revenue : 0);
+  const kpiCash = d.cashCollected + (year ? YTD_BASE.cash : 0);
+  const kpiAvg = (d.totalSec + (year ? YTD_BASE.billableSec : 0)) / Math.max(lawyers.length, 1);
 
   return (
     <AdminShell
@@ -123,35 +143,48 @@ export default function Dashboard() {
         stalledCount={d.stalledMatters.length}
       />
 
-      {/* This-month KPIs (timeframe explicit) */}
+      {/* KPIs with explicit timeframe toggle */}
       <div className="mt-5 mb-2 flex items-baseline justify-between">
-        <h2 className="text-sm font-semibold text-fg-muted uppercase tracking-wide">This month</h2>
-        <span className="text-xs text-fg-muted">7-day rolling chart below</span>
+        <h2 className="text-sm font-semibold text-fg-muted uppercase tracking-wide">
+          {year ? 'This year' : 'This month'}
+        </h2>
+        <div className="flex items-center gap-1 bg-card border border-border rounded-lg p-0.5">
+          {(
+            [
+              ['month', 'This month'],
+              ['year', 'This year'],
+            ] as const
+          ).map(([key, label]) => (
+            <button
+              key={key}
+              onClick={() => setTimeframe(key)}
+              className={`px-3 h-7 rounded-md text-xs font-semibold transition ${
+                timeframe === key ? 'bg-accent text-white' : 'text-fg-muted hover:text-fg'
+              }`}>
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
       <div className="grid grid-cols-4 gap-3">
-        <Kpi label="Billable" value={formatHoursH(d.billableSec)} icon={<IClock />} delta="+12%" />
-        <Kpi label="Revenue (billed)" value={formatMoneyCompact(d.approvedUnbilledValue + d.cashCollected)} icon={<IDollar />} delta="+18.2%" />
-        <Kpi label="Cash collected" value={formatMoneyCompact(d.cashCollected)} icon={<IBank />} accent />
-        <Kpi label="Avg per member" value={formatHoursH(d.avgPerMember)} icon={<ITarget />} sub={`across ${lawyers.length} members`} />
+        <Kpi label="Billable" value={formatHoursH(kpiBillableSec)} icon={<IClock />} delta={year ? '+9% vs last yr' : '+12%'} />
+        <Kpi label="Revenue (billed)" value={formatMoneyCompact(kpiRevenue)} icon={<IDollar />} delta={year ? '+14.6% vs last yr' : '+18.2%'} />
+        <Kpi label="Cash collected" value={formatMoneyCompact(kpiCash)} icon={<IBank />} accent />
+        <Kpi label="Avg per member" value={formatHoursH(kpiAvg)} icon={<ITarget />} sub={`across ${lawyers.length} members`} />
       </div>
 
-      {/* Hours chart */}
+      {/* Hours chart — real entries, stacked per member */}
       <div className="mt-4 bg-card border border-border rounded-2xl p-6">
         <div className="flex items-start justify-between mb-6">
           <div>
             <div className="text-sm font-semibold text-fg">Hours over time</div>
             <div className="text-xs text-fg-muted mt-0.5">
-              Last 7 days · total <span className="text-fg font-semibold">{formatHoursH(d.days.reduce((a, x) => a + x.sec, 0))}</span>
+              Last 7 days · total <span className="text-fg font-semibold">{formatHoursH(d.days.reduce((a, x) => a + x.sec, 0))}</span> · each color is a member
             </div>
           </div>
-          <button className="text-sm text-fg-muted inline-flex items-center gap-1.5 border border-border rounded-lg px-3 h-9 hover:bg-bg">
-            Daily
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-              <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
+          <ChartLegend days={d.days} />
         </div>
-        <AutoScaleBarChart series={d.days} />
+        <StackedHoursChart series={d.days} />
       </div>
 
       {/* Recent activity + Capture mix */}
@@ -328,7 +361,7 @@ function QuickActionMenu() {
       {open && (
         <div className="absolute right-0 mt-2 w-[220px] bg-card border border-border rounded-xl shadow-[0_20px_60px_-20px_rgba(15,20,25,0.25)] z-30 overflow-hidden">
           {[
-            { href: '/admin/entries', label: 'Add time entry', icon: <IClock /> },
+            { href: '/admin/entries', label: 'Manual time entry', icon: <IClock /> },
             { href: '/admin/invoices?new=1', label: 'New invoice', icon: <IDollar /> },
             { href: '/admin/matters?new=1', label: 'New matter', icon: <IBriefcase /> },
             { href: '/admin/clients?new=1', label: 'New client', icon: <IUsers /> },
@@ -372,10 +405,54 @@ function Kpi({ label, value, icon, delta, accent, sub }: { label: string; value:
   );
 }
 
-function AutoScaleBarChart({ series }: { series: { label: string; sec: number }[] }) {
+// Stable per-lawyer chart colors. Sophia gets the brand accent — she's the
+// demo's protagonist; everyone else gets distinct supporting hues.
+const LAWYER_COLORS: Record<string, string> = {
+  lwy_soph: '#22C55E',
+  lwy_jord: '#3B82F6',
+  lwy_sara: '#A855F7',
+  lwy_marc: '#F59E0B',
+};
+
+type DaySeries = { label: string; sec: number; perLawyer: Record<string, number> };
+
+// Legend with the members' actual faces + their 7-day totals.
+function ChartLegend({ days }: { days: DaySeries[] }) {
+  const totals = lawyers
+    .map((l) => ({
+      l,
+      sec: days.reduce((a, d) => a + (d.perLawyer[l.id] ?? 0), 0),
+    }))
+    .filter((x) => x.sec > 0)
+    .sort((a, b) => b.sec - a.sec);
+  return (
+    <div className="flex items-center gap-3 flex-wrap justify-end">
+      {totals.map(({ l, sec }) => (
+        <span key={l.id} className="inline-flex items-center gap-1.5 text-xs">
+          <span className="relative inline-flex">
+            {l.avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={l.avatarUrl} alt={l.name} className="w-6 h-6 rounded-full object-cover" />
+            ) : (
+              <span className="w-6 h-6 rounded-full bg-bg flex items-center justify-center text-[9px] font-bold">{l.initials}</span>
+            )}
+            <span
+              className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full ring-2 ring-card"
+              style={{ background: LAWYER_COLORS[l.id] ?? '#9CA3AF' }}
+            />
+          </span>
+          <span className="text-fg-muted">
+            {l.name.split(' ')[0]} <span className="font-semibold text-fg tabular-nums">{formatHoursH(sec)}</span>
+          </span>
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function StackedHoursChart({ series }: { series: DaySeries[] }) {
   const hours = series.map((s) => s.sec / 3600);
   const peak = Math.max(...hours, 1);
-  // Round max up to next nice number (1, 2, 5, 10, 20, 50, 100)
   const niceSteps = [1, 2, 3, 4, 5, 8, 10, 12, 16, 20, 30, 50, 80, 100];
   const max = niceSteps.find((s) => s >= peak * 1.1) ?? Math.ceil(peak * 1.2);
 
@@ -391,11 +468,31 @@ function AutoScaleBarChart({ series }: { series: { label: string; sec: number }[
           </div>
         ))}
         <div className="absolute left-10 right-0 top-0 bottom-0 flex items-end gap-2 px-2">
-          {hours.map((h, i) => (
-            <div key={i} className="flex-1 flex justify-center">
-              <div className="w-7 bg-accent rounded-md" style={{ height: `${(h / max) * 100}%`, minHeight: h > 0 ? 4 : 0 }} title={`${h.toFixed(2)}h`} />
-            </div>
-          ))}
+          {series.map((day, i) => {
+            const segments = Object.entries(day.perLawyer)
+              .sort(([a], [b]) => a.localeCompare(b))
+              .map(([lawyerId, sec]) => ({ lawyerId, sec }));
+            return (
+              <div key={i} className="flex-1 flex justify-center items-end h-full">
+                <div
+                  className="w-7 flex flex-col-reverse rounded-md overflow-hidden"
+                  style={{ height: `${((day.sec / 3600) / max) * 100}%`, minHeight: day.sec > 0 ? 4 : 0 }}
+                  title={segments
+                    .map((s) => `${lawyerById(s.lawyerId)?.name.split(' ')[0]}: ${(s.sec / 3600).toFixed(1)}h`)
+                    .join(' · ')}>
+                  {segments.map((s) => (
+                    <div
+                      key={s.lawyerId}
+                      style={{
+                        height: `${(s.sec / day.sec) * 100}%`,
+                        background: LAWYER_COLORS[s.lawyerId] ?? '#9CA3AF',
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
       <div className="flex pl-10 mt-2">
@@ -461,7 +558,12 @@ function TopMembersCard({ data }: { data: typeof seedEntries }) {
       <div className="space-y-3">
         {byLawyer.map(({ l, sec }) => (
           <div key={l.id} className="flex items-center gap-3">
-            <span className="w-8 h-8 rounded-full bg-accent-soft text-accent-dark flex items-center justify-center text-xs font-semibold">{l.initials}</span>
+            {l.avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={l.avatarUrl} alt={l.name} className="w-8 h-8 rounded-full object-cover shrink-0" />
+            ) : (
+              <span className="w-8 h-8 rounded-full bg-accent-soft text-accent-dark flex items-center justify-center text-xs font-semibold">{l.initials}</span>
+            )}
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between mb-1.5">
                 <div className="text-sm font-medium truncate">{l.name}</div>

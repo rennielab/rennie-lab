@@ -112,26 +112,37 @@ export default function AdminLogin() {
         <div className="text-xs text-fg-subtle">© 2026 Clockd</div>
       </div>
 
-      {/* RIGHT — marketing card */}
+      {/* RIGHT — marketing card. Professional photography per Dana 2026-05-26
+          (replaces the old placeholder art). */}
       <div className="hidden lg:flex p-6">
-        <div className="flex-1 rounded-2xl bg-bg flex flex-col px-16 py-14 relative overflow-hidden">
-          <div className="max-w-[640px]">
-            <h2 className="text-[28px] font-semibold leading-[1.25] tracking-[-0.5px] text-fg">
-              The #1 choice of legal professionals for managing clients, cases, billing, and more.
+        <div className="flex-1 rounded-2xl flex flex-col px-16 py-14 relative overflow-hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="https://images.unsplash.com/photo-1556157382-97eda2d62296?auto=format&fit=crop&w=1600&q=80"
+            alt="Lawyer taking a client call"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/25" />
+
+          <div className="relative max-w-[640px]">
+            <h2 className="text-[28px] font-semibold leading-[1.25] tracking-[-0.5px] text-white">
+              The #1 choice of legal professionals for managing clients, matters, billing, and more.
             </h2>
-            <p className="text-sm text-fg-muted mt-4 leading-relaxed max-w-[560px]">
-              The most popular free time tracker for attorneys. Track time you spend on legal matters and calculate
-              your billable hours based on your hourly rates.
+            <p className="text-sm text-white/80 mt-4 leading-relaxed max-w-[560px]">
+              Every client call becomes a billable time entry — automatically. Track time you spend on legal
+              matters and bill it without the admin.
             </p>
             <div className="flex items-center gap-2 mt-6">
               <div className="w-2 h-2 rounded-full bg-accent" />
-              <div className="w-2 h-2 rounded-full bg-border-strong" />
-              <div className="w-2 h-2 rounded-full bg-border-strong" />
+              <div className="w-2 h-2 rounded-full bg-white/40" />
+              <div className="w-2 h-2 rounded-full bg-white/40" />
             </div>
           </div>
 
           {/* Dashboard preview mockup */}
-          <DashboardPreview />
+          <div className="relative">
+            <DashboardPreview />
+          </div>
         </div>
       </div>
     </div>
