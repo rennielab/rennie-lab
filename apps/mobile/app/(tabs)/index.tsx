@@ -6,8 +6,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
+  Animated,
+  Easing,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -84,33 +86,14 @@ export default function Calls() {
         </Pressable>
       </View>
 
-      {/* ── Segments: white inactive, lime active ── */}
-      <View style={styles.segments}>
-        {(
-          [
-            ['keypad', 'Keypad'],
-            ['contacts', 'Contacts'],
-            ['recents', 'Recents'],
-          ] as const
-        ).map(([key, label]) => {
-          const active = mode === key;
-          return (
-            <Pressable
-              key={key}
-              onPress={() => {
-                Haptics.selectionAsync();
-                setMode(key);
-              }}
-              style={styles.segment}
-              hitSlop={6}>
-              <Text style={[styles.segmentLabel, active && styles.segmentLabelActive]}>
-                {label}
-              </Text>
-              <View style={[styles.segmentBar, active && styles.segmentBarActive]} />
-            </Pressable>
-          );
-        })}
-      </View>
+      {/* ── Pill slider: lime thumb glides between segments ── */}
+      <PillSlider
+        value={mode}
+        onChange={(m) => {
+          Haptics.selectionAsync();
+          setMode(m);
+        }}
+      />
 
       {/* ── KEYPAD ── */}
       {mode === 'keypad' && (
@@ -195,6 +178,142 @@ export default function Calls() {
     </View>
   );
 }
+
+// ─── Pill slider ───────────────────────────────────────────────────────────
+// A single lime thumb glides between the three segments on a dark glass
+// track. Active label flips to deep forest on lime; inactive stays white.
+
+const SEGMENTS: { key: Mode; label: string; icon: keyof typeof Ionicons.glyphMap }[] = [
+  { key: 'keypad', label: 'Keypad', icon: 'keypad' },
+  { key: 'contacts', label: 'Contacts', icon: 'people' },
+  { key: 'recents', label: 'Recents', icon: 'time' },
+];
+
+function PillSlider({ value, onChange }: { value: Mode; onChange: (m: Mode) => void }) {
+  const [trackWidth, setTrackWidth] = useState(0);
+  const index = SEGMENTS.findIndex((s) => s.key === value);
+  const segW = trackWidth > 0 ? trackWidth / SEGMENTS.length : 0;
+
+  const x = useRef(new Animated.Value(0)).current;
+  // Subtle squish while traveling — the thumb feels alive, not teleported.
+  const squish = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    if (segW === 0) return;
+    Animated.parallel([
+      Animated.spring(x, {
+        toValue: index * segW,
+        useNativeDriver: true,
+        stiffness: 320,
+        damping: 26,
+        mass: 0.7,
+      }),
+      Animated.sequence([
+        Animated.timing(squish, {
+          toValue: 0.93,
+          duration: 90,
+          easing: Easing.out(Easing.quad),
+          useNativeDriver: true,
+        }),
+        Animated.spring(squish, {
+          toValue: 1,
+          useNativeDriver: true,
+          stiffness: 300,
+          damping: 16,
+        }),
+      ]),
+    ]).start();
+  }, [index, segW, x, squish]);
+
+  return (
+    <View style={sliderStyles.outer}>
+      <View
+        style={sliderStyles.track}
+        onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width - 8)}>
+        {segW > 0 && (
+          <Animated.View
+            style={[
+              sliderStyles.thumb,
+              {
+                width: segW,
+                transform: [{ translateX: x }, { scaleY: squish }],
+              },
+            ]}
+          />
+        )}
+        {SEGMENTS.map((s) => {
+          const active = s.key === value;
+          return (
+            <Pressable
+              key={s.key}
+              onPress={() => onChange(s.key)}
+              style={sliderStyles.segment}
+              hitSlop={4}>
+              <Ionicons
+                name={active ? s.icon : (`${s.icon}-outline` as keyof typeof Ionicons.glyphMap)}
+                size={15}
+                color={active ? colors.bg : '#FFFFFF'}
+              />
+              <Text style={[sliderStyles.label, active && sliderStyles.labelActive]}>
+                {s.label}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
+
+const sliderStyles = StyleSheet.create({
+  outer: {
+    paddingHorizontal: space.xxl,
+    paddingTop: space.sm,
+    paddingBottom: space.xs,
+  },
+  track: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderRadius: radii.pill,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.10)',
+    padding: 4,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  thumb: {
+    position: 'absolute',
+    top: 4,
+    bottom: 4,
+    left: 4,
+    borderRadius: radii.pill,
+    backgroundColor: colors.accent,
+    shadowColor: colors.accent,
+    shadowOpacity: 0.55,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 6,
+  },
+  segment: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 11,
+    zIndex: 1,
+  },
+  label: {
+    color: '#FFFFFF',
+    fontSize: font.size.sm,
+    fontWeight: '600',
+    letterSpacing: 0.2,
+  },
+  labelActive: {
+    color: colors.bg,
+    fontWeight: '800',
+  },
+});
 
 // E.164-ish pretty printing for the readout: 4155550142 → (415) 555-0142
 function formatDialed(d: string): string {
@@ -333,25 +452,6 @@ const styles = StyleSheet.create({
   firmName: { color: colors.textPrimary, fontSize: font.size.sm, fontWeight: '700' },
   firmNumber: { color: colors.textTertiary, fontSize: 11, marginTop: 1 },
   youBtn: { padding: 2 },
-
-  // Segments — white inactive, lime active, iPhone-clean
-  segments: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: space.xxl,
-    paddingTop: space.sm,
-    paddingBottom: space.xs,
-  },
-  segment: { alignItems: 'center', gap: 6 },
-  segmentLabel: {
-    color: '#FFFFFF',
-    fontSize: font.size.base,
-    fontWeight: '600',
-    letterSpacing: 0.2,
-  },
-  segmentLabelActive: { color: colors.accent, fontWeight: '700' },
-  segmentBar: { width: 28, height: 3, borderRadius: 1.5, backgroundColor: 'transparent' },
-  segmentBarActive: { backgroundColor: colors.accent },
 
   // Keypad layout
   keypadWrap: { flex: 1, paddingHorizontal: 40, justifyContent: 'flex-end', paddingBottom: 132 },
