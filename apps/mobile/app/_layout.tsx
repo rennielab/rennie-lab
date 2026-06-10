@@ -36,7 +36,6 @@ export default function RootLayout() {
           <Stack.Screen name="processing" options={{ animation: 'fade', gestureEnabled: false }} />
           <Stack.Screen name="logged" options={{ animation: 'slide_from_bottom' }} />
           <Stack.Screen name="log-entry" options={{ animation: 'slide_from_bottom' }} />
-          <Stack.Screen name="chat" options={{ animation: 'slide_from_right' }} />
           <Stack.Screen name="entry/[id]" options={{ animation: 'slide_from_right' }} />
         </Stack>
         <StatusBar style="light" />

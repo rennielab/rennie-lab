@@ -5,8 +5,8 @@
 
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { useRouter } from 'expo-router';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useFocusEffect } from 'expo-router';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   FlatList,
   KeyboardAvoidingView,
@@ -33,7 +33,6 @@ import { firm } from '@/lib/mock';
 import { colors, font, radii, space } from '@/lib/tokens';
 
 export default function Chat() {
-  const router = useRouter();
   const insets = useSafeAreaInsets();
   const messages = useChatMessages();
   const [draft, setDraft] = useState('');
@@ -41,10 +40,12 @@ export default function Chat() {
   const [mentions, setMentions] = useState<string[]>([]);
   const listRef = useRef<FlatList<Group>>(null);
 
-  // Mark thread read when the user opens it.
-  useEffect(() => {
-    markRead();
-  }, []);
+  // Mark thread read each time the tab gains focus.
+  useFocusEffect(
+    useCallback(() => {
+      markRead();
+    }, []),
+  );
 
   // Scroll to bottom on mount and whenever a new message comes in.
   useEffect(() => {
@@ -89,11 +90,8 @@ export default function Chat() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={{ flex: 1, backgroundColor: colors.bg }}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 24}>
-      {/* ── Header ── */}
+      {/* ── Header (tab — no back button) ── */}
       <View style={[styles.header, { paddingTop: insets.top + space.md }]}>
-        <Pressable onPress={() => router.back()} hitSlop={10} style={styles.iconBtn}>
-          <Ionicons name="chevron-back" size={22} color={colors.textPrimary} />
-        </Pressable>
         <View style={{ flex: 1 }}>
           <Text style={styles.title}>Message Center</Text>
           <Text style={styles.subtitle}>{firm.name} · Reyes v. Horizon</Text>
@@ -159,7 +157,8 @@ export default function Chat() {
       )}
 
       {/* ── Composer ── */}
-      <View style={[styles.composer, { paddingBottom: insets.bottom + space.sm }]}>
+      {/* Composer sits above the floating tab bar */}
+      <View style={[styles.composer, { paddingBottom: insets.bottom + 86 }]}>
         <TextInput
           value={draft}
           onChangeText={setDraft}
