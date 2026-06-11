@@ -1,10 +1,28 @@
 # Clockd — Production Pickup & Port Plan
 
-*Prepared 2026-06-12, from a full audit of `clockd-labs/clockd` (frozen at `orkan-handover`, 2026-05-22) vs the demo prototype (this repo).*
+*Prepared 2026-06-12, from a full audit of `clockd-labs/clockd` (frozen at `orkan-handover`, 2026-05-22) vs the demo prototype (this repo). Updated same day after a live side-by-side review of production (localhost) vs prototype (Vercel staging).*
 
 ## TL;DR
 
 The production codebase is in **far better shape than expected**. M1 + M2 are complete and heavily audited (42/46 P0 fixes done, 37/43 P1, all Round-4/5 ship-blockers closed). The web admin is feature-complete for firm operations. What's missing is exactly what the prototype is strong at: **the two mobile apps are empty shells**, and the differentiator wiring (Twilio webhooks → auto time entries) plus Stripe are unbuilt. The port is therefore not a rewrite — it's **finishing M3 with the prototype as the design spec**.
+
+## The three users — where each codebase stands
+
+Clockd has three personas, and production's depth is inversely proportional to distance from the admin:
+
+| Persona | Prototype (demo) | Production (Orkan) | Gap |
+|---|---|---|---|
+| **1. Admin** — firm owner who registered Clockd, pays the subscription (Marcus) | Full demo surface: triage dashboard, approvals, Do Not Bill, invoicing, documents, chat | **Strongest**: real auth/MFA, full CRUD, permissions, batch confirm, aging buckets | Small — port UX moments only |
+| **2. Firm User / Staff** — the lawyer being tracked (Sophia) | Dedicated `/firm` web persona + the **entire phone-first mobile app** | `MemberDashboardPage` web view only; **mobile-lawyer is an empty shell** | **Biggest.** Sophia lives on her phone → Phase 1 |
+| **3. End Client** — the person in the matter, tracked and billed (Sarah) | Full portal: card-payment flow, documents + signing, Message Center | Thin portal: login, view matters, call history. **No payments/documents/chat** | Second-biggest — and it's the revenue loop → Phases 3–4 |
+
+Every phase below should state which persona it serves; a phase that doesn't move one of the three doesn't ship.
+
+## Side-by-side findings (live review, 2026-06-12)
+
+**Port from prototype → production (admin surface):** dashboard triage queue ("Your queue"), per-user stacked hours chart with member faces, This Month/This Year toggle, time-entry column sorting, Do Not Bill flow + status tabs, matter stage taxonomy (Intake/Active/On Hold/Closed) + stalled detection, invoice header status pills, "(this month)" timeframe labels, login-page photography, copy pass (production ships *"Insert page description here."* on Time Entries/Matters/Invoices).
+
+**Keep from production (already better than prototype):** real data grids with pagination, batch Confirm All, invoice aging buckets (30/60-day), header member+date filters, client archive + portal invites, team member detail + permissions pages, real settings (MFA/sessions/business details), the entire auth + API + WebSocket substrate.
 
 ## What production already has (don't rebuild)
 
