@@ -454,13 +454,13 @@ const styles = StyleSheet.create({
   youBtn: { padding: 2 },
 
   // Keypad layout
-  keypadWrap: { flex: 1, paddingHorizontal: 40, justifyContent: 'flex-end', paddingBottom: 132 },
+  keypadWrap: { flex: 1, paddingHorizontal: 40, justifyContent: 'flex-end', paddingBottom: 116, minHeight: 0 },
   dialReadout: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 56,
-    marginBottom: space.md,
+    minHeight: 44,
+    marginBottom: space.sm,
   },
   dialNumber: {
     color: colors.textPrimary,
@@ -477,7 +477,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    rowGap: 14,
+    rowGap: 10,
   },
   padKey: {
     width: '28%',

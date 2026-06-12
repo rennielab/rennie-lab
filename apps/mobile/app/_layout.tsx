@@ -2,10 +2,21 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { Text, TextInput } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { colors } from '@/lib/tokens';
+
+// Respect iOS Dynamic Type, but cap it: dense surfaces (keypad, pill
+// slider, tab bar) break past ~115%. Found in the wild on Dana's phone —
+// larger system text size made segment labels clip and the keypad
+// overlap the slider.
+type ScalableDefaults = { defaultProps?: { maxFontSizeMultiplier?: number } };
+const TextWithDefaults = Text as unknown as ScalableDefaults;
+const TextInputWithDefaults = TextInput as unknown as ScalableDefaults;
+TextWithDefaults.defaultProps = { ...TextWithDefaults.defaultProps, maxFontSizeMultiplier: 1.15 };
+TextInputWithDefaults.defaultProps = { ...TextInputWithDefaults.defaultProps, maxFontSizeMultiplier: 1.15 };
 
 export default function RootLayout() {
   // Load the Ionicons font for web. On native this is auto-linked at build
